@@ -112,6 +112,10 @@ header nav li:hover {
     border: 1px solid #164c79;
     background: #f2f2f2;
 }
+header nav li.selected:hover {
+    border: 1px solid #164c79;
+    background: #d2d2d2;
+}
 header nav a {
     color: #1c619a;
     text-decoration: none;
@@ -145,11 +149,12 @@ section#home article h2 {
 }
 section#home article p {
     margin: 0px;
+    line-height: 1.4em;
 }
 section#home article ul {
     margin: 0;
     padding: 0 1.5em;
-
+    line-height: 1.4em;
 }
 section#home article ul li {
     margin: 0px;
