@@ -1,10 +1,23 @@
+<%
+    menuItems = [
+        ['Home', '/'],
+        ['Docs', '/page/docs'],
+        ['FAQ', '/page/faq'],
+        ['Support', '/page/support'],
+    ]
+    path = request.path
+    for k in menuItems:
+        if path == k[1]:
+            k.append(' class=\"selected\"')
+        else:
+            k.append('')
+%>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>CCrypto VPN</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/static/style.css" media="screen" />
-    <link rel="stylesheet" href="/static/style-tty.css" media="tty" />
 </head>
 <body>
     <div id="topbar">
@@ -25,10 +38,9 @@
 
         <nav>
             <ul>
-                <li class="selected"><a href="/">Home</a></li>
-                <li><a href="/">Docs</a></li>
-                <li><a href="/">FAQ</a></li>
-                <li><a href="/">Support</a></li>
+                % for menuItem in menuItems:
+                    <li${menuItem[2] | n}><a href="${menuItem[1]}">${menuItem[0]}</a></li>
+                % endfor
             </ul>
         </nav>
 
@@ -38,7 +50,7 @@
     ${self.body()}
     
     <footer>
-        <p>Copyleft 2013 <a href="//ccrypto.org/">Cognitive Cryptography</a> - <a href="/">CGU</a> - <a href="/">Abuse report</a></p>
+        <p>Copyleft 2013 <a href="//ccrypto.org/">Cognitive Cryptography</a> - <a href="/page/tos">ToS</a> - <a href="/page/abuse">Abuse report</a></p>
     </footer>
 </body>
 </html>
