@@ -14,6 +14,7 @@ requires = [
     'pyramid_debugtoolbar',
     'zope.sqlalchemy',
     'waitress',
+    'markdown',
     ]
 
 setup(name='ccvpn2_web',
