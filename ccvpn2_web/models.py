@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float
+from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float, TypeDecorator
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.types import TypeDecorator
 from zope.sqlalchemy import ZopeTransactionExtension
 from sqlalchemy.dialects import postgresql
 from datetime import datetime, timedelta
@@ -142,7 +141,7 @@ class User(Base):
     __tablename__ = 'users'
     id          = Column(Integer, primary_key=True, nullable=False)
     username    = Column(String(length=32), unique=True, nullable=False)
-    password    = Column(String(length=256), nullable=False)
+    password    = Column(postgresql.BYTEA(length=96), nullable=False)
     email       = Column(String(length=256), nullable=True, default=None)
     is_active   = Column(Boolean, nullable=False, default=True)
     is_admin    = Column(Boolean, nullable=False, default=False)
@@ -158,6 +157,20 @@ class User(Base):
         if not self.is_paid():
             self.paid_until = datetime.now()
         self.paid_until += time
+
+    def __str__(self):
+        return '<User %s #%d>'%(self.username, self.id)
+
+def get_user(request):
+    if 'user_id' not in request.session:
+        return None
+
+    uid = request.session['user_id']
+    user = DBSession.query(User).filter_by(id=uid) .first()
+    if not user:
+        del request.session['user_id']
+        return None
+    return user
 
 class RemoteAddrModel(Base):
     __tablename__ = 'gatewayaddrs'

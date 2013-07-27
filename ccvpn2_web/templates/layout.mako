@@ -46,6 +46,13 @@
 
         <div style="clear: both"></div>
     </header>
+
+        % for packed in request.session.pop_flash():
+        <% t, m = packed if len(packed) == 2 else ('info', packed) %>
+        <article class="message">
+            <p class="${t}">${m}</p>
+        </article>
+        % endfor
     
     ${self.body()}
     
