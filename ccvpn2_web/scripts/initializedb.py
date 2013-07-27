@@ -9,7 +9,7 @@ from pyramid.paster import (
     setup_logging,
     )
 
-from ..models import DBSession, Base
+from ccvpn2_web.models import DBSession, Base, User, Order
 
 
 def usage(argv):

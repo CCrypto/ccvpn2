@@ -124,6 +124,22 @@ header nav a:hover {
     color: #164c79;
 }
 
+.message {
+    width: 40%;
+    margin: auto;
+    text-align: center;
+}
+.message p {
+    font-weight: bold;
+    padding: 6px;
+}
+.message p.info {
+    border: 1px dotted #298ddf;
+}
+.message p.error {
+    border: 1px dotted #f1174b;
+}
+
 section {
     padding: 0 5%;
 }
