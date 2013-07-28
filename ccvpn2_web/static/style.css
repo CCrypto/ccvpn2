@@ -200,6 +200,22 @@ section#homecreate a:hover {
     background: #298ddf;
 }
 
+article h1 {
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+    font-size: 1.5em;
+}
+article p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+article ul {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 40px;
+    list-style-type: disc;
+}
+
 footer {
     padding: 20px 3%;
     color: #347BB6;
@@ -208,6 +224,24 @@ footer {
 }
 footer a {
     color: #347BB6;
+}
+
+section form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 1em;
+}
+section form input {
+    display: block;
+}
+section form .inputhelp {
+    display: inline-block;
+    margin: 0;
+    color: #606060;
+    font-size: 0.8em;
+}
+section form input[type=submit] {
+    margin-top: 1em;
 }
 
 @font-face {

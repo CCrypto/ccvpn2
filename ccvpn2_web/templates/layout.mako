@@ -17,10 +17,17 @@
 <head>
     <title>CCrypto VPN</title>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/static/reset.css" media="screen" />
     <link rel="stylesheet" href="/static/style.css" media="screen" />
 </head>
 <body>
     <div id="topbar">
+        % if request.user:
+            <p class="login-helper">
+                <a href="/account/">Your account</a>
+                - <a href="/account/logout">Logout</a>
+            </p>
+        % else:
         <form action="/account/login" method="post">
             <a href="/account/signup" class="create">Sign up</a>
             <a href="/account/forgot" class="login-helper">Forgot password?</a>
@@ -28,6 +35,7 @@
             <input id="in_password" type="password" name="password" placeholder="Password"></input>
             <input value="Login" type="submit">
         </form>
+        % endif
     </div>
     
     <header>

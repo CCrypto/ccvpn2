@@ -7,8 +7,12 @@ from datetime import datetime, timedelta
 import json
 import random
 import logging
+import re
+import hashlib
 from urllib.parse import urlencode
 from urllib.request import urlopen
+
+log = logging.getLogger(__name__)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -16,13 +20,16 @@ Base = declarative_base()
 def random_access_token():
     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
-    return ''.join([charset[random.randint(0,base-1)] for n in xrange(32)])
+    return ''.join([charset[random.randint(0,base-1)] for n in range(32)])
 
 def random_gift_code():
     charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
-    return ''.join([charset[random.randint(0,base-1)] for n in xrange(16)])
-    
+    return ''.join([charset[random.randint(0,base-1)] for n in range(16)])
+
+def random_bytes(length):
+    return bytearray([random.randint(0,0xff) for n in range(length)])
+
 class JSONEncodedDict(TypeDecorator):
     """Represents an immutable structure as a json-encoded string.
     """
@@ -150,6 +157,9 @@ class User(Base):
     last_login  = Column(DateTime, nullable=True, default=None)
     paid_until  = Column(DateTime, nullable=True, default=None)
     
+    username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
+    email_re    = re.compile('^.+@.+$')
+
     def is_paid(self):
         return self.paid_until != None and self.paid_until > datetime.now()
     
@@ -158,17 +168,43 @@ class User(Base):
             self.paid_until = datetime.now()
         self.paid_until += time
 
-    def __str__(self):
-        return '<User %s #%d>'%(self.username, self.id)
+    def set_username(self, username):
+        if not self.username_re.match(username):
+            return False
+        self.username = username
+        return True
+
+    def set_password(self, clearpw):
+        if 0 < len(clearpw) < 256:
+            salt = random_bytes(32)
+            password = bytearray(clearpw, 'utf-8')
+            hash = hashlib.sha512(salt+password).digest()
+            self.password = salt + hash
+            return True
+        return False
+
+    def set_email(self, email):
+        if not self.email_re.match(email):
+            return False
+        self.email = email
+        return True
+
+    def check_password(self, clearpw):
+        if len(self.password) != 96:
+            return False
+        salt = self.password[:32]
+        password = bytearray(clearpw, 'utf-8')
+        hash = hashlib.sha512(salt+password).digest()
+        return self.password[32:96] == hash
 
 def get_user(request):
-    if 'user_id' not in request.session:
+    if 'uid' not in request.session:
         return None
 
-    uid = request.session['user_id']
+    uid = request.session['uid']
     user = DBSession.query(User).filter_by(id=uid) .first()
     if not user:
-        del request.session['user_id']
+        del request.session['uid']
         return None
     return user
 
