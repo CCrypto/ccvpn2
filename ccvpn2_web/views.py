@@ -42,6 +42,13 @@ def a_login(request):
     request.session.flash(('error', error))
     return HTTPSeeOther(location=request.route_url('home'))
 
+@view_config(route_name='account_logout')
+def a_logout(request):
+    if 'uid' in request.session:
+        del request.session['uid']
+        request.session.flash(('info', 'Logged out.'))
+    return HTTPSeeOther(location=request.route_url('home'))
+
 @view_config(route_name='account_signup', renderer='ccvpn2_web:templates/signup.mako')
 def a_signup(request):
     if request.method == 'POST':
@@ -77,5 +84,28 @@ def a_signup(request):
             return {k:request.POST[k] for k in ('username','password','password2','email')}
         request.session['uid'] = u.id
         return HTTPSeeOther(location=request.route_url('home'))
+    return {}
+
+@view_config(route_name='account_forgot', renderer='ccvpn2_web:templates/forgot_password.mako')
+def a_forgot(request):
+    if request.method == 'POST':
+        try:
+            u = DBSession.query(User) \
+                .filter_by(username=request.POST['username']) \
+                .first()
+            if not u:
+                raise Exception('Unknown username.')
+            if not u.email:
+                raise Exception('No e-mail address associated. Contact the support.')
+            # TODO: Here, send a mail with a reset link
+            request.session.flash(('info', 'We sent a reset link. Check your emails.'))
+        except KeyError:
+            return HTTPBadRequest()
+        except Exception as e:
+            request.session.flash(('error', e.args[0]))
+    return {}
+
+@view_config(route_name='account', renderer='ccvpn2_web:templates/account.mako')
+def account(request):
     return {}
 
