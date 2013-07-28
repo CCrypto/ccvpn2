@@ -208,6 +208,11 @@ article h1 {
     margin-bottom: 0.83em;
     font-size: 1.5em;
 }
+article h2 {
+    margin-top: 0.83em;
+    margin-bottom: 0.40em;
+    font-size: 1.4em;
+}
 article p {
     margin-top: 1em;
     margin-bottom: 1em;
