@@ -34,7 +34,7 @@ def a_login(request):
         assert user.check_password(password)
         request.session['uid'] = user.id
         request.session.flash(('info', 'Logged in.'))
-        return HTTPSeeOther(location=request.route_url('home'))
+        return HTTPSeeOther(location=request.route_url('account'))
     except KeyError:
         return HTTPBadRequest()
     except AssertionError:
