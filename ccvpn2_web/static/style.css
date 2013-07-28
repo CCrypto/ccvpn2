@@ -10,6 +10,7 @@ body {
     color: #4d94d7;
     font-family: 'OpenSansLight', Arial, sans-serif;
     background: #000;
+    height: 27px;
 }
 #topbar input[type=text] {
     padding: 3px;
@@ -34,11 +35,13 @@ body {
     border: 1px solid #4d94d7;
     text-transform: uppercase;
     background: none;
+    font-size: 13px;
 }
 #topbar input[type=submit]:hover {
     color: #4d94d7;
     background: #06131f;
     cursor: pointer;
+    height: 15px;
 }
 #topbar a.login-helper {
     font-size: 0.7em;
@@ -48,13 +51,19 @@ body {
 #topbar a.create {
     font-size: 13px;
     color: #4d94d7;
-    padding: 0 5px;
+    height: 15px;
+    display: inline-block;
+    padding: 4px 6px 0px 6px;
     margin-right: 10px;
     text-decoration: none;
     font-family: Arial, sans-serif;
     border: 1px solid #4d94d7;
     text-transform: uppercase;
     background: #06131f;
+}
+#topbar p {
+    height: 27px;
+    padding-top: 3px;
 }
 
 header {
