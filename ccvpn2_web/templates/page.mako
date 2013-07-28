@@ -1,7 +1,9 @@
 <%inherit file="layout.mako" />
 
-<section id="home">
+<section>
+    <article>
     ${content | n}
+    </article>
     <div style="clear: both"></div>
 </section>
 

@@ -2,9 +2,12 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from .models import DBSession, User, Order
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy import func
 from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
 import markdown
 import os
+import re
+import transaction
 
 @view_config(route_name='home', renderer='ccvpn2_web:templates/home.mako')
 def home(request):
@@ -39,4 +42,40 @@ def a_login(request):
     request.session.flash(('error', error))
     return HTTPSeeOther(location=request.route_url('home'))
 
+@view_config(route_name='account_signup', renderer='ccvpn2_web:templates/signup.mako')
+def a_signup(request):
+    if request.method == 'POST':
+        errors = []
+        u = User()
+        try:
+            u.set_username(request.POST['username']) or \
+                errors.append('Invalid username.')
+            u.set_password(request.POST['password']) or \
+                errors.append('Invalid password.')
+            u.set_email(request.POST['email']) or \
+                errors.append('Invalid email address.')
+            if request.POST['password'] != request.POST['password2']:
+                errors.append('Both passwords do not match.')
+            assert not errors
+            
+            nc = DBSession.query(func.count(User.id).label('nc')).filter_by(username=u.username).subquery()
+            ec = DBSession.query(func.count(User.id).label('ec')).filter_by(email=u.email).subquery()
+            c  = DBSession.query(nc, ec).first()
+            if c.nc > 0:
+                errors.append('Username already registered.')
+            if c.ec > 0:
+                errors.append('E-mail address already registered.')
+            assert not errors
+            
+            DBSession.add(u)
+            transaction.commit() # Commit to have u.id
+        except KeyError:
+            return HTTPBadRequest()
+        except AssertionError:
+            for error in errors:
+                request.session.flash(('error', error))
+            return {k:request.POST[k] for k in ('username','password','password2','email')}
+        request.session['uid'] = u.id
+        return HTTPSeeOther(location=request.route_url('home'))
+    return {}
 
