@@ -23,9 +23,9 @@
 <body>
     <div id="topbar">
         % if request.user:
-            <p class="login-helper">
-                <a href="/account/">Your account</a>
-                - <a href="/account/logout">Logout</a>
+            <p>
+                <a class="create" href="/account/">Your account</a>
+                <a class="create" href="/account/logout">Logout</a>
             </p>
         % else:
         <form action="/account/login" method="post">

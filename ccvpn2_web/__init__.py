@@ -20,6 +20,7 @@ def main(global_config, **settings):
     config.add_route('account',        '/account')
     config.add_route('account_login',  '/account/login', request_method='POST')
     config.add_route('account_logout', '/account/logout')
+    config.add_route('account_forgot', '/account/forgot')
     config.add_route('account_signup', '/account/signup')
     config.add_route('page',           '/page/{page:[a-z]+}')
     config.scan()
