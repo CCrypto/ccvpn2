@@ -273,6 +273,9 @@ section form input[type=submit] {
 h1, h2, h3, h4{
     color: #1c619a;
 }
+b{
+    color: #1c619a;   
+}
 @font-face {
     font-family: 'OpenSansLight';
     src: url('/static/OpenSans-Light-webfont.eot');
