@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float, TypeDecorator
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
-from zope.sqlalchemy import ZopeTransactionExtension
 from sqlalchemy.dialects import postgresql
 from datetime import datetime, timedelta
 import json
@@ -14,7 +13,7 @@ from urllib.request import urlopen
 
 log = logging.getLogger(__name__)
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+DBSession = scoped_session(sessionmaker())
 Base = declarative_base()
 
 def random_access_token():
@@ -168,11 +167,14 @@ class User(Base):
             self.paid_until = datetime.now()
         self.paid_until += time
 
-    def set_username(self, username):
-        if not self.username_re.match(username):
-            return False
-        self.username = username
-        return True
+    def validate_username(self, username):
+        return self.username_re.match(username)
+
+    def validate_email(self, email):
+        return self.email_re.match(email)
+
+    def validate_password(self,clearpw):
+        return 0 < len(clearpw) < 256
 
     def set_password(self, clearpw):
         if 0 < len(clearpw) < 256:
@@ -182,12 +184,6 @@ class User(Base):
             self.password = salt + hash
             return True
         return False
-
-    def set_email(self, email):
-        if not self.email_re.match(email):
-            return False
-        self.email = email
-        return True
 
     def check_password(self, clearpw):
         if len(self.password) != 96:

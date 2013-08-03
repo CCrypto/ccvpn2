@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from .models import DBSession, User, Order
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
-from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
+from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
 import markdown
 import os
 import re
@@ -42,7 +42,7 @@ def a_login(request):
     request.session.flash(('error', error))
     return HTTPSeeOther(location=request.route_url('home'))
 
-@view_config(route_name='account_logout')
+@view_config(route_name='account_logout', permission='logged')
 def a_logout(request):
     if 'uid' in request.session:
         del request.session['uid']
@@ -55,35 +55,37 @@ def a_signup(request):
         errors = []
         u = User()
         try:
-            u.set_username(request.POST['username']) or \
+            u.validate_username(request.POST['username']) or \
                 errors.append('Invalid username.')
-            u.set_password(request.POST['password']) or \
+            u.validate_password(request.POST['password']) or \
                 errors.append('Invalid password.')
-            u.set_email(request.POST['email']) or \
+            u.validate_email(request.POST['email']) or \
                 errors.append('Invalid email address.')
             if request.POST['password'] != request.POST['password2']:
                 errors.append('Both passwords do not match.')
             assert not errors
             
-            nc = DBSession.query(func.count(User.id).label('nc')).filter_by(username=u.username).subquery()
-            ec = DBSession.query(func.count(User.id).label('ec')).filter_by(email=u.email).subquery()
+            nc = DBSession.query(func.count(User.id).label('nc')).filter_by(username=request.POST['username']).subquery()
+            ec = DBSession.query(func.count(User.id).label('ec')).filter_by(email=request.POST['email']).subquery()
             c  = DBSession.query(nc, ec).first()
             if c.nc > 0:
                 errors.append('Username already registered.')
             if c.ec > 0:
                 errors.append('E-mail address already registered.')
             assert not errors
-            
+            u.username = request.POST['username']
+            u.email = request.POST['email']
+            u.set_password(request.POST['password'])
             DBSession.add(u)
-            transaction.commit() # Commit to have u.id
+            DBSession.commit()
+            request.session['uid'] = u.id
+            return HTTPSeeOther(location=request.route_url('account'))
         except KeyError:
             return HTTPBadRequest()
-        except AssertionError:
+        except AssertionError as e:
             for error in errors:
                 request.session.flash(('error', error))
             return {k:request.POST[k] for k in ('username','password','password2','email')}
-        request.session['uid'] = u.id
-        return HTTPSeeOther(location=request.route_url('home'))
     return {}
 
 @view_config(route_name='account_forgot', renderer='ccvpn2_web:templates/forgot_password.mako')
@@ -105,7 +107,40 @@ def a_forgot(request):
             request.session.flash(('error', e.args[0]))
     return {}
 
-@view_config(route_name='account', renderer='ccvpn2_web:templates/account.mako')
+@view_config(route_name='account', permission='logged', renderer='ccvpn2_web:templates/account.mako')
 def account(request):
-    return {}
+    if request.method == 'POST':
+        errors = []
+        u = request.user
+        try:
+            if request.POST['password'] != '':
+                u.validate_password(request.POST['password']) or \
+                    errors.append('Invalid password.')
+                if request.POST['password'] != request.POST['password2']:
+                    errors.append('Both passwords do not match.')
+            if request.POST['email'] != '':
+                u.validate_email(request.POST['email']) or \
+                    errors.append('Invalid email address.')
+            assert not errors
+
+            if request.POST['email'] != '':
+                c = DBSession.query(func.count(User.id).label('ec')).filter_by(email=request.POST['email']).first()
+                if c.ec > 0:
+                    errors.append('E-mail address already registered.')
+            assert not errors
+            if request.POST['password'] != '':
+                u.set_password(request.POST['password'])
+            if request.POST['email'] != '':
+                u.email = request.POST['email']
+            request.session.flash(('info', 'Saved!'))
+        except KeyError:
+            return HTTPBadRequest()
+        except AssertionError:
+            for error in errors:
+                request.session.flash(('error', error))
+    return {'email':request.user.email}
+
+@view_config(route_name='account_redirect')
+def account_redirect(request):
+    return HTTPMovedPermanently(location=request.route_url('account'))
 
