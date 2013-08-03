@@ -6,10 +6,10 @@
         <h3>Settings</h3>
         <form action="/account/" method="post">
             <label for="ins_password">Change password</label>
-            <input type="password" id="ins_password" name="password" required="required" />
+            <input type="password" id="ins_password" name="password" />
 
             <label for="ins_password2">Change password (repeat)</label>
-            <input type="password" id="ins_password2" name="password2" required="required" />
+            <input type="password" id="ins_password2" name="password2" />
 
             <label for="ins_email">E-mail</label>
             <input type="email" id="ins_email" name="email" value="${email or ''}" />
