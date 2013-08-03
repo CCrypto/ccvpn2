@@ -18,16 +18,16 @@
 
     <article>
         <img src="/static/anon.svg" alt="" />
-        <h2>Anonymously</h2>
+        <h2>Secure</h2>
         <p>Provides an <b>encrypted</b> tunnel<br />
             with an <b>anonymous</b> address.<br />
-            It makes you untraceable.</p>
+            Support <b>DNSSEC</b> and <b>PFS</b>.</p>
     </article>
 
     <article>
         <img src="/static/openvpn.svg" alt="" />
         <h2>OpenVPN</h2>
-        <p>Secure, free, easy to use. On:<br/>
+        <p>Secure, Free, easy to use. On:<br/>
             <ul>
                 <li><b>Windows, OSX</b></li>
                 <li><b>GNU/Linux, BSD</b></li>
