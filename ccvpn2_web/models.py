@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float, TypeDecorator
+from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float, TypeDecorator, Interval
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.dialects import postgresql
 from datetime import datetime, timedelta
 import json
@@ -155,7 +155,10 @@ class User(Base):
     signup_date = Column(DateTime, nullable=False, default=datetime.now)
     last_login  = Column(DateTime, nullable=True, default=None)
     paid_until  = Column(DateTime, nullable=True, default=None)
-    
+
+    giftcodes_used = relationship('GiftCode', backref='user')
+    orders = relationship('Order', backref='user')
+
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re    = re.compile('^.+@.+$')
 
@@ -193,30 +196,12 @@ class User(Base):
         hash = hashlib.sha512(salt+password).digest()
         return self.password[32:96] == hash
 
-def get_user(request):
-    if 'uid' not in request.session:
-        return None
-
-    uid = request.session['uid']
-    user = DBSession.query(User).filter_by(id=uid) .first()
-    if not user:
-        del request.session['uid']
-        return None
-    return user
-
-class RemoteAddrModel(Base):
-    __tablename__ = 'gatewayaddrs'
-    id         = Column(Integer, primary_key=True, nullable=False)
-    ipversion  = Column(Integer, nullable=False)
-    location   = Column(String(length=32), nullable=False)
-
-class GiftCodes(Base):
+class GiftCode(Base):
     __tablename__ = 'giftcodes'
     id      = Column(Integer, primary_key=True, nullable=False)
     code    = Column(String(16), primary_key=True, nullable=False, default=random_gift_code)
-    enabled = Column(Boolean, default=True, nullable=False)
-    onetime = Column(Boolean, default=True, nullable=False)
-    used    = Column(Integer, default=0, nullable=False)
+    time    = Column(Interval, default=timedelta(days=30), nullable=False)
+    used    = Column(ForeignKey('users.id'), nullable=True)
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -245,3 +230,13 @@ class APIAccessToken(Base):
 
 
 
+def get_user(request):
+    if 'uid' not in request.session:
+        return None
+
+    uid = request.session['uid']
+    user = DBSession.query(User).filter_by(id=uid) .first()
+    if not user:
+        del request.session['uid']
+        return None
+    return user

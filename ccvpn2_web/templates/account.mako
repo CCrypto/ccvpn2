@@ -32,6 +32,7 @@
             <select id="ino_method" name="method">
                 <option value="paypal">Paypal</option>
                 <option value="bitcoin">Bitcoin</option>
+                <option value="giftcode">Gift code</option>
             </select>
 
             <input type="submit" />
