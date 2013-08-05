@@ -1,13 +1,14 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from .models import DBSession, User, Order
+from .models import DBSession, User, Order, GiftCode
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
 from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
 import markdown
 import os
 import re
-import transaction
+import datetime
+from . import methods
 
 @view_config(route_name='home', renderer='ccvpn2_web:templates/home.mako')
 def home(request):
@@ -143,4 +144,51 @@ def account(request):
 @view_config(route_name='account_redirect')
 def account_redirect(request):
     return HTTPMovedPermanently(location=request.route_url('account'))
+
+@view_config(route_name='order_post', permission='logged')
+def order_post(request):
+    if 'code' in request.POST and request.POST['code'] != '':
+        gc = DBSession.query(GiftCode) \
+            .filter_by(code=request.POST['code'], used=None) \
+            .first()
+        if not gc:
+            request.session.flash(('error', 'Unknown or already used code.'))
+        else:
+            request.user.add_paid_time(gc.time)
+            gc.used = request.user.id
+            added = gc.time.days
+            request.session.flash(('info', 'OK! Added %d days to your account.'%added))
+        DBSession.commit()
+        return HTTPSeeOther(location=request.route_url('account'))
+     
+    times = (1, 3, 6, 12)
+    try:
+        
+        assert request.POST['method'] in methods.METHODS
+        assert int(request.POST['time']) in times
+    except (KeyError, AssertionError):
+        # there should not be any problems here
+        return HTTPBadRequest()
+    time = datetime.timedelta(days=30*int(request.POST['time']))
+    o = Order(user=request.user, time=time)
+    o.close_date = datetime.datetime.now()+datetime.timedelta(days=7)
+    method = methods.METHODS[request.POST['method']]()
+    method.init(request, o)
+    DBSession.add(o)
+    DBSession.commit()
+    return method.start(request, o)
+
+@view_config(route_name='order_view', renderer='ccvpn2_web:templates/order.mako', permission='logged')
+def order_view(request):
+    id = int(request.matchdict['hexid'], 16)
+    o = DBSession.query(Order).filter_by(id=id).first()
+    if not o:
+        return HTTPNotFound()
+    return {'order':o}
+
+@view_config(route_name='order_callback')
+def order_callback(request):
+    return {}
+
+
 

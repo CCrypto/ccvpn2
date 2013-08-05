@@ -64,15 +64,16 @@ class PaypalAPI(object):
 
     def make_link(self, order, request):
         baseurl = self.api_base+'/cgi-bin/webscr?'
+        hexid = hex(order.id)[2:]
         params = {
             'cmd' : '_donations',
-            'notify_url' : request.route_url('paypal_ipn', order=order.id),
+            'notify_url' : request.route_url('order_callback', hexid=hexid),
             'item_name' : self.title,
             'currency_code' : self.currency,
             'business' : self.address,
             'no_shipping' : '1',
-            'return' : request.route_url('orders'),
-            'cancel_return' : request.route_url('home'),
+            'return' : request.route_url('order_view', hexid=hexid),
+            'cancel_return' : request.route_url('order_view', hexid=hexid),
         }
         if self.header_image:
             params['cpp_header_image'] = self.header_image
@@ -142,7 +143,6 @@ class PaypalAPI(object):
             print('Error: '+str(error))
             return True
 
-
 class User(Base):
     __tablename__ = 'users'
     id          = Column(Integer, primary_key=True, nullable=False)
@@ -169,6 +169,13 @@ class User(Base):
         if not self.is_paid():
             self.paid_until = datetime.now()
         self.paid_until += time
+
+    def paid_days_left(self):
+        if self.is_paid():
+            days = (self.paid_until - datetime.now()).days
+            return days if days > 0 else 1
+        else:
+            return 0
 
     def validate_username(self, username):
         return self.username_re.match(username)
@@ -216,6 +223,7 @@ class Order(Base):
     close_date  = Column(DateTime, nullable=True)
     ammount     = Column(Float, nullable=False)
     paid_ammount= Column(Float, nullable=False)
+    time        = Column(Interval, nullable=True)
     method      = Column(Integer, nullable=False)
     paid        = Column(Boolean, nullable=False, default=False)
     paymentdata = Column(JSONEncodedDict(), nullable=True)
