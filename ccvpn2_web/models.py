@@ -66,9 +66,10 @@ class PaypalAPI(object):
         baseurl = self.api_base+'/cgi-bin/webscr?'
         hexid = hex(order.id)[2:]
         params = {
-            'cmd' : '_donations',
+            'cmd' : '_xclick',
             'notify_url' : request.route_url('order_callback', hexid=hexid),
             'item_name' : self.title,
+            'amount' : order.ammount,
             'currency_code' : self.currency,
             'business' : self.address,
             'no_shipping' : '1',
@@ -222,7 +223,7 @@ class Order(Base):
     start_date  = Column(DateTime, nullable=False, default=datetime.now)
     close_date  = Column(DateTime, nullable=True)
     ammount     = Column(Float, nullable=False)
-    paid_ammount= Column(Float, nullable=False)
+    paid_ammount= Column(Float, nullable=False, default=0)
     time        = Column(Interval, nullable=True)
     method      = Column(Integer, nullable=False)
     paid        = Column(Boolean, nullable=False, default=False)
