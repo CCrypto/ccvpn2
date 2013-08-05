@@ -190,9 +190,7 @@ section#home article ul li {
     list-style: none;
 }
 
-section#account {
-}
-section#account article {
+section article.two {
     padding-top: 30px;
     padding-bottom: 30px;
     float: left;
@@ -256,6 +254,7 @@ section form label {
     display: block;
     font-weight: bold;
     margin-top: 1em;
+    margin-bottom: 6px;
 }
 section form input {
     display: block;
@@ -265,6 +264,9 @@ section form .inputhelp {
     margin: 0;
     color: #606060;
     font-size: 0.8em;
+}
+.inlinefield, .inlinefield > select {
+    float: left;
 }
 section form input[type=submit] {
     margin-top: 1em;
