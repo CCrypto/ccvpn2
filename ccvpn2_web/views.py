@@ -188,7 +188,14 @@ def order_view(request):
 
 @view_config(route_name='order_callback')
 def order_callback(request):
-    return {}
+    id = int(request.matchdict['hexid'], 16)
+    o = DBSession.query(Order).filter_by(id=id).first()
+    if not o:
+        return HTTPNotFound()
+    method = methods.METHOD_IDS[o.method]
+    ret = method.callback(request, o)
+    DBSession.commit()
+    return ret
 
 
 
