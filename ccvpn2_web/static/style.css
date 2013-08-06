@@ -91,9 +91,9 @@ header #title h1 {
     font-family: Arial, sans-serif;
 }
 header #title h2 {
-    margin: -23px 0 0 19px;
+    margin: -23px 0 0 18px;
     font-size: 1.5em;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.08em;
     font-weight: normal;
     font-family: 'OpenSansLightItalic', Arial, sans-serif;
 }
