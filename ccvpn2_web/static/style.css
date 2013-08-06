@@ -108,25 +108,28 @@ header nav {
 header nav ul {
     margin: 0px;
     padding: 0px;
+    text-transform: uppercase;
 }
 header nav li {
     display: inline;
-    vertical-align: middle;
     line-height: 122px;
-    padding: 3px 10px;
-    border: 1px solid #1c619a;
+    margin: auto 5px;
+    padding: 3px 3px 20px;
+    border-bottom: 3px solid #fff;
+    -webkit-transition: all 0.1s ;
+    -ms-transition: all 0.1s ;
+    transition: all 0.1s ;
 }
+
 header nav li.selected {
-    border: 1px solid #164c79;
-    background: #d2d2d2;
+    border-bottom: 3px solid #0e83cd;
+    padding-bottom: 3px;
 }
 header nav li:hover {
-    border: 1px solid #164c79;
-    background: #f2f2f2;
+    padding-bottom: 3px;
+    border-bottom: 3px solid #0e83cd;
 }
 header nav li.selected:hover {
-    border: 1px solid #164c79;
-    background: #d2d2d2;
 }
 header nav a {
     color: #1c619a;
@@ -173,7 +176,7 @@ section#home article h2 {
     color: #1c619a;
     text-transform: uppercase;
     font-weight: normal;
-    font-family: 'OpenSansLight', Arial, sans-serif;
+    font-family: Arial, sans-serif;
 }
 section#home article p {
     margin: 0px;
