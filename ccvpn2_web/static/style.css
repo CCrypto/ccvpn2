@@ -1,7 +1,7 @@
 body {
     margin: 0 auto;
     font-family: Arial, sans-serif;
-    background: #f2f2f2;
+    background: #f2f2f2 url("/static/bg.png");
 }
 
 #topbar {
@@ -10,6 +10,7 @@ body {
     color: #4d94d7;
     font-family: 'OpenSansLight', Arial, sans-serif;
     background: #000;
+    background-image: none;
     height: 27px;
 }
 #topbar input[type=text] {
@@ -70,6 +71,7 @@ header {
     padding: 0 3%;
     font-family: 'OpenSansLight', Arial, sans-serif;
     background: #fff;
+    background-image: none;
 }
 header #title {
     float: left;
