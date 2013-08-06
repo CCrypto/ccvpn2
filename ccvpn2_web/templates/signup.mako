@@ -1,7 +1,7 @@
 <%inherit file="layout.mako" />
 
 <section>
-    <article>
+    <article id="signuppage">
     <h1>Sign up</h1>
     <form action="/account/signup" method="post">
         <label for="ins_username">Username</label>
