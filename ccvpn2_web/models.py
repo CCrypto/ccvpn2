@@ -36,14 +36,15 @@ class JSONEncodedDict(TypeDecorator):
     impl = UnicodeText
 
     def process_bind_param(self, value, dialect):
-        if value is not None:
+        if value is not None and len(value) > 0:
             value = json.dumps(value)
-
         return value
 
     def process_result_value(self, value, dialect):
         if value is not None:
             value = json.loads(value)
+        else:
+            value = dict()
         return value
 
 class PaypalAPI(object):
@@ -69,7 +70,7 @@ class PaypalAPI(object):
             'cmd' : '_xclick',
             'notify_url' : request.route_url('order_callback', hexid=hexid),
             'item_name' : self.title,
-            'amount' : order.ammount,
+            'amount' : order.amount,
             'currency_code' : self.currency,
             'business' : self.address,
             'no_shipping' : '1',
@@ -115,10 +116,10 @@ class PaypalAPI(object):
                 assert params['txn_type'] == 'web_accept', \
                     'Wrong transaction type: '+params['txn_type']
                 
-                order.paid_ammount = float(params['mc_gross'])
-                assert order.paid_ammount >= order.ammount, \
+                order.paid_amount = float(params['mc_gross'])
+                assert order.paid_amount >= order.amount, \
                     'HAX! Paid %f, ordered %f.' % (
-                        order.paid_ammount, order.ammount)
+                        order.paid_amount, order.amount)
                 
                 # Store some data about the order
                 order.payment = {
@@ -222,12 +223,12 @@ class Order(Base):
     uid         = Column(ForeignKey('users.id'))
     start_date  = Column(DateTime, nullable=False, default=datetime.now)
     close_date  = Column(DateTime, nullable=True)
-    ammount     = Column(Float, nullable=False)
-    paid_ammount= Column(Float, nullable=False, default=0)
+    amount      = Column(Float, nullable=False)
+    paid_amount = Column(Float, nullable=False, default=0)
     time        = Column(Interval, nullable=True)
     method      = Column(Integer, nullable=False)
     paid        = Column(Boolean, nullable=False, default=False)
-    paymentdata = Column(JSONEncodedDict(), nullable=True)
+    payment     = Column(JSONEncodedDict(), nullable=True)
 
 class APIAccessToken(Base):
     __tablename__ = 'apiaccesstok'

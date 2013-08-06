@@ -16,6 +16,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'markdown',
+    'bitcoin-python',
     ]
 
 setup(name='ccvpn2_web',
@@ -42,5 +43,6 @@ setup(name='ccvpn2_web',
       main = ccvpn2_web:main
       [console_scripts]
       initialize_ccvpn2_web_db = ccvpn2_web.scripts.initializedb:main
+      ccvpn2_checkbtcorders = ccvpn2_web.scripts.checkbtcorders:main
       """,
       )
