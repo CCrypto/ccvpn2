@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from .models import DBSession, User, Order, GiftCode
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
-from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
+from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound, HTTPUnauthorized
 import markdown
 import os
 import re
@@ -172,6 +172,7 @@ def order_post(request):
     time = datetime.timedelta(days=30*int(request.POST['time']))
     o = Order(user=request.user, time=time)
     o.close_date = datetime.datetime.now()+datetime.timedelta(days=7)
+    o.payment = {}
     method = methods.METHODS[request.POST['method']]()
     method.init(request, o)
     DBSession.add(o)
@@ -184,7 +185,9 @@ def order_view(request):
     o = DBSession.query(Order).filter_by(id=id).first()
     if not o:
         return HTTPNotFound()
-    return {'order':o}
+    if not request.user.is_admin and request.user.id != o.uid:
+        return HTTPUnauthorized()
+    return {'o':o}
 
 @view_config(route_name='order_callback')
 def order_callback(request):
