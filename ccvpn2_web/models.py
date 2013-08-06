@@ -38,6 +38,8 @@ class JSONEncodedDict(TypeDecorator):
     def process_bind_param(self, value, dialect):
         if value is not None and len(value) > 0:
             value = json.dumps(value)
+        else:
+            value = None
         return value
 
     def process_result_value(self, value, dialect):
