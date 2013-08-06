@@ -261,6 +261,11 @@ section form label {
 }
 section form input {
     display: block;
+    padding: 8px 0px;
+    border: 1px solid rgb(218, 223, 225);
+    margin-bottom: 12px;
+    border-radius: 3px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
 }
 section form .inputhelp {
     display: inline-block;
@@ -275,6 +280,29 @@ section form input[type=submit] {
     margin-top: 1em;
 }
 
+section article#signuppage{
+    width: 500px;
+    margin: auto;
+}
+section article#signuppage input{
+    width: 100%;
+}
+section article#signuppage label{
+    font-weight: normal;
+}
+section article#signuppage input[type=submit]{
+    width: 500px;
+    padding: 15px 0px;
+    font-size: 16px;
+    color: #f2f2f2;
+    box-shadow: none;
+    background: #1c619a;
+}
+section article#signuppage input[type=submit]:hover{
+    color: #fff;
+    background: #298ddf;
+    cursor: pointer;
+}
 h1, h2, h3, h4{
     color: #1c619a;
 }
