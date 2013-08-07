@@ -195,11 +195,15 @@ section#home article ul li {
     list-style: none;
 }
 
-section article.two {
-    padding-top: 30px;
+section article {
     padding-bottom: 30px;
+}
+
+section article.two {
     float: left;
-    width: 50%;
+    width: 49%;
+    min-width: 200px;
+    display: inline-block;
 }
 
 section#homecreate {
