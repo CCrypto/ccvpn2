@@ -168,6 +168,7 @@ section#home article {
     float: left;
     width: 20%;
     text-align: center;
+    min-width: 200px;
 }
 section#home article img {
     width: 80%;
@@ -194,11 +195,15 @@ section#home article ul li {
     list-style: none;
 }
 
-section article.two {
-    padding-top: 30px;
+section article {
     padding-bottom: 30px;
+}
+
+section article.two {
     float: left;
-    width: 50%;
+    width: 49%;
+    min-width: 200px;
+    display: inline-block;
 }
 
 section#homecreate {
@@ -262,7 +267,7 @@ section form label {
 }
 section form input {
     display: block;
-    padding: 8px 0px;
+    padding: 8px 5px;
     border: 1px solid rgb(218, 223, 225);
     margin-bottom: 12px;
     border-radius: 3px;
@@ -286,7 +291,9 @@ section article#signuppage{
     margin: auto;
 }
 section article#signuppage input{
-    width: 100%;
+    width: 488px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 section article#signuppage label{
     font-weight: normal;
@@ -309,6 +316,11 @@ h1, h2, h3, h4{
 }
 b{
     color: #1c619a;   
+}
+td {
+    padding: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 @font-face {
     font-family: 'OpenSansLight';
