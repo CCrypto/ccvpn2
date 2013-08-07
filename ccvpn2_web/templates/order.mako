@@ -12,9 +12,9 @@
 % else:
     <article>
     % if o.method == o.METHOD.BITCOIN:
-        <p>Please send <b>${o.amount - o.paid_amount}</b> to
+        <p>Please send <b>${o.amount - o.paid_amount} BTC</b> to
             <b>${o.payment['btc_address']}</b> .</p>
-        <p>This page is updated every 15 minutes.<p>
+        <p>This page is updated every 5 minutes.<p>
     % elif o.method == o.METHOD.PAYPAL:
         <p>If you already paid with Paypal, please wait for Paypal to confirm
             the transaction, it can take up to 30 minutes.</br>
