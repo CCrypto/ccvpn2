@@ -169,6 +169,7 @@ section#home article {
     float: left;
     width: 20%;
     text-align: center;
+    min-width: 200px;
 }
 section#home article img {
     width: 80%;
