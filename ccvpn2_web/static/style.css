@@ -287,7 +287,9 @@ section article#signuppage{
     margin: auto;
 }
 section article#signuppage input{
-    width: 100%;
+    width: 488px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 section article#signuppage label{
     font-weight: normal;
@@ -310,6 +312,11 @@ h1, h2, h3, h4{
 }
 b{
     color: #1c619a;   
+}
+td {
+    padding: 5px;
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 @font-face {
     font-family: 'OpenSansLight';
