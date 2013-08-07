@@ -263,7 +263,7 @@ section form label {
 }
 section form input {
     display: block;
-    padding: 8px 0px;
+    padding: 8px 5px;
     border: 1px solid rgb(218, 223, 225);
     margin-bottom: 12px;
     border-radius: 3px;
