@@ -322,6 +322,30 @@ td {
     border: 1px solid black;
     border-collapse: collapse;
 }
+.profileform {
+    display: inline;
+}
+.profileform input, .profileform label {
+    display: inline;
+}
+.profileform input[type=checkbox] {
+    margin-left: 20px;
+}
+.profileform label {
+    display: inline-block;
+    font-weight: normal;
+    margin-right: 20px;
+}
+.deletebutton {
+    height: 20px;
+    padding: 2px 5px;
+    margin: 0;
+}
+
+label[title] {
+    border-bottom: 1px dotted black;
+}
+
 @font-face {
     font-family: 'OpenSansLight';
     src: url('/static/OpenSans-Light-webfont.eot');

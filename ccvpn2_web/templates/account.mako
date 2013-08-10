@@ -1,10 +1,38 @@
 <%inherit file="layout.mako" />
-
+<%
+    user = request.user
+    profiles = request.user.profiles
+%>
 <section id="account">
-    <h2>Account : ${request.user.username}</h2>
-    % if request.user.is_paid():
+    <h2>Account : ${user.username}</h2>
+    % if user.is_paid:
         <article>
-            <p>Your account is <b>paid</b> for ${request.user.paid_days_left()} day(s).</p>
+            <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>
+            <ul>
+                <li>Default profile: [Ask password] <a href="/account/config/0/">Get ccrypto.ovpn</a></li>
+            % for profile in profiles:
+                <li>Profile : ${profile.name}
+                - <form class="profileform" method="post" action="/account/">
+                    <input type="hidden" name="profiledelete" value="${profile.id}" />
+                    <input type="submit" class="deletebutton" value="Delete" />
+                </form>
+                - <a href="/config/${profile.id}/">Get ccrypto.ovpn</a></li>
+            % endfor
+                <li>
+                    Add : 
+                    <form class="profileform" action="/account/" method="post">
+                        <input type="text" name="profilename" id="fp_name" placeholder="Profile name" />
+                        <input type="checkbox" value="1" name="askpw" id="fp_askpw" checked="checked" />
+                        <label for="fp_askpw">Ask password?</label>
+                        <input type="submit" />
+                    </form>
+                </li>
+            </ul>
+            <p>You can only have <b>one connection per profile</b>,
+                but up to 10 profiles. (10 running clients)<br />
+                "Ask password" will ask password when connecting.
+                If you uncheck it, the config file will incllude a random
+                private key.</p>
         </article>
     % endif
 

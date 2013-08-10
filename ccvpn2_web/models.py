@@ -16,10 +16,16 @@ log = logging.getLogger(__name__)
 DBSession = scoped_session(sessionmaker())
 Base = declarative_base()
 
+# TODO: Make one reusable function insted of three
+
 def random_access_token():
     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
     return ''.join([charset[random.randint(0,base-1)] for n in range(32)])
+
+def random_profile_password():
+    # Every printable ASCII character
+    return ''.join([chr(random.randint(32,126)) for n in range(256)])
 
 def random_gift_code():
     charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -149,12 +155,12 @@ class PaypalAPI(object):
 
 class User(Base):
     __tablename__ = 'users'
-    id          = Column(Integer, primary_key=True, nullable=False)
-    username    = Column(String(length=32), unique=True, nullable=False)
-    password    = Column(postgresql.BYTEA(length=96), nullable=False)
-    email       = Column(String(length=256), nullable=True, default=None)
-    is_active   = Column(Boolean, nullable=False, default=True)
-    is_admin    = Column(Boolean, nullable=False, default=False)
+    id          = Column(Integer, primary_key=True, nullable=False, doc='ID')
+    username    = Column(String(length=32), unique=True, nullable=False, doc='Username')
+    password    = Column(postgresql.BYTEA(length=96), nullable=False, doc='Password')
+    email       = Column(String(length=256), nullable=True, default=None, doc='E-mail')
+    is_active   = Column(Boolean, nullable=False, default=True, doc='Active?')
+    is_admin    = Column(Boolean, nullable=False, default=False, doc='Admin?')
     month_bw    = Column(BigInteger, nullable=False, default=0)
     signup_date = Column(DateTime, nullable=False, default=datetime.now)
     last_login  = Column(DateTime, nullable=True, default=None)
@@ -162,20 +168,25 @@ class User(Base):
 
     giftcodes_used = relationship('GiftCode', backref='user')
     orders = relationship('Order', backref='user')
+    profiles = relationship('Profile', backref='user')
 
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re    = re.compile('^.+@.+$')
+    
+    list_fields = ('id', 'username', 'email', 'is_active', 'is_admin')
+    edit_fields = ('id', 'username', 'email', 'is_active', 'is_admin', 'signup_date', 'last_login', 'paid_until')
 
+    @property
     def is_paid(self):
         return self.paid_until != None and self.paid_until > datetime.now()
     
     def add_paid_time(self, time):
-        if not self.is_paid():
+        if not self.is_paid:
             self.paid_until = datetime.now()
         self.paid_until += time
 
     def paid_days_left(self):
-        if self.is_paid():
+        if self.is_paid:
             days = (self.paid_until - datetime.now()).days
             return days if days > 0 else 1
         else:
@@ -207,12 +218,42 @@ class User(Base):
         hash = hashlib.sha512(salt+password).digest()
         return self.password[32:96] == hash
 
+    def __str__(self):
+        return self.username
+
+class Profile(Base):
+    __tablename__ = 'profiles'
+    id      = Column(Integer, primary_key=True, nullable=False, doc='ID')
+    uid     = Column(ForeignKey('users.id'))
+    name    = Column(String(16), nullable=False, doc='Name')
+    password = Column(Text, nullable=True, doc='Key')
+
+    def validate_name(self, name):
+        return re.match('^[a-zA-Z0-9]+$', name)
+
+    list_fields = ('id', 'uid', 'name')
+    edit_fields = ('id', 'uid', 'name', 'password')
+
 class GiftCode(Base):
     __tablename__ = 'giftcodes'
-    id      = Column(Integer, primary_key=True, nullable=False)
-    code    = Column(String(16), primary_key=True, nullable=False, default=random_gift_code)
-    time    = Column(Interval, default=timedelta(days=30), nullable=False)
+    id      = Column(Integer, primary_key=True, nullable=False, doc='ID')
+    code    = Column(String(16), unique=True, nullable=False, default=random_gift_code, doc='Code')
+    time    = Column(Interval, default=timedelta(days=30), nullable=False, doc='Time')
     used    = Column(ForeignKey('users.id'), nullable=True)
+    
+    @property
+    def username_if_used(self):
+        '''User'''
+        if self.used:
+            return self.user.username
+        else:
+            return False
+
+    def __str__(self):
+        return self.code
+
+    list_fields = ('id', 'code', 'time', 'username_if_used')
+    edit_fields = ('id', 'code', 'time', 'used')
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -232,6 +273,12 @@ class Order(Base):
     paid        = Column(Boolean, nullable=False, default=False)
     payment     = Column(JSONEncodedDict(), nullable=True)
 
+    list_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time', 'method', 'paid')
+    edit_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time', 'method', 'paid')
+
+    def __str__(self):
+        return hex(self.id)[2:]
+
 class APIAccessToken(Base):
     __tablename__ = 'apiaccesstok'
     id          = Column(Integer, primary_key=True, nullable=False)
@@ -239,7 +286,12 @@ class APIAccessToken(Base):
     label       = Column(String(256), nullable=True)
     remote_addr = Column(postgresql.INET, nullable=True)
     expire_date = Column(DateTime, nullable=True)
+    
+    list_fields = ('id', 'label', 'remote_addr')
+    edit_fields = ('id', 'token', 'label', 'remote_addr', 'expire_date')
 
+    def __str__(self):
+        return self.label
 
 
 def get_user(request):
