@@ -3,13 +3,33 @@ from pyramid.view import view_config
 from .models import DBSession, User, Order, GiftCode, APIAccessToken, Profile, random_profile_password
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
-from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound, HTTPUnauthorized
+from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPForbidden, HTTPNotFound, HTTPUnauthorized
 import markdown
 import os
 import re
 import datetime
 from pyramid.renderers import render_to_response
 from . import methods
+
+def require_api_token(function=None):
+    def _dec(view_func):
+        def _func(request):
+            if not 'X-API-Token' in request.headers:
+                return HTTPBadRequest('require API token header.')
+            token = request.headers['X-API-Token']
+            at = DBSession.query(APIAccessToken) \
+                .filter_by(token=token).first()
+            if not at:
+                return HTTPForbidden('wrong API token')
+            if at.remote_addr and at.remote_addr != request.remote_addr \
+               and at.remote_addr != '::ffff:'+request.remote_add:
+                return HTTPUnauthorized('remote address not allowed for this token')
+            return view_func(request, *args, **kwargs)
+        return _func
+    if function is None:
+        return _dec
+    else:
+        return _dec(function)
 
 @view_config(route_name='home', renderer='ccvpn2_web:templates/home.mako')
 def home(request):
@@ -261,4 +281,55 @@ def config_profile(request):
             remotes=openvpn_remote, ca_content=ca_content))
     r.content_type = 'test/plain'
     return r
+
+@view_config(route_name='api_server_auth', request_method='POST')
+@require_api_token
+def api_server_auth(request):
+    if 'username' not in request.POST or 'password' not in request.POST:
+        return HTTPBadRequest()
+    fullname = request.POST['username']
+    password = request.POST['password']
+    if '/' in fullname:
+        username, profilename = fullname.split('/', 1)
+    else:
+        username = fullname
+        profilename = None
+    user = DBSession.query(User).filter_by(username=username).first()
+    if not user or not user.check_password(password):
+        return HTTPForbidden()
+    if not user.is_paid():
+        return HTTPUnauthorized()
+    if profilename:
+        profile = DBSession.query(Profile) \
+            .filter_by(name=profilename, uid=user.id).first()
+        if not profile:
+            return HTTPForbidden()
+    return HTTPOk()
+
+@view_config(route_name='api_server_disconnect', request_method='POST')
+@require_api_token
+def api_server_disconnect(request):
+    # May be used to count login/logouts
+    # Empty for now
+    return HTTPOk()
+
+@view_config(route_name='api_server_config', request_method='GET')
+@require_api_token
+def api_server_config(request):
+    if 'username' not in request.GET:
+        return HTTPBadRequest()
+    fullname = request.GET['username']
+    if '/' in fullname:
+        username, profilename = fullname.split('/', 1)
+    else:
+        username = fullname
+        profilename = None
+    user = DBSession.query(User).filter_by(username=username).first()
+    if not user:
+        return HTTPNotFound()
+    # Nothing here, we do not need per-client configuration
+    # Mostly for future uses (BW limit, user routes, port forwarding, ...)
+    return HTTPOk()
+
+
 
