@@ -236,13 +236,14 @@ def order_callback(request):
     return ret
 
 openvpn_remote = ('vpn-gw.ccrypto.org',)
+ca_content = ""
 
 @view_config(route_name='config', permission='logged')
 def config(request):
     udp = request.matchdict['version'] == 'alpha'
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
         dict(username=request.user.username, udp=udp,
-            remotes=openvpn_remote))
+            remotes=openvpn_remote, ca_content=ca_content))
     r.content_type = 'test/plain'
     return r
 
@@ -257,7 +258,7 @@ def config_profile(request):
         return HTTPNotFound()
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
         dict(username=request.user.username, udp=udp, profile=profile,
-            remotes=openvpn_remote))
+            remotes=openvpn_remote, ca_content=ca_content))
     r.content_type = 'test/plain'
     return r
 

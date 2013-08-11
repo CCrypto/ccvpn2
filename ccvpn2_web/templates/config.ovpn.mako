@@ -26,3 +26,6 @@ persist-tun
 comp-lzo
 redirect-gateway def1
 
+<ca>
+${ca_content}</ca>
+
