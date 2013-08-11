@@ -60,6 +60,9 @@ def main(global_config, **settings):
     config.add_route('admin_orders',   '/admin/orders')
     config.add_route('admin_giftcodes','/admin/giftcodes')
     config.add_route('admin_apiaccess','/admin/apiaccess')
+    config.add_route('api_server_auth','/api/server/auth')
+    config.add_route('api_server_disconnect','/api/server/disconnect')
+    config.add_route('api_server_config','/api/server/config')
     config.scan()
 
     views.ca_content = open(settings['openvpn.ca-cert'], 'r').read()
