@@ -52,6 +52,13 @@ def main(global_config, **settings):
     config.add_route('order_view',     '/order/view/{hexid:[a-f0-9]+}')
     config.add_route('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
     config.add_route('page',           '/page/{page:[a-z]+}')
+    config.add_route('config',         '/config/ccrypto-{version:[a-z]+}.ovpn')
+    config.add_route('config_profile', '/config/ccrypto-{profile:[a-zA-Z0-9]+}-{version:[a-z]+}.ovpn')
+    config.add_route('admin_home',     '/admin/')
+    config.add_route('admin_users',    '/admin/users')
+    config.add_route('admin_orders',   '/admin/orders')
+    config.add_route('admin_giftcodes','/admin/giftcodes')
+    config.add_route('admin_apiaccess','/admin/apiaccess')
     config.scan()
     return config.make_wsgi_app()
 
