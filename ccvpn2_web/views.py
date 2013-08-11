@@ -119,6 +119,9 @@ def account_post(request):
             p.validate_name(request.POST['profilename']) or \
                 errors.append('Invalid name.')
             assert not errors
+            if DBSession.query(Profile).filter_by(uid=request.user.id, name=request.POST['profilename']).first():
+                errors.append('Name already used.')
+            assert not errors
             p.name = request.POST['profilename']
             p.askpw = request.POST['askpw'] == '1'
             p.uid = request.user.id
@@ -231,4 +234,30 @@ def order_callback(request):
     ret = method.callback(request, o)
     DBSession.commit()
     return ret
+
+openvpn_remote = ('vpn-gw.ccrypto.org',)
+
+@view_config(route_name='config', permission='logged')
+def config(request):
+    udp = request.matchdict['version'] == 'alpha'
+    r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
+        dict(username=request.user.username, udp=udp,
+            remotes=openvpn_remote))
+    r.content_type = 'test/plain'
+    return r
+
+@view_config(route_name='config_profile', permission='logged')
+def config_profile(request):
+    udp = request.matchdict['version'] == 'alpha'
+    pname = request.matchdict['profile']
+    profile = DBSession.query(Profile) \
+        .filter_by(uid=request.user.id, name=pname) \
+        .first()
+    if not profile:
+        return HTTPNotFound()
+    r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
+        dict(username=request.user.username, udp=udp, profile=profile,
+            remotes=openvpn_remote))
+    r.content_type = 'test/plain'
+    return r
 
