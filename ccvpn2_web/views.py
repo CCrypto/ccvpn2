@@ -114,7 +114,7 @@ def account_post(request):
     # TODO: Fix that. split in two functions or something.
     errors = []
     try:
-        if 'profilename' in request.POST and 'askpw' in request.POST:
+        if 'profilename' in request.POST:
             p = Profile()
             p.validate_name(request.POST['profilename']) or \
                 errors.append('Invalid name.')
@@ -123,7 +123,7 @@ def account_post(request):
                 errors.append('Name already used.')
             assert not errors
             p.name = request.POST['profilename']
-            p.askpw = request.POST['askpw'] == '1'
+            p.askpw = 'askpw' in request.POST and request.POST['askpw'] == '1'
             p.uid = request.user.id
             if not p.askpw:
                 p.password = random_profile_password()
