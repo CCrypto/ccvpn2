@@ -5,9 +5,11 @@
         ['FAQ', '/page/faq'],
         ['Support', '/page/support'],
     ]
+    if request.user and request.user.is_admin:
+        menuItems.append(['Admin', '/admin/'])
     path = request.path
     for k in menuItems:
-        if path == k[1]:
+        if path == k[1] or (k[1] != '/' and k[1][-1] == '/' and path.startswith(k[1])):
             k.append(' class=\"selected\"')
         else:
             k.append('')
