@@ -2,6 +2,7 @@ from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 from pyramid_beaker import session_factory_from_settings
 from pyramid.authorization import ACLAuthorizationPolicy
+from . import views
 
 from .models import (DBSession, Base, User, get_user)
 
@@ -60,5 +61,8 @@ def main(global_config, **settings):
     config.add_route('admin_giftcodes','/admin/giftcodes')
     config.add_route('admin_apiaccess','/admin/apiaccess')
     config.scan()
+
+    views.ca_content = open(settings['openvpn.ca-cert'], 'r').read()
+
     return config.make_wsgi_app()
 
