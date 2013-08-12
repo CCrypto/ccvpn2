@@ -259,13 +259,16 @@ footer a {
     color: #347BB6;
 }
 
-section form label {
+form.vertical label {
     display: block;
     font-weight: bold;
     margin-top: 1em;
     margin-bottom: 6px;
 }
-section form input {
+form.vertical label[title] {
+    border-bottom: 1px dotted black;
+}
+form.vertical input {
     display: block;
     padding: 8px 5px;
     border: 1px solid rgb(218, 223, 225);
@@ -273,17 +276,73 @@ section form input {
     border-radius: 3px;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
 }
-section form .inputhelp {
+form.vertical .inputhelp {
     display: inline-block;
     margin: 0;
     color: #606060;
     font-size: 0.8em;
 }
+form.vertical input[type=submit] {
+    margin-top: 1em;
+}
+
+
+form.largeform label {
+    display: inline-block;
+    font-weight: bold;
+    float: left;
+    width: 140px;
+    padding: 4px 5px;
+    clear: both;
+}
+form.largeform label[title] {
+    border-bottom: 1px dotted black;
+}
+form.largeform input {
+    height: 16px;
+    display: block;
+    padding: 4px 5px;
+    border: 1px solid rgb(218, 223, 225);
+    margin: 2px 2px 2px 160px;
+    border-radius: 3px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+form.largeform input[type=checkbox] {
+    border: 0;
+    padding: 0;
+    margin: 8px 2px 8px 160px;
+}
+form.largeform input[type=submit] {
+    margin-top: 1em;
+    padding: 6px 16px;
+    height: 30px;
+}
+
+
+form.profileform {
+    display: inline;
+}
+form.profileform input {
+    margin: 2px 0;
+    border: 1px solid rgb(218, 223, 225);
+    border-radius: 3px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+form.profileform input, .profileform label {
+    display: inline;
+}
+form.profileform input[type=checkbox] {
+    margin-left: 20px;
+}
+form.profileform label {
+    display: inline-block;
+    font-weight: normal;
+    margin-right: 20px;
+}
+
+
 .inlinefield, .inlinefield > select {
     float: left;
-}
-section form input[type=submit] {
-    margin-top: 1em;
 }
 
 section article#signuppage{
@@ -322,29 +381,12 @@ td {
     border: 1px solid black;
     border-collapse: collapse;
 }
-.profileform {
-    display: inline;
-}
-.profileform input, .profileform label {
-    display: inline;
-}
-.profileform input[type=checkbox] {
-    margin-left: 20px;
-}
-.profileform label {
-    display: inline-block;
-    font-weight: normal;
-    margin-right: 20px;
-}
 .deletebutton {
     height: 20px;
     padding: 2px 5px;
     margin: 0;
 }
 
-label[title] {
-    border-bottom: 1px dotted black;
-}
 
 @font-face {
     font-family: 'OpenSansLight';

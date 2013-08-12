@@ -25,8 +25,6 @@
                     Add : 
                     <form class="profileform" action="/account/" method="post">
                         <input type="text" name="profilename" id="fp_name" placeholder="Profile name" />
-                        <input type="checkbox" value="1" name="askpw" id="fp_askpw" checked="checked" />
-                        <label for="fp_askpw">Ask password?</label>
                         <input type="submit" />
                     </form>
                 </li>
@@ -46,7 +44,7 @@
 
     <article class="two">
         <h3>Settings</h3>
-        <form action="/account/" method="post">
+        <form action="/account/" method="post" class="vertical">
             <label for="ins_password">Change password</label>
             <input type="password" id="ins_password" name="password" />
 
@@ -61,7 +59,7 @@
     </article>
     <article class="two">
         <h3>Renew</h3>
-        <form action="/order/" method="post">
+        <form action="/order/" method="post" class="vertical">
             <div class="inlinefield">
             <label for="ino_time">Time</label>
             <select id="ino_time" name="time">
