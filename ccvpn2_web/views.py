@@ -332,4 +332,75 @@ def api_server_config(request):
     return HTTPOk()
 
 
+@view_config(route_name='admin_home', renderer='ccvpn2_web:templates/admin/home.mako', permission='admin')
+def admin_home(request):
+    return {}
+
+class AdminView(object):
+    ''' Basic CRUD view for admin stuff '''
+    model = None
+
+    def __init__(self, request):
+        self.request = request
+
+    def tvars(self, d):
+        d['request'] = self.request
+        d['model'] = self.model
+        d['model_name'] = self.model.__name__
+        return d
+
+    def post_item(self):
+        for k in self.model.edit_fields:
+            if k not in self.request.POST:
+                #FIXME: if model.k is bool, ignore missing
+                raise HTTPBadRequest()
+        if self.request.POST['id'] != '':
+            item = self.get_item(self.request.POST['id'])
+        else:
+            item = self.model()
+            DBSession.add(item)
+        for k in self.model.edit_fields:
+            setattr(item, k, self.request.POST[k])
+        DBSession.commit()
+        self.request.session.flash(('info', 'Saved!'))
+        return HTTPSeeOther(location=self.request.route_url('admin_'+self.model.__name__.lower()+'s', _query={'id':item.id})) # TODO fix that shit
+
+    def get_item(self, id):
+        item_id = self.request.GET['id']
+        item = DBSession.query(self.model).filter_by(id=item_id).first()
+        if item is None:
+            raise HTTPNotFound()
+        return render_to_response('ccvpn2_web:templates/admin/item.mako',
+            self.tvars(dict(item=item)))
+
+    def list_items(self):
+        items = DBSession.query(self.model)
+        return render_to_response('ccvpn2_web:templates/admin/list.mako',
+            self.tvars(dict(items=items)))
+
+    def __call__(self):
+        if self.request.method == 'POST':
+            return self.post_item()
+        else:
+            if 'id' in self.request.GET:
+                return self.get_item(self.request.GET['id'])
+            else:
+                return self.list_items()
+
+
+@view_config(route_name='admin_users', permission='admin')
+class AdminUsers(AdminView):
+    model = User
+
+@view_config(route_name='admin_orders', permission='admin')
+class AdminOrders(AdminView):
+    model = Order
+
+@view_config(route_name='admin_giftcodes', permission='admin')
+class AdminGiftCodes(AdminView):
+    model = GiftCode
+
+@view_config(route_name='admin_apiaccess', permission='admin')
+class AdminAPIAccess(AdminView):
+    model = APIAccessToken
 
