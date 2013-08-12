@@ -141,6 +141,8 @@ def account_post(request):
             assert not errors
             if DBSession.query(Profile).filter_by(uid=request.user.id, name=request.POST['profilename']).first():
                 errors.append('Name already used.')
+            if DBSession.query(func.count(Profile.id)).filter_by(uid=request.user.id).scalar() > 10:
+                errors.append('You have too many profiles.')
             assert not errors
             p.name = request.POST['profilename']
             p.askpw = 'askpw' in request.POST and request.POST['askpw'] == '1'
