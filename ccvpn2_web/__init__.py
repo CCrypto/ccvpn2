@@ -52,7 +52,7 @@ def main(global_config, **settings):
     config.add_route('order_post',     '/order/', request_method='POST')
     config.add_route('order_view',     '/order/view/{hexid:[a-f0-9]+}')
     config.add_route('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
-    config.add_route('page',           '/page/{page:[a-z]+}')
+    config.add_route('page',           '/page/{page:[a-zA-Z0-9_-]+}')
     config.add_route('config',         '/config/ccrypto-{version:[a-z]+}.ovpn')
     config.add_route('config_profile', '/config/ccrypto-{profile:[a-zA-Z0-9]+}-{version:[a-z]+}.ovpn')
     config.add_route('admin_home',     '/admin/')
