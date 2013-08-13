@@ -11,7 +11,7 @@
             <ul>
                 <li>Default profile: [Ask password]
                 - <a href="/config/ccrypto-alpha.ovpn"><b>Get Alpha config</b></a>
-                - <a href="/config/ccrypto-beta.ovpn">Get Beta config*</a></li>
+                - <a href="/config/ccrypto-beta.ovpn">(Beta*)</a></li>
             % for profile in profiles:
                 <li>Profile : ${profile.name}
                 - <form class="profileform" method="post" action="/account/">
@@ -19,7 +19,7 @@
                     <input type="submit" class="deletebutton" value="Delete" />
                 </form>
                 - <a href="/config/ccrypto-${profile.name}-alpha.ovpn"><b>Get Alpha config</b></a>
-                - <a href="/config/ccrypto-${profile.name}-beta.ovpn">Get Beta config*</a></li>
+                - <a href="/config/ccrypto-${profile.name}-beta.ovpn">(Beta*)</a></li>
             % endfor
                 <li>
                     Add : 
@@ -32,9 +32,9 @@
             <ul>
                 <li>You can only have <b>one connection per profile</b>,
                     but up to 10 profiles. (10 running clients)</li>
-                <li>"Ask password" will ask password when connecting.
+                <!--li>"Ask password" will ask password when connecting.
                     If you uncheck it, the config file will incllude a random
-                    private key.</li>
+                    private key.</li-->
                 <li>*Beta config : TCP version using port 443.
                     Should pass through most of the firewalls.
                     SLOWER, use Alpha if you can.</li>
