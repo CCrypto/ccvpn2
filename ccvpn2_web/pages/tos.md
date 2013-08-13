@@ -13,8 +13,7 @@ thirs-party services failure.
 
 By using our services and/or website, you agree in full to the terms and
 conditions provided herein, in addition to all future amendments and modifications.
-If you do not agree to these terms and conditions, then access to Cognitive Cryptography
-and its services is prohibed.
+If you do not agree to these terms and conditions, then access to the service is prohibed.
 
 Clients who breaches or violates our terms and conditions may have their
 account and access to the service removed withour any refund.
@@ -25,13 +24,14 @@ all applicable laws and regulations in France and the country in which you
 reside to use this service.
 
 By using our services, you agree to not engage in any of the following activities:
-* SPAM. You agree to not send or facilitate any unsolicited email.
-* Anything that could be considered hostile by a third party, including but
+
+  - SPAM. You agree to not send or facilitate any unsolicited email.
+  - Anything that could be considered hostile by a third party, including but
     not limited to Denial-of-Service attacks.
-* Receiving or distributing any illegal content
-* Receiving or distributing any copyrighted, trademark, or patented content
+  - Receiving or distributing any illegal content
+  - Receiving or distributing any copyrighted, trademark, or patented content
     which you do not own or lack consent  or license from the owner.
-* Any action that results in inclusion on IP blacklists.
+  - Any action that results in inclusion on IP blacklists.
 
 ### Client Responsabilities
 As a client, you are responsible for maintaining the confidentility and
@@ -46,4 +46,22 @@ which may arise at a later date.
 Client understands that Cognitive Cryptography for reasons beyond its control may shut down
 and terminate services. In this case, clients will be notified at least thirty
 (30) days in advance, and will not be eligible for a partial or complete refund.
+
+### Refund Policy
+If you are not 100% satisfied with your purchase, within 7 days from the
+purchase date, we will fully refund the cost of your order.
+
+### Privacy Policy
+
+What do we collect?
+
+  - Your account settings.
+  - Payment data, including transaction IDs and Paypal or Bitcoin adresses.
+  - The IP adresses used to log in.
+
+How is my Information used?  
+Your information is used to provide you and maintain the service.
+We do not sell or redistribute your information.
+
+We use cookies.
 
