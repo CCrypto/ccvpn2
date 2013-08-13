@@ -257,7 +257,7 @@ def order_callback(request):
     DBSession.commit()
     return ret
 
-openvpn_remote = ('vpn-gw.ccrypto.org',)
+openvpn_remote = ('gw.vpn.ccrypto.org',)
 ca_content = ""
 
 @view_config(route_name='config', permission='logged')
