@@ -3,22 +3,33 @@
 <section>
     <h2>Admin - ${model_name} - ${str(item)} #${item.id}</h2>
     <article class="two">
-        <form action="/admin/${model_name}/${item.id}" method="post">
-        % for field in model.edit_fields:
-            <%
-                doc = getattr(model, field).__doc__
-                value = getattr(item, field)
-                if value is None:
-                    value = ''
-            %>
-            % if isinstance(value, bool):
-                <input type="checkbox" name="${field}" id="f_${field}" checked="${'checked' if value else ''}" />
-                <label for="f_${field}">${doc if doc is not None else field}</label>
-            % else:
-                <label for="f_${field}">${doc if doc is not None else field}</label>
-                <input type="text" name="${field}" id="f_${field}" value="${value}" />
-            % endif
-        % endfor
+        <form class="largeform" action="/admin/users?id=${item.id}" method="post">
+                <label for="f_id">ID</label>
+                <input type="text" name="id" id="f_id" value="${item.id}" />
+
+                <label for="f_username">Username</label>
+                <input type="text" name="username" id="f_username" value="${item.username}" />
+                
+                <label for="f_password">Password</label>
+                <input type="password" name="password" id="f_password" value="" />
+            
+                <label for="f_email">E-mail</label>
+                <input type="text" name="email" id="f_email" value="${item.email or ''}" />
+            
+                <label for="f_is_active">Active?</label>
+                <input type="checkbox" name="is_active" id="f_is_active" ${ 'checked="checked"' if item.is_active else '' | n} />
+            
+                <label for="f_is_admin">Admin?</label>
+                <input type="checkbox" name="is_admin" id="f_is_admin" ${ 'checked="checked"' if item.is_admin else '' | n} />
+            
+                <label for="f_signup_date">Signup</label>
+                <input type="text" name="signup_date" id="f_signup_date" value="${item.signup_date or ''}" />
+            
+                <label for="f_last_login">Last login</label>
+                <input type="text" name="last_login" id="f_last_login" value="${item.last_login or ''}" />
+            
+                <label for="f_paid_until">Paid until...</label>
+                <input type="text" name="paid_until" id="f_paid_until" value="${item.paid_until or ''}" />
             <input type="submit" />
         </form>
     </article>

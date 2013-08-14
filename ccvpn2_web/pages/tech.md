@@ -3,7 +3,7 @@ Tech Stuff
 
 Software
 --------
-We use OpenVPN on GNU/Linux, with tun.
+We use OpenVPN on GNU/Linux, with tun.  
 Every port is allowed, on TCP an UDP, with IPv4 and IPv6.
 
 You can connect to OpenVPN servers with:
