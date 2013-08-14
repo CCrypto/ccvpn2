@@ -16,7 +16,8 @@ Security
 --------
 We have a 4096b RSA key for authentication and key exchange,
 and allow the best ciphers available to provide *perfect forward secrecy*
-to up-to-date clients.
+to up-to-date clients.  
+It took 4 hours to generate the Diffie-Hellman parameters.
 
 Client certificate authentication
 ---------------------------------
