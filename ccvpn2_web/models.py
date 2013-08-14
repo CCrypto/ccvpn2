@@ -173,9 +173,6 @@ class User(Base):
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re    = re.compile('^.+@.+$')
     
-    list_fields = ('id', 'username', 'email', 'is_active', 'is_admin')
-    edit_fields = ('id', 'username', 'email', 'is_active', 'is_admin', 'signup_date', 'last_login', 'paid_until')
-
     @property
     def is_paid(self):
         return self.paid_until != None and self.paid_until > datetime.now()

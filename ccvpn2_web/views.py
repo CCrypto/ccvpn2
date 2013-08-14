@@ -2,7 +2,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 from .models import DBSession, User, Order, GiftCode, APIAccessToken, Profile, random_profile_password
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import func
+from sqlalchemy import func, Boolean
 from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPForbidden, HTTPNotFound, HTTPUnauthorized
 import markdown
 import os
@@ -341,6 +341,8 @@ def admin_home(request):
 class AdminView(object):
     ''' Basic CRUD view for admin stuff '''
     model = None
+    item_template = None
+    list_template = None
 
     def __init__(self, request):
         self.request = request
@@ -350,34 +352,46 @@ class AdminView(object):
         d['model'] = self.model
         d['model_name'] = self.model.__name__
         return d
+    
+    def assign_from_form(self, item):
+        #item.field = self.request.field
+        raise NotImplementedError()
 
     def post_item(self):
-        for k in self.model.edit_fields:
-            if k not in self.request.POST:
-                #FIXME: if model.k is bool, ignore missing
-                raise HTTPBadRequest()
-        if self.request.POST['id'] != '':
+        if 'id' in self.request.POST and self.request.POST['id'] != '':
             item = self.get_item(self.request.POST['id'])
+            item_id = self.request.POST['id']
+            item = DBSession.query(self.model).filter_by(id=item_id).first()
+            if not item:
+                item = self.model()
+                DBSession.add(item)
         else:
             item = self.model()
             DBSession.add(item)
-        for k in self.model.edit_fields:
-            setattr(item, k, self.request.POST[k])
+        try:
+            self.assign_from_form(item)
+        except:
+            DBSession.rollback()
+            raise
+            
         DBSession.commit()
         self.request.session.flash(('info', 'Saved!'))
-        return HTTPSeeOther(location=self.request.route_url('admin_'+self.model.__name__.lower()+'s', _query={'id':item.id})) # TODO fix that shit
+        route_name = 'admin_'+self.model.__name__.lower()+'s'
+        return HTTPSeeOther(location=self.request.route_url(route_name, _query={'id':item.id})) # TODO fix that shit
 
     def get_item(self, id):
         item_id = self.request.GET['id']
         item = DBSession.query(self.model).filter_by(id=item_id).first()
+        template = 'ccvpn2_web:templates/admin/item.mako'
         if item is None:
             raise HTTPNotFound()
-        return render_to_response('ccvpn2_web:templates/admin/item.mako',
+        return render_to_response(self.item_template or template,
             self.tvars(dict(item=item)))
 
     def list_items(self):
         items = DBSession.query(self.model)
-        return render_to_response('ccvpn2_web:templates/admin/list.mako',
+        template = 'ccvpn2_web:templates/admin/list.mako'
+        return render_to_response(self.list_template or template,
             self.tvars(dict(items=items)))
 
     def __call__(self):
@@ -393,6 +407,17 @@ class AdminView(object):
 @view_config(route_name='admin_users', permission='admin')
 class AdminUsers(AdminView):
     model = User
+    item_template = 'ccvpn2_web:templates/admin/item_user.mako'
+    list_template = 'ccvpn2_web:templates/admin/list_user.mako'
+    def assign_from_form(self, item):
+        post = self.request.POST
+        item.username = post['username']
+        item.email = post['email'] or None
+        if post['password']:
+            item.set_password(post['password'])
+        item.is_active = 'is_active' in post
+        item.is_admin = 'is_admin' in post
+        item.paid_until = post['paid_until'] or None
 
 @view_config(route_name='admin_orders', permission='admin')
 class AdminOrders(AdminView):
