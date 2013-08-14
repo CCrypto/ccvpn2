@@ -45,8 +45,12 @@ def page(request):
     except FileNotFoundError:
         return HTTPNotFound()
 
-@view_config(route_name='account_login')
+@view_config(route_name='account_login', renderer='ccvpn2_web:templates/login.mako')
 def a_login(request):
+    return {}
+
+@view_config(route_name='account_login', request_method='POST', renderer='ccvpn2_web:templates/login.mako')
+def a_login_post(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
@@ -61,7 +65,7 @@ def a_login(request):
     except AssertionError:
         error = 'Invalid username/password.'
     request.session.flash(('error', error))
-    return HTTPSeeOther(location=request.route_url('home'))
+    return {}
 
 @view_config(route_name='account_logout', permission='logged')
 def a_logout(request):

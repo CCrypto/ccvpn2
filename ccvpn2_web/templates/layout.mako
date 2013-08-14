@@ -24,28 +24,31 @@
 </head>
 <body>
     <div id="topbar">
-        % if request.user:
+        <div class="topbar-left">
             <p>
-                <a class="create" href="/account/">Your account</a>
-                <a class="create" href="/account/logout">Logout</a>
+                <a href="http://crypto.org">Cognitive Cryptography</a> :
+                <a href="http://tux-fh.net" title="Web Hosting">Tux-FreeHost</a>
             </p>
-        % else:
-        <form action="/account/login" method="post">
-            <a href="/account/signup" class="create">Sign up</a>
-            <a href="/account/forgot" class="login-helper">Forgot password?</a>
-            <input id="in_username" type="text" name="username" placeholder="Username"></input>
-            <input id="in_password" type="password" name="password" placeholder="Password"></input>
-            <input value="Login" type="submit">
-        </form>
-        % endif
+        </div>
+        <div class="topbar-right">
+            % if request.user:
+                <p><a class="create" href="/account/">Your account</a>
+                    <a class="create" href="/account/logout">Logout</a>
+                    </p>
+            % else:
+                <p><a href="/account/signup" class="create">Sign up</a>
+                    <a href="/account/login" class="create">Log in</a>
+                    </p>
+            % endif
+        </div>
+        <div style="clear:both"></div>
     </div>
     
     <header>
-        <div id="title">
+        <div id="logo">
             <h1><a href="/">VPN</a></h1>
             <h2><a href="//ccrypto.org/">By CCrypto</a></h2>
         </div>
-
         <nav>
             <ul>
                 % for menuItem in menuItems:
@@ -53,19 +56,20 @@
                 % endfor
             </ul>
         </nav>
-
         <div style="clear: both"></div>
     </header>
 
+    <div class="wrap">
         % for packed in request.session.pop_flash():
         <% t, m = packed if len(packed) == 2 else ('info', packed) %>
-        <article class="message">
+        <div class="message">
             <p class="${t}">${m}</p>
-        </article>
+        </div>
         % endfor
     
-    ${self.body()}
-    
+        ${self.body()}
+    </div>
+
     <footer>
         <p>Copyleft 2013 <a href="//ccrypto.org/">Cognitive Cryptography</a> - <a href="/page/tos">ToS</a> - <a href="/page/support">Abuse report</a></p>
     </footer>

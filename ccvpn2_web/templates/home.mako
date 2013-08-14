@@ -1,6 +1,6 @@
 <%inherit file="layout.mako" />
 
-<section id="home">
+<section id="homepage">
     <article class="home-unlimited-a">
         <img src="/static/unlimited.svg" alt="" />
         <h2>Unlimited</h2>

@@ -45,7 +45,7 @@ def main(global_config, **settings):
     config.add_route('home',           '/')
     config.add_route('account_redirect', '/account')
     config.add_route('account',        '/account/')
-    config.add_route('account_login',  '/account/login', request_method='POST')
+    config.add_route('account_login',  '/account/login')
     config.add_route('account_logout', '/account/logout')
     config.add_route('account_forgot', '/account/forgot')
     config.add_route('account_signup', '/account/signup')

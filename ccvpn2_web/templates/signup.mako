@@ -1,7 +1,7 @@
 <%inherit file="layout.mako" />
 
-<section>
-    <article id="signuppage">
+<section id="signuppage">
+    <article class="signup">
     <h1>Sign up</h1>
     <form action="/account/signup" method="post" class="vertical">
         <label for="ins_username">Username</label>
@@ -21,6 +21,14 @@
 
         <input type="submit" />
     </form>
+    </article>
+    <article class="rightsignup">
+        <h2>Others Links</h2>
+        <ul>
+            <li><a href="/account/login">Already a member? Login</a></li>
+            <li><a href="/account/forgot">Forgot your password?</a></li>
+            <li><a href="/page/support">Need help?</a></li>
+        </ul>
     </article>
     <div style="clear: both"></div>
 </section>
