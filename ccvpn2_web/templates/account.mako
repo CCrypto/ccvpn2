@@ -8,27 +8,32 @@
     % if user.is_paid:
         <article>
             <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>
-            <ul>
-                <li>Default profile: [Ask password]
-                - <a href="/config/ccrypto-alpha.ovpn"><b>Get Alpha config</b></a>
-                - <a href="/config/ccrypto-beta.ovpn">(Beta*)</a></li>
+            
+            <hr />
+            
+            <table>
+                <tr><td>Default profile</td>
+                    <td><!--delete--></td>
+                    <td><a href="/config/ccrypto-alpha.ovpn"><b>Get Alpha config</b></a></td>
+                    <td><a href="/config/ccrypto-beta.ovpn">(Beta*)</a></td>
+                </tr>
             % for profile in profiles:
-                <li>Profile : ${profile.name}
-                - <form class="profileform" method="post" action="/account/">
-                    <input type="hidden" name="profiledelete" value="${profile.id}" />
-                    <input type="submit" class="deletebutton" value="Delete" />
-                </form>
-                - <a href="/config/ccrypto-${profile.name}-alpha.ovpn"><b>Get Alpha config</b></a>
-                - <a href="/config/ccrypto-${profile.name}-beta.ovpn">(Beta*)</a></li>
+                <tr><td>Profile : ${profile.name}</td>
+                    <td><form class="profileform" method="post" action="/account/">
+                        <input type="hidden" name="profiledelete" value="${profile.id}" />
+                        <input type="submit" class="deletebutton" value="Delete" />
+                    </form></td>
+                    <td><a href="/config/ccrypto-${profile.name}-alpha.ovpn"><b>Get Alpha config</b></a></td>
+                    <td><a href="/config/ccrypto-${profile.name}-beta.ovpn">(Beta*)</a></td>
+                    </tr>
             % endfor
-                <li>
-                    Add : 
-                    <form class="profileform" action="/account/" method="post">
-                        <input type="text" name="profilename" id="fp_name" placeholder="Profile name" />
-                        <input type="submit" />
-                    </form>
-                </li>
-            </ul>
+            </table>
+
+            <h3>Add :</h3>
+            <form class="profileform" action="/account/" method="post">
+                <input type="text" name="profilename" id="fp_name" placeholder="Profile name" />
+                <input type="submit" />
+            </form>
             <ul>
                 <li>You can only have <b>one connection per profile</b>,
                     but up to 10 profiles. (10 running clients)</li>
