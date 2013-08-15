@@ -30,6 +30,9 @@
             <li><a href="/page/support">Need help?</a></li>
         </ul>
     </article>
+    <article class="rightsignup">
+        <img src="/static/7proxies.png" style="max-width:90%; margin: 5%" alt="Good luck, I'm behind 7 proxies." />
+    </article>
     <div style="clear: both"></div>
 </section>
 
