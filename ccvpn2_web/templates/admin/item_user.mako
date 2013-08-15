@@ -1,17 +1,17 @@
 <%inherit file="../layout.mako" />
 
 <section>
-    <h2>Admin - ${model_name} - ${str(item)} #${item.id}</h2>
+    <h2><a href="/admin/">Admin</a> - <a href="/admin/users">User</a> #${item.id} : ${item.username}</h2>
     <article class="two">
         <form class="largeform" action="/admin/users?id=${item.id}" method="post">
                 <label for="f_id">ID</label>
-                <input type="text" name="id" id="f_id" value="${item.id}" />
+                <input type="text" name="id" id="f_id" value="${item.id}" readonly="readonly" />
 
                 <label for="f_username">Username</label>
                 <input type="text" name="username" id="f_username" value="${item.username}" />
                 
                 <label for="f_password">Password</label>
-                <input type="password" name="password" id="f_password" value="" />
+                <input type="password" name="password" id="f_password" value="" placeholder="<empty to not change>" />
             
                 <label for="f_email">E-mail</label>
                 <input type="text" name="email" id="f_email" value="${item.email or ''}" />
@@ -35,6 +35,7 @@
     </article>
     <article class="two">
         <h3>Orders</h3>
+        % if item.orders:
         <table>
             <tr><td>ID</td> <td>Time</td> <td>Paid?</td> <td>Method</td></tr>
             % for order in item.orders:
@@ -46,9 +47,13 @@
                 </tr>
             % endfor
         </table>
+        % else:
+            <p>None</p>
+        % endif
     </article>
     <article class="two">
         <h3>Gift Codes Used</h3>
+        % if item.giftcodes_used:
         <table>
             <tr><td>ID</td> <td>Code</td> <td>Time</td></tr>
             % for gc in item.giftcodes_used:
@@ -59,6 +64,9 @@
                 </tr>
             % endfor
         </table>
+        % else:
+            <p>None</p>
+        % endif
     </article>
     <div style="clear: both"></div>
 </section>
