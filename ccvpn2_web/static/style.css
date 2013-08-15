@@ -429,6 +429,25 @@ article ul {
     list-style-type: disc;
 }
 
+.message {
+    width: 40%;
+    margin: auto;
+    text-align: center;
+    margin-top: 20px;
+}
+.message p {
+    font-weight: bold;
+    padding: 6px;
+}
+.message p.info {
+    border: 1px solid #1c619a;
+    background-color: #D2D9DF;
+}
+.message p.error {
+    border: 1px solid #f1174b;
+    background-color: #EDDFE2;
+}
+
 @media screen and (max-width: 550px) {
     #topbar .topbar-left{
         display: none;

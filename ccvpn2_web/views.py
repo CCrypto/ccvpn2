@@ -84,8 +84,9 @@ def a_signup(request):
                 errors.append('Invalid username.')
             u.validate_password(request.POST['password']) or \
                 errors.append('Invalid password.')
-            u.validate_email(request.POST['email']) or \
-                errors.append('Invalid email address.')
+            if request.POST['email']:
+                u.validate_email(request.POST['email']) or \
+                    errors.append('Invalid email address.')
             if request.POST['password'] != request.POST['password2']:
                 errors.append('Both passwords do not match.')
             assert not errors

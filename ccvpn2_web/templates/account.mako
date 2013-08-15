@@ -66,7 +66,7 @@
     </article>
     <article class="two">
         <h3>Renew</h3>
-        <form action="/order/" method="post" class="vertical">
+        <form action="/order/" method="post" class="vert">
             <div class="inlinefield">
             <label for="ino_time">Time</label>
             <select id="ino_time" name="time">
