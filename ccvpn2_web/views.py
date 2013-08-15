@@ -399,6 +399,15 @@ class AdminView(object):
         return render_to_response(self.list_template or template,
             self.tvars(dict(items=items)))
 
+    def _get_uid(self, input):
+        if post['user'].startswith('#'):
+            return post['user'][1:]
+        user = DBSession.query(User).filter_by(username=post['user']).first()
+        if not user:
+            # TODO: handle that correctly
+            raise HTTPBadRequest()
+        return user.id
+
     def __call__(self):
         if self.request.method == 'POST':
             return self.post_item()
@@ -427,12 +436,35 @@ class AdminUsers(AdminView):
 @view_config(route_name='admin_orders', permission='admin')
 class AdminOrders(AdminView):
     model = Order
+    def assign_from_form(self, item):
+        post = self.request.POST
+        item.uid = self._get_uid(post['user'])
+        item.start_date = post['start_date']
+        item.close_date = post['close_date'] or None
+        item.amount = post['amount']
+        item.paid_amount = post['paid_amount']
+        item.time = post['time']
+        item.method = post['method'] # TODO: permit text values
+        item.paid = 'paid' in post
+        item.payment = post['payment']
 
 @view_config(route_name='admin_giftcodes', permission='admin')
 class AdminGiftCodes(AdminView):
     model = GiftCode
+    def assign_from_form(self, item):
+        post = self.request.POST
+        item.code = post['code']
+        item.time = post['time']
+        item.used = self._get_uid(post['used'])
+
 
 @view_config(route_name='admin_apiaccess', permission='admin')
 class AdminAPIAccess(AdminView):
     model = APIAccessToken
+    def assign_from_form(self, item):
+        post = self.request.POST
+        item.token = post['token']
+        item.label = post['label']
+        item.remote_addr = post['remote_addr']
+        item.expire_date = post['expire_date']
 

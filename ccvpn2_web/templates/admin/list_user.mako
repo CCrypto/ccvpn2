@@ -40,13 +40,13 @@
                 <label for="f_is_admin">Admin?</label>
                 <input type="checkbox" name="is_admin" id="f_is_admin"  />
             
-                <label for="f_signup_date">signup_date</label>
+                <label for="f_signup_date">Signup date</label>
                 <input type="text" name="signup_date" id="f_signup_date" value="2013-08-15 02:40:21.006970" />
             
-                <label for="f_last_login">last_login</label>
+                <label for="f_last_login">Last login</label>
                 <input type="text" name="last_login" id="f_last_login" value="" />
             
-                <label for="f_paid_until">paid_until</label>
+                <label for="f_paid_until">Paid until...</label>
                 <input type="text" name="paid_until" id="f_paid_until" value="" />
             <input type="submit" value="Add" />
         </form>
