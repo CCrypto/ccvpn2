@@ -14,7 +14,7 @@
             % for item in items:
             <tr><td><a href="/admin/users?id=${item.id}">${item.id}</a></td>
                 <td>${item.username}</td>
-                <td>${item.email}</td>
+                <td>${item.email or ''}</td>
                 <td>${item.is_active | check}</td>
                 <td>${item.is_paid | check}</td>
                 <td>${item.is_admin | check}</td>
