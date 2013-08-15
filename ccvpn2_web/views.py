@@ -24,7 +24,7 @@ def require_api_token(function=None):
             if at.remote_addr and at.remote_addr != request.remote_addr \
                and at.remote_addr != '::ffff:'+request.remote_addr:
                 return HTTPUnauthorized('remote address not allowed for this token')
-            return view_func(request, *args, **kwargs)
+            return view_func(request)
         return _func
     if function is None:
         return _dec
@@ -304,7 +304,7 @@ def api_server_auth(request):
     user = DBSession.query(User).filter_by(username=username).first()
     if not user or not user.check_password(password):
         return HTTPForbidden()
-    if not user.is_paid():
+    if not user.is_paid:
         return HTTPUnauthorized()
     if profilename:
         profile = DBSession.query(Profile) \
