@@ -44,12 +44,14 @@
                     Should pass through most of the firewalls.
                     SLOWER, use Alpha if you can.</li>
             </ul>
+            <!-- TODO: put that in CSS -->
+            <hr />
         </article>
     % endif
 
     <article class="two">
         <h3>Settings</h3>
-        <form action="/account/" method="post" class="vertical">
+        <form action="/account/" method="post" class="vert">
             <label for="ins_password">Change password</label>
             <input type="password" id="ins_password" name="password" />
 

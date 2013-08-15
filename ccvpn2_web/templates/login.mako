@@ -3,7 +3,7 @@
 <section id="loginpage">
     <article class="login">
     <h1>Log in</h1>
-    <form action="/account/signup" method="post" class="vertical">
+    <form class="vert" action="/account/signup" method="post" class="vertical">
         <label for="ins_username">Username</label>
         <input type="text" id="ins_username" name="username" pattern="[a-zA-Z0-9_-]{2,32}" required="required" value="${username or ''}" />
 
