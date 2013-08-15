@@ -7,6 +7,10 @@ tls-client
 dev tun0
 tun-ipv6
 
+auth-user-pass
+# you can use this and put username/password, one per line, in a file
+# auth-user-pass cred.txt
+
 % if udp:
 proto udp
 port 1194
