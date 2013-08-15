@@ -21,7 +21,7 @@
         <h2>Secure</h2>
         <p>Provides an <b>encrypted</b> tunnel<br />
             with an <b>anonymous</b> address.<br />
-            Support <b>DNSSEC</b> and <b>PFS</b>.</p>
+            Supports <b>DNSSEC</b> and <b>PFS</b>.</p>
     </article>
 
     <article>
