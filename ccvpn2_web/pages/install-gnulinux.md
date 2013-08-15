@@ -12,3 +12,17 @@ You will need a config file : In [your account](/account/), download the config 
 
 If you have any questions, go to the Support page.
 
+Debian/Ubuntu
+-------------
+Login as root.  
+Put the config file you have downloaded in `/etc/openvpn/`, ie: `/etc/openvpn/ccrypto-alpha.conf`  
+
+Now, you can start it :
+
+    service openvpn start ccrypto-alpha
+
+To start it on boot, edit `/etc/default/openvpn` and uncomment/change the `AUTOSTART` line:
+
+    AUTOSTART="ccrypto-alpha"
+
+
