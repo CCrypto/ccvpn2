@@ -286,32 +286,16 @@ article.linkslogin a:hover{
 }
 
 
-
-
-
 section form label {
-    display: block;
     font-weight: bold;
     color: #1c619a;
-    margin-top: 1em;
-    margin-bottom: 6px;
 }
 section form input {
-    display: block;
-    padding: 8px 5px;
     border: 1px solid rgb(218, 223, 225);
     border-radius: 3px;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
 }
-section form .inputhelp {
-    display: inline-block;
-    margin: 0;
-    color: #606060;
-    font-size: 0.8em;
-}
-section form input[type=submit]{
-    margin-top: 10px;
-    padding: 7px 30px;
+section form input[type=submit] {
     color: #fff;
     text-transform: uppercase;
     border-radius: 3px;
@@ -323,10 +307,83 @@ section form input[type=submit]{
     background: -o-linear-gradient(top,#2c6983,#183c4b);
     background: linear-gradient(top,#2c6983,#183c4b);
 }
-section form input[type=submit]:hover{
+section form input[type=submit]:hover {
     background: #225469;
     cursor: pointer;
 }
+
+section form.vert label {
+    display: block;
+    margin-top: 1em;
+    margin-bottom: 6px;
+}
+section form.vert input {
+    display: block;
+    padding: 8px 5px;
+}
+section form.vert .inputhelp {
+    display: inline-block;
+    margin: 0;
+    color: #606060;
+    font-size: 0.8em;
+}
+section form.vert input[type=submit]{
+    margin-top: 10px;
+    padding: 7px 30px;
+}
+
+.profileform {
+    display: inline;
+}
+.profileform input[type=submit], .profileform input[type=text] {
+    display: inline;
+    margin: 0;
+    padding: 4px 8px;
+}
+
+form.largeform label {
+    display: inline-block;
+    float: left;
+    width: 140px;
+    padding: 4px 5px;
+    clear: both;
+    font-weight: bold;
+    color: #1c619a;
+}
+form.largeform label[title] {
+    border-bottom: 1px dotted black;
+}
+form.largeform input {
+    height: 16px;
+    display: block;
+    padding: 4px 5px;
+    margin: 2px 2px 2px 160px;
+    border: 1px solid rgb(218, 223, 225);
+    border-radius: 3px;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+form.largeform input[type=checkbox] {
+    border: 0;
+    padding: 0;
+    margin: 8px 2px 8px 160px;
+}
+form.largeform input[type=submit] {
+    margin-top: 1em;
+    padding: 6px 16px;
+    height: 30px;
+}
+
+article {
+    margin-bottom: 30px;
+}
+
+section article.two {
+    float: left;
+    width: 49%;
+    min-width: 200px;
+    display: inline-block;
+}
+
 footer{
     color: #1c619a;
     text-align: center;
@@ -339,14 +396,6 @@ footer p {
     margin-top: 0.6em;
 }
 
-.profileform {
-    display: inline;
-}
-.profileform input[type=submit], .profileform input[type=text] {
-    display: inline;
-    margin: 0;
-    padding: 4px 8px;
-}
 
 table td {
     padding: 2px 6px 2px 6px;
@@ -358,6 +407,7 @@ hr {
     border-top: 1px solid #1c619a;
     height: 0;
     width: 50%;
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -367,6 +417,16 @@ hr {
 }
 a{
     color: #1c619a;
+}
+article p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+article ul {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    padding-left: 40px;
+    list-style-type: disc;
 }
 
 @media screen and (max-width: 550px) {
@@ -386,29 +446,6 @@ a{
 
     }
 }
-
-
-
-article p {
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-article ul {
-    margin-top: 1em;
-    margin-bottom: 1em;
-    padding-left: 40px;
-    list-style-type: disc;
-}
-
-
-
-
-
-
-
-
-
-
 
 
  /* FONTS */
