@@ -26,7 +26,7 @@
     <div id="topbar">
         <div class="topbar-left">
             <p>
-                <a href="http://crypto.org">Cognitive Cryptography</a> :
+                <a href="http://ccrypto.org">Cognitive Cryptography</a> :
                 <a href="http://tux-fh.net" title="Web Hosting">Tux-FreeHost</a>
             </p>
         </div>

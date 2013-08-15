@@ -22,7 +22,7 @@ def require_api_token(function=None):
             if not at:
                 return HTTPForbidden('wrong API token')
             if at.remote_addr and at.remote_addr != request.remote_addr \
-               and at.remote_addr != '::ffff:'+request.remote_add:
+               and at.remote_addr != '::ffff:'+request.remote_addr:
                 return HTTPUnauthorized('remote address not allowed for this token')
             return view_func(request, *args, **kwargs)
         return _func
