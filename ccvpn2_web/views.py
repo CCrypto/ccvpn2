@@ -400,9 +400,9 @@ class AdminView(object):
             self.tvars(dict(items=items)))
 
     def _get_uid(self, input):
-        if post['user'].startswith('#'):
-            return post['user'][1:]
-        user = DBSession.query(User).filter_by(username=post['user']).first()
+        if input.startswith('#'):
+            return input[1:]
+        user = DBSession.query(User).filter_by(username=input).first()
         if not user:
             # TODO: handle that correctly
             raise HTTPBadRequest()
