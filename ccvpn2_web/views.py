@@ -455,7 +455,7 @@ class AdminGiftCodes(AdminView):
         post = self.request.POST
         item.code = post['code']
         item.time = post['time']
-        item.used = self._get_uid(post['used'])
+        #item.used = self._get_uid(post['used'])
 
 
 @view_config(route_name='admin_apiaccess', permission='admin')
