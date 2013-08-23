@@ -258,7 +258,7 @@ def order_callback(request):
     if not o:
         return HTTPNotFound()
     method = methods.METHOD_IDS[o.method]
-    ret = method.callback(request, o)
+    ret = method().callback(request, o)
     DBSession.commit()
     return ret
 

@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from .models import DBSession, User, Order, PaypalAPI
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import func
-from pyramid.httpexceptions import HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
+from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
 import markdown
 import os
 import re

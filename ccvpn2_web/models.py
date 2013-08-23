@@ -114,7 +114,8 @@ class PaypalAPI(object):
                         'payeremail' : params['payer_email'],
                     }
                 order.payment['status'] = 'refunded'
-                order.ok = False
+                order.paid = False
+                # FIXME: maybe remove some time
                 return True
             elif params['payment_status'] == 'Completed':
                 assert self.receiver == params['receiver_email'], \
@@ -135,7 +136,8 @@ class PaypalAPI(object):
                     'payerid' : params['payer_id'],
                     'payeremail' : params['payer_email'],
                 }
-                order.ok = True
+                order.paid = True
+                order.user.add_paid_time(order.time)
                 return True
             else:
                 # Not implemented, ignore it
