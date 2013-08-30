@@ -8,9 +8,10 @@ Every port is allowed, on TCP an UDP, with IPv4 and IPv6.
 
 You can connect to OpenVPN servers with:
 
-  - "Alpha" : UDP, default port. Default, recommended.
-  - "Beta" : TCP, port 443 (HTTPS). It should pass through most of the firewalls, but it is slower and less reliable than Alpha.  
-    Use it only if Alpha does NOT work for you.
+  - UDP port 1194 (default). Recommended.
+  - TCP port 443 (HTTPS). It should pass through most of the firewalls, but it is slower and less reliable than the first.
+
+Our OpenVPN config files automatically tries to use UDP, then TCP.
 
 Security
 --------

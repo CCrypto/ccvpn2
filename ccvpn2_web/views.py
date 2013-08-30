@@ -267,16 +267,14 @@ ca_content = ""
 
 @view_config(route_name='config', permission='logged')
 def config(request):
-    udp = request.matchdict['version'] == 'alpha'
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
-        dict(username=request.user.username, udp=udp,
+        dict(username=request.user.username,
             remotes=openvpn_remote, ca_content=ca_content))
     r.content_type = 'test/plain'
     return r
 
 @view_config(route_name='config_profile', permission='logged')
 def config_profile(request):
-    udp = request.matchdict['version'] == 'alpha'
     pname = request.matchdict['profile']
     profile = DBSession.query(Profile) \
         .filter_by(uid=request.user.id, name=pname) \
@@ -284,7 +282,7 @@ def config_profile(request):
     if not profile:
         return HTTPNotFound()
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
-        dict(username=request.user.username, udp=udp, profile=profile,
+        dict(username=request.user.username, profile=profile,
             remotes=openvpn_remote, ca_content=ca_content))
     r.content_type = 'test/plain'
     return r
