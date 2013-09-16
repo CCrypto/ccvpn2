@@ -15,7 +15,7 @@
                 <tr><td>Default profile</td>
                     <td><!--delete--></td>
                     <td><a href="/config/ccrypto.ovpn"><b>Get config</b></a></td>
-                    <td><a href="/config/ccrypto.ovpn?android"><b>(Android)</b></a></td>
+                    <td><a href="/config/ccrypto.ovpn?android"><b>(For Android)</b></a></td>
                 </tr>
             % for profile in profiles:
                 <tr><td>Profile : ${profile.name}</td>
