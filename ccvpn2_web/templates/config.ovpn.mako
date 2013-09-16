@@ -11,17 +11,22 @@ auth-user-pass
 # you can use this and put username/password, one per line, in a file
 # auth-user-pass cred.txt
 
-<connection>
-% for remote in remotes:
-remote ${remote} 1194 udp
-% endfor
-</connection>
+% if android:
+    # de.blinkt.openvpn does not support <connection>
+    remote ${remotes[0]} 443 tcp
+% else:
+    <connection>
+    % for remote in remotes:
+    remote ${remote} 1194 udp
+    % endfor
+    </connection>
 
-<connection>
-% for remote in remotes:
-remote ${remote} 443 tcp
-% endfor
-</connection>
+    <connection>
+    % for remote in remotes:
+    remote ${remote} 443 tcp
+    % endfor
+    </connection>
+% endif
 
 resolv-retry infinite
 nobind

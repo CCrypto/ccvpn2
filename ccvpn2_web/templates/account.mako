@@ -15,6 +15,7 @@
                 <tr><td>Default profile</td>
                     <td><!--delete--></td>
                     <td><a href="/config/ccrypto.ovpn"><b>Get config</b></a></td>
+                    <td><a href="/config/ccrypto.ovpn?android"><b>(Android)</b></a></td>
                 </tr>
             % for profile in profiles:
                 <tr><td>Profile : ${profile.name}</td>
@@ -23,6 +24,7 @@
                         <input type="submit" class="deletebutton" value="Delete" />
                     </form></td>
                     <td><a href="/config/ccrypto-${profile.name}.ovpn"><b>Get config</b></a></td>
+                    <td><a href="/config/ccrypto-${profile.name}.ovpn?android"><b>(For Android)</b></a></td>
                     </tr>
             % endfor
             </table>
