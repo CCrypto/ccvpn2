@@ -91,12 +91,16 @@ def a_signup(request):
                 errors.append('Both passwords do not match.')
             assert not errors
             
-            nc = DBSession.query(func.count(User.id).label('nc')).filter_by(username=request.POST['username']).subquery()
-            ec = DBSession.query(func.count(User.id).label('ec')).filter_by(email=request.POST['email']).subquery()
+            nc = DBSession.query(func.count(User.id).label('nc')) \
+                .filter_by(username=request.POST['username']) \
+                .subquery()
+            ec = DBSession.query(func.count(User.id).label('ec')) \
+                .filter_by(email=request.POST['email']) \
+                .subquery()
             c  = DBSession.query(nc, ec).first()
             if c.nc > 0:
                 errors.append('Username already registered.')
-            if c.ec > 0:
+            if c.ec > 0 and request.POST['email'] != '':
                 errors.append('E-mail address already registered.')
             assert not errors
             u.username = request.POST['username']
