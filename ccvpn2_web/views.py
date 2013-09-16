@@ -269,7 +269,8 @@ ca_content = ""
 def config(request):
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
         dict(username=request.user.username,
-            remotes=openvpn_remote, ca_content=ca_content))
+            remotes=openvpn_remote, ca_content=ca_content,
+            android='android' in request.GET))
     r.content_type = 'test/plain'
     return r
 
@@ -283,7 +284,8 @@ def config_profile(request):
         return HTTPNotFound()
     r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
         dict(username=request.user.username, profile=profile,
-            remotes=openvpn_remote, ca_content=ca_content))
+            remotes=openvpn_remote, ca_content=ca_content,
+            android='android' in request.GET))
     r.content_type = 'test/plain'
     return r
 
