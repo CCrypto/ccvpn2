@@ -15,17 +15,10 @@ auth-user-pass
     # de.blinkt.openvpn does not support <connection>
     remote ${remotes[0]} 443 tcp
 % else:
-    <connection>
     % for remote in remotes:
     remote ${remote} 1194 udp
-    % endfor
-    </connection>
-
-    <connection>
-    % for remote in remotes:
     remote ${remote} 443 tcp
     % endfor
-    </connection>
 % endif
 
 resolv-retry infinite
