@@ -12,13 +12,13 @@ auth-user-pass
 # auth-user-pass cred.txt
 
 % if android:
-    # de.blinkt.openvpn does not support <connection>
-    remote ${remotes[0]} 443 tcp
+# de.blinkt.openvpn does not support <connection>
+remote ${remotes[0]} 443 tcp
 % else:
-    % for remote in remotes:
-    remote ${remote} 1194 udp
-    remote ${remote} 443 tcp
-    % endfor
+% for remote in remotes:
+remote ${remote} 1194 udp
+remote ${remote} 443 tcp
+% endfor
 % endif
 
 resolv-retry infinite
