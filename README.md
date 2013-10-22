@@ -19,4 +19,5 @@ Bitcoin Payments
 You will need to run a script regularly to check for verified transaction.
 With this app installed in /home/vpn/ccvpn/, add this in your crontab:
 
-    */5 * * * * /home/vpn/ccvpn/cron_checkbtcorders.sh
+    */5 * * * * /home/vpn/ccvpn/cron_checkbtcorders.sh /home/vpn/ccvpn/development.ini
+
