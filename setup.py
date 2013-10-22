@@ -44,5 +44,6 @@ setup(name='ccvpn',
       [console_scripts]
       initialize_ccvpn_db = ccvpn.scripts.initializedb:main
       ccvpn_checkbtcorders = ccvpn.scripts.checkbtcorders:main
+      ccvpn_apiacl = ccvpn.scripts.apiacl:main
       """,
       )
