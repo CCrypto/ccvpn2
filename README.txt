@@ -1,5 +1,5 @@
-ccvpn2_web README
-==================
+CCrypto VPN 
+===========
 
 Getting Started
 ---------------
@@ -8,7 +8,7 @@ Getting Started
 
 - $venv/bin/python setup.py develop
 
-- $venv/bin/initialize_ccvpn2_web_db development.ini
+- $venv/bin/initialize_ccvpn_db development.ini
 
 - $venv/bin/pserve development.ini
 

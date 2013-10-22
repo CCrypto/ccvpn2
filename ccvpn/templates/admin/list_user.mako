@@ -1,5 +1,5 @@
 <%inherit file="../layout.mako" />
-<%! from ccvpn2_web.models import Base %>
+<%! from ccvpn.models import Base %>
 <section>
     <h2><a href="/admin/">Admin</a> - <a href="/admin/${model_name.lower()}s">${model_name}s</a></h2>
     <article>

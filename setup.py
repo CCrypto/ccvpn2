@@ -19,9 +19,9 @@ requires = [
     'bitcoin-python',
     ]
 
-setup(name='ccvpn2_web',
+setup(name='ccvpn',
       version='0.0',
-      description='ccvpn2_web',
+      description='ccvpn',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
         "Programming Language :: Python",
@@ -36,13 +36,13 @@ setup(name='ccvpn2_web',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      test_suite='ccvpn2_web',
+      test_suite='ccvpn',
       install_requires=requires,
       entry_points="""\
       [paste.app_factory]
-      main = ccvpn2_web:main
+      main = ccvpn:main
       [console_scripts]
-      initialize_ccvpn2_web_db = ccvpn2_web.scripts.initializedb:main
-      ccvpn2_checkbtcorders = ccvpn2_web.scripts.checkbtcorders:main
+      initialize_ccvpn_db = ccvpn.scripts.initializedb:main
+      ccvpn_checkbtcorders = ccvpn.scripts.checkbtcorders:main
       """,
       )
