@@ -31,13 +31,13 @@ def require_api_token(function=None):
     else:
         return _dec(function)
 
-@view_config(route_name='home', renderer='ccvpn2_web:templates/home.mako')
+@view_config(route_name='home', renderer='home.mako')
 def home(request):
     return {}
 
-@view_config(route_name='page', renderer='ccvpn2_web:templates/page.mako')
+@view_config(route_name='page', renderer='page.mako')
 def page(request):
-    path = 'ccvpn2_web/pages/'+request.matchdict['page']+'.md'
+    path = 'ccvpn/pages/'+request.matchdict['page']+'.md'
     try:
         f = open(path, 'r')
         content = markdown.markdown(f.read())
@@ -45,11 +45,11 @@ def page(request):
     except FileNotFoundError:
         return HTTPNotFound()
 
-@view_config(route_name='account_login', renderer='ccvpn2_web:templates/login.mako')
+@view_config(route_name='account_login', renderer='login.mako')
 def a_login(request):
     return {}
 
-@view_config(route_name='account_login', request_method='POST', renderer='ccvpn2_web:templates/login.mako')
+@view_config(route_name='account_login', request_method='POST', renderer='login.mako')
 def a_login_post(request):
     try:
         username = request.POST['username']
@@ -74,7 +74,7 @@ def a_logout(request):
         request.session.flash(('info', 'Logged out.'))
     return HTTPSeeOther(location=request.route_url('home'))
 
-@view_config(route_name='account_signup', renderer='ccvpn2_web:templates/signup.mako')
+@view_config(route_name='account_signup', renderer='signup.mako')
 def a_signup(request):
     if request.method == 'POST':
         errors = []
@@ -118,7 +118,7 @@ def a_signup(request):
             return {k:request.POST[k] for k in ('username','password','password2','email')}
     return {}
 
-@view_config(route_name='account_forgot', renderer='ccvpn2_web:templates/forgot_password.mako')
+@view_config(route_name='account_forgot', renderer='forgot_password.mako')
 def a_forgot(request):
     if request.method == 'POST':
         try:
@@ -138,7 +138,7 @@ def a_forgot(request):
     return {}
 
 
-@view_config(route_name='account', request_method='POST', permission='logged', renderer='ccvpn2_web:templates/account.mako')
+@view_config(route_name='account', request_method='POST', permission='logged', renderer='account.mako')
 def account_post(request):
     # TODO: Fix that. split in two functions or something.
     errors = []
@@ -203,7 +203,7 @@ def account_post(request):
     return account(request)
     
 
-@view_config(route_name='account', permission='logged', renderer='ccvpn2_web:templates/account.mako')
+@view_config(route_name='account', permission='logged', renderer='account.mako')
 def account(request):
     return {'email':request.user.email}
 
@@ -245,7 +245,7 @@ def order_post(request):
     DBSession.commit()
     return method.start(request, o)
 
-@view_config(route_name='order_view', renderer='ccvpn2_web:templates/order.mako', permission='logged')
+@view_config(route_name='order_view', renderer='order.mako', permission='logged')
 def order_view(request):
     id = int(request.matchdict['hexid'], 16)
     o = DBSession.query(Order).filter_by(id=id).first()
@@ -271,7 +271,7 @@ ca_content = ""
 
 @view_config(route_name='config', permission='logged')
 def config(request):
-    r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
+    r = render_to_response('config.ovpn.mako',
         dict(username=request.user.username,
             remotes=openvpn_remote, ca_content=ca_content,
             android='android' in request.GET))
@@ -286,7 +286,7 @@ def config_profile(request):
         .first()
     if not profile:
         return HTTPNotFound()
-    r = render_to_response('ccvpn2_web:templates/config.ovpn.mako',
+    r = render_to_response('config.ovpn.mako',
         dict(username=request.user.username, profile=profile,
             remotes=openvpn_remote, ca_content=ca_content,
             android='android' in request.GET))
@@ -343,7 +343,7 @@ def api_server_config(request):
     return HTTPOk()
 
 
-@view_config(route_name='admin_home', renderer='ccvpn2_web:templates/admin/home.mako', permission='admin')
+@view_config(route_name='admin_home', renderer='admin/home.mako', permission='admin')
 def admin_home(request):
     return {}
 
@@ -391,7 +391,7 @@ class AdminView(object):
     def get_item(self, id):
         item_id = self.request.GET['id']
         item = DBSession.query(self.model).filter_by(id=item_id).first()
-        template = 'ccvpn2_web:templates/admin/item.mako'
+        template = 'admin/item.mako'
         if item is None:
             raise HTTPNotFound()
         return render_to_response(self.item_template or template,
@@ -399,7 +399,7 @@ class AdminView(object):
 
     def list_items(self):
         items = DBSession.query(self.model)
-        template = 'ccvpn2_web:templates/admin/list.mako'
+        template = 'admin/list.mako'
         return render_to_response(self.list_template or template,
             self.tvars(dict(items=items)))
 
@@ -425,8 +425,8 @@ class AdminView(object):
 @view_config(route_name='admin_users', permission='admin')
 class AdminUsers(AdminView):
     model = User
-    item_template = 'ccvpn2_web:templates/admin/item_user.mako'
-    list_template = 'ccvpn2_web:templates/admin/list_user.mako'
+    item_template = 'admin/item_user.mako'
+    list_template = 'admin/list_user.mako'
     def assign_from_form(self, item):
         post = self.request.POST
         item.username = post['username']

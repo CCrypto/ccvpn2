@@ -9,8 +9,8 @@ from pyramid.paster import (
     setup_logging,
     )
 
-from ccvpn2_web.models import DBSession, Base, User, Order
-from ccvpn2_web.methods import BitcoinMethod
+from ccvpn.models import DBSession, Base, User, Order
+from ccvpn.methods import BitcoinMethod
 import logging
 log = logging.getLogger(__name__)
 
