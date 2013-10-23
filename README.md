@@ -4,14 +4,19 @@ CCrypto VPN
 Getting Started
 ---------------
 
-- cd <directory containing this file>
+```bash
+    git clone https://github.com/CCrypto/ccvpn.git
+    cd ccvpn/
 
-- $venv/bin/python setup.py develop
-
-- $venv/bin/initialize_ccvpn_db development.ini
-
-- $venv/bin/pserve development.ini
-
+    # Use --user if you're not root
+    ./setup.py develop
+    
+    # Prepare the database
+    initialize_ccvpn_db development.ini
+    
+    # Run the dev web server
+    pserve development.ini
+```
 
 OpenVPN
 -------
