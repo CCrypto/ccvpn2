@@ -4,6 +4,9 @@ CCrypto VPN
 Getting Started
 ---------------
 
+It only works with PostgreSQL for now, because of the BYTEA field used for
+passwords.
+
 ```bash
     git clone https://github.com/CCrypto/ccvpn.git
     cd ccvpn/
@@ -17,6 +20,8 @@ Getting Started
     # Run the dev web server
     pserve development.ini
 ```
+
+The default "admin" account has the password "admin".
 
 OpenVPN
 -------
