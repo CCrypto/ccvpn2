@@ -4,8 +4,7 @@ CCrypto VPN
 Getting Started
 ---------------
 
-It only works with PostgreSQL for now, because of the BYTEA field used for
-passwords.
+It only works with PostgreSQL for now, because of the INET type.
 
 ```bash
     git clone https://github.com/CCrypto/ccvpn.git

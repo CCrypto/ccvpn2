@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, Text, String, Boolean, BigInteger, DateTime, ForeignKey, UnicodeText, Float, TypeDecorator, Interval
+from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
-from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects import postgresql # INET
 from datetime import datetime, timedelta
 import json
 import random
@@ -159,7 +159,7 @@ class User(Base):
     __tablename__ = 'users'
     id          = Column(Integer, primary_key=True, nullable=False, doc='ID')
     username    = Column(String(length=32), unique=True, nullable=False, doc='Username')
-    password    = Column(postgresql.BYTEA(length=96), nullable=False, doc='Password')
+    password    = Column(LargeBinary(length=96), nullable=False, doc='Password')
     email       = Column(String(length=256), nullable=True, default=None, doc='E-mail')
     is_active   = Column(Boolean, nullable=False, default=True, doc='Active?')
     is_admin    = Column(Boolean, nullable=False, default=False, doc='Admin?')
