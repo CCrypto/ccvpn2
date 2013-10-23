@@ -1,5 +1,9 @@
 __pycache__
 *.pyc
 .tmp/
+*.swp
 ca.crt
 *.egg-info
+*.log
+openvpn/settings.py
+openvpn/config/
