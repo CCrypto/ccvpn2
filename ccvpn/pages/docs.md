@@ -10,6 +10,7 @@ Installation guides:
 
 Other:
 
+  - [make client remember password](/page/auth-user-pass)
   - [our servers](/page/gateways)
   - [tech stuff](/page/tech)
 
