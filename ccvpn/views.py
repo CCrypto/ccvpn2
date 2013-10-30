@@ -10,6 +10,7 @@ import re
 import datetime
 from pyramid.renderers import render_to_response
 from . import methods
+import codecs
 
 def require_api_token(function=None):
     def _dec(view_func):
@@ -39,7 +40,7 @@ def home(request):
 def page(request):
     path = 'ccvpn/pages/'+request.matchdict['page']+'.md'
     try:
-        f = open(path, 'r')
+        f = codecs.open(path, mode="r", encoding="utf-8")
         content = markdown.markdown(f.read())
         return {'content':content}
     except FileNotFoundError:
