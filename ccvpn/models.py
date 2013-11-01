@@ -243,7 +243,7 @@ class GiftCode(Base):
     @property
     def username_if_used(self):
         '''User'''
-        if self.used:
+        if self.used and self.user:
             return self.user.username
         else:
             return False
