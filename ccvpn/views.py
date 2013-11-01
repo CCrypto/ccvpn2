@@ -34,7 +34,10 @@ def require_api_token(function=None):
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
-    return {}
+    return {
+        'eur_price' : float(request.registry.settings.get('paypal.month_price', 2)),
+        'btc_price' : float(request.registry.settings.get('bitcoin.month_price', 0.02))
+    }
 
 @view_config(route_name='page', renderer='page.mako')
 def page(request):
