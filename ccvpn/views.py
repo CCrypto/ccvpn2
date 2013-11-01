@@ -343,10 +343,71 @@ def api_server_config(request):
     # Mostly for future uses (BW limit, user routes, port forwarding, ...)
     return HTTPOk()
 
+from datetime import timedelta
+
+def get_users(maxage, unit):
+    q = DBSession.query(
+            func.count(User.id).label('accounts'),
+            func.count(User.paid_until).label('paid'),
+            func.extract(unit, User.signup_date).label('time')) \
+        .filter(func.age(func.now(), User.signup_date)
+            < maxage) \
+        .group_by('time').all()
+    return q
+
+@view_config(route_name='admin_graph', permission='admin')
+def admin_graph(request):
+    graphs = {
+        'users_m': (
+            'Users (month)', 'Accounts', 'Paid Acc.',
+            lambda: get_users(timedelta(days=30), 'day'),
+            30,
+        ),
+        'users_y': (
+            'Users (year)', 'Accounts', 'Paid Acc.',
+            lambda: get_users(timedelta(days=365), 'month'),
+            12,
+        ),
+    }
+    try:
+        name = request.matchdict['name']
+        import pygal
+        timescale = graphs[name][4] + 1
+        users_m = pygal.Line(fill=True)
+        users_m.title = graphs[name][0]
+        users_m.x_labels = map(str, range(0, timescale))
+        users_m_q = graphs[name][3]()
+        accounts_m = [0 for i in range(0, timescale)]
+        paid_m = [0 for i in range(0, timescale)]
+        for day in users_m_q:
+            accounts_m[int(day[2])] = day[0]
+            paid_m[int(day[2])] = day[1]
+            print(repr(day))
+            
+        users_m.add(graphs[name][1], accounts_m)
+        users_m.add(graphs[name][2], paid_m)
+        
+
+        return Response(users_m.render(), content_type='image/svg+xml')
+    except ImportError:
+        return HTTPNotFound()
 
 @view_config(route_name='admin_home', renderer='admin/home.mako', permission='admin')
 def admin_home(request):
-    return {}
+    try:
+        import pygal
+        #users_year = pygal.StackedLine(fill=True)
+        #users_year.title = 'Users (year)'
+        #users_year.x_labels = map(str, range(0, 12))
+        #users_year_account = []
+        #users_year_paid = []
+
+        return {'graph':True}
+
+    except ImportError as e:
+        print(repr(e))
+        request.session.flash(('error', 'Pygal not found - cannot make charts'))
+        return {'graph':False}
 
 class AdminView(object):
     ''' Basic CRUD view for admin stuff '''

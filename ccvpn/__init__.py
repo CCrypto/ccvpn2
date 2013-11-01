@@ -56,6 +56,7 @@ def main(global_config, **settings):
     config.add_route('config',         '/config/ccrypto.ovpn')
     config.add_route('config_profile', '/config/ccrypto-{profile:[a-zA-Z0-9]+}.ovpn')
     config.add_route('admin_home',     '/admin/')
+    config.add_route('admin_graph',    '/admin/graph/{name}.svg')
     config.add_route('admin_users',    '/admin/users')
     config.add_route('admin_orders',   '/admin/orders')
     config.add_route('admin_giftcodes','/admin/giftcodes')
