@@ -12,7 +12,7 @@
     <article>
         <img src="/static/cheap.svg" alt="" />
         <h2>Cheap</h2>
-        <p><b>2€ / 0.02BTC</b> per month!<br/>
+        <p><b>${eur_price}€ / ${btc_price}BTC</b> per month!<br/>
             We accept Paypal and Bitcoins</p>
     </article>
 
