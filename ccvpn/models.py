@@ -21,19 +21,19 @@ Base = declarative_base()
 def random_access_token():
     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
-    return ''.join([charset[random.randint(0,base-1)] for n in range(32)])
+    return ''.join([charset[random.SystemRandom().randint(0,base-1)] for n in range(32)])
 
 def random_profile_password():
     # Every printable ASCII character
-    return ''.join([chr(random.randint(32,126)) for n in range(256)])
+    return ''.join([chr(random.SystemRandom().randint(32,126)) for n in range(256)])
 
 def random_gift_code():
     charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
-    return ''.join([charset[random.randint(0,base-1)] for n in range(16)])
+    return ''.join([charset[random.SystemRandom().randint(0,base-1)] for n in range(16)])
 
 def random_bytes(length):
-    return bytearray([random.randint(0,0xff) for n in range(length)])
+    return bytearray([random.SystemRandom().randint(0,0xff) for n in range(length)])
 
 class JSONEncodedDict(TypeDecorator):
     """Represents an immutable structure as a json-encoded string.
