@@ -344,7 +344,7 @@ def api_server_config(request):
         return HTTPNotFound()
     # Nothing here, we do not need per-client configuration
     # Mostly for future uses (BW limit, user routes, port forwarding, ...)
-    return HTTPOk()
+    return HTTPOk(empty_body=True)
 
 from datetime import timedelta
 
