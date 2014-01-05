@@ -1,5 +1,6 @@
 import codecs
 import markdown
+import os
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -15,7 +16,9 @@ def home(request):
 
 @view_config(route_name='page', renderer='page.mako')
 def page(request):
-    path = 'ccvpn/pages/'+request.matchdict['page']+'.md'
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    page = 'pages/'+request.matchdict['page']+'.md'
+    path = os.path.join(root, page)
     try:
         f = codecs.open(path, mode="r", encoding="utf-8")
         content = markdown.markdown(f.read())
