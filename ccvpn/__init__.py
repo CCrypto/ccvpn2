@@ -31,16 +31,25 @@ class AuthorizationPolicy(object):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    engine = engine_from_config(settings, 'sqlalchemy.')
-    DBSession.configure(bind=engine)
-    Base.metadata.bind = engine
+    
+    if 'sqlalchemy.url' in settings:
+        engine = engine_from_config(settings, 'sqlalchemy.')
+        DBSession.configure(bind=engine)
+        Base.metadata.bind = engine
+
+    if not 'mako.directories' in settings:
+        settings['mako.directories'] = 'ccvpn:templates/'
+    if not 'mako.imports' in settings:
+        settings['mako.imports'] = 'from ccvpn.filters import check'
+
     session_factory = session_factory_from_settings(settings)
     authentication = AuthenticationPolicy()
     authorization = AuthorizationPolicy()
     config = Configurator(settings=settings,
         authentication_policy=authentication, authorization_policy=authorization)
+    config.include('pyramid_mako')
     config.set_session_factory(session_factory)
-    config.set_request_property(get_user, 'user', reify=True)
+    config.add_request_method(get_user, 'user', reify=True, property=True)
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home',           '/')
     config.add_route('account_redirect', '/account')
@@ -65,8 +74,12 @@ def main(global_config, **settings):
     config.add_route('api_server_disconnect','/api/server/disconnect')
     config.add_route('api_server_config','/api/server/config')
     config.scan()
-
-    views.ca_content = open(settings['openvpn.ca-cert'], 'r').read()
+    
+    ca_path = settings.get('openvpn.ca-cert', None)
+    if ca_path:
+        views.ca_content = open(ca_path, 'r').read()
+    else:
+        views.ca_content = ''
 
     return config.make_wsgi_app()
 

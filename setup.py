@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 
 from setuptools import setup, find_packages
@@ -16,6 +17,7 @@ requires = [
     'waitress',
     'markdown',
     'bitcoin-python',
+    'webtest',
     ]
 
 setup(name='ccvpn',

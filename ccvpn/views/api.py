@@ -58,7 +58,7 @@ def api_server_auth(request):
 def api_server_disconnect(request):
     # May be used to count login/logouts
     # Empty for now
-    return HTTPOk()
+    return HTTPOk(empty_body=True)
 
 
 @view_config(route_name='api_server_config', request_method='GET')
@@ -74,7 +74,13 @@ def api_server_config(request):
         profilename = None
     user = DBSession.query(User).filter_by(username=username).first()
     if not user:
-        return HTTPNotFound()
+        return HTTPNotFound('unknown user')
+    if profilename:
+        profile = DBSession.query(Profile) \
+            .filter_by(name=profilename, uid=user.id) \
+            .first()
+        if not profile:
+            return HTTPNotFound('unknown profile')
     # Nothing here, we do not need per-client configuration
     # Mostly for future uses (BW limit, user routes, port forwarding, ...)
     return HTTPOk(empty_body=True)

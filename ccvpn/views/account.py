@@ -21,13 +21,13 @@ ca_content = ""
 
 
 @view_config(route_name='account_login', renderer='login.mako')
-def a_login(request):
+def login(request):
     return {}
 
 
 @view_config(route_name='account_login', request_method='POST',
              renderer='login.mako')
-def a_login_post(request):
+def login_post(request):
     try:
         username = request.POST['username']
         password = request.POST['password']
@@ -46,7 +46,7 @@ def a_login_post(request):
 
 
 @view_config(route_name='account_logout', permission='logged')
-def a_logout(request):
+def logout(request):
     if 'uid' in request.session:
         del request.session['uid']
         request.session.flash(('info', 'Logged out.'))
@@ -54,7 +54,7 @@ def a_logout(request):
 
 
 @view_config(route_name='account_signup', renderer='signup.mako')
-def a_signup(request):
+def signup(request):
     if request.method == 'POST':
         errors = []
         u = User()
@@ -100,7 +100,7 @@ def a_signup(request):
 
 
 @view_config(route_name='account_forgot', renderer='forgot_password.mako')
-def a_forgot(request):
+def forgot(request):
     if request.method == 'POST':
         try:
             u = DBSession.query(User) \

@@ -3,6 +3,7 @@ import markdown
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 
+from ccvpn.views import account, admin, api
 
 @view_config(route_name='home', renderer='home.mako')
 def home(request):

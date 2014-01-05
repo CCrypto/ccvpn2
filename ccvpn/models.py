@@ -57,6 +57,15 @@ class JSONEncodedDict(TypeDecorator):
             value = dict()
         return value
 
+class INETWrapper(TypeDecorator):
+    impl = String
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == 'postgresql':
+            return dialect.type_descriptor(postgresql.INET())
+        else:
+            return dialect.type_descriptor(String())
+
 class PaypalAPI(object):
     api_base = ''
     test = False
@@ -159,7 +168,7 @@ class PaypalAPI(object):
 
 class User(Base):
     __tablename__ = 'users'
-    id          = Column(Integer, primary_key=True, nullable=False, doc='ID')
+    id          = Column(Integer, primary_key=True, doc='ID')
     username    = Column(String(length=32), unique=True, nullable=False, doc='Username')
     password    = Column(LargeBinary(length=96), nullable=False, doc='Password')
     email       = Column(String(length=256), nullable=True, default=None, doc='E-mail')
@@ -177,6 +186,12 @@ class User(Base):
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re    = re.compile('^.+@.+$')
     
+    def __init__(self, *args, **kwargs):
+        password = kwargs.pop('password', None)
+        if password:
+            self.set_password(password)
+        super().__init__(*args, **kwargs)
+
     @property
     def is_paid(self):
         return self.paid_until != None and self.paid_until > datetime.now()
@@ -224,7 +239,7 @@ class User(Base):
 
 class Profile(Base):
     __tablename__ = 'profiles'
-    id      = Column(Integer, primary_key=True, nullable=False, doc='ID')
+    id      = Column(Integer, primary_key=True, doc='ID')
     uid     = Column(ForeignKey('users.id'))
     name    = Column(String(16), nullable=False, doc='Name')
     password = Column(Text, nullable=True, doc='Key')
@@ -263,7 +278,7 @@ class Order(Base):
         PAYPAL  = 1
         GIFTCODE= 2
 
-    id          = Column(Integer, primary_key=True, nullable=False)
+    id          = Column(Integer, primary_key=True)
     uid         = Column(ForeignKey('users.id'))
     start_date  = Column(DateTime, nullable=False, default=datetime.now)
     close_date  = Column(DateTime, nullable=True)
@@ -282,10 +297,10 @@ class Order(Base):
 
 class APIAccessToken(Base):
     __tablename__ = 'apiaccesstok'
-    id          = Column(Integer, primary_key=True, nullable=False)
-    token       = Column(String(32), primary_key=True, nullable=False, default=random_access_token)
+    id          = Column(Integer, primary_key=True)
+    token       = Column(String(32), nullable=False, default=random_access_token)
     label       = Column(String(256), nullable=True)
-    remote_addr = Column(postgresql.INET, nullable=True)
+    remote_addr = Column(INETWrapper, nullable=True)
     expire_date = Column(DateTime, nullable=True)
     
     list_fields = ('id', 'label', 'remote_addr')
