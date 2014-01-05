@@ -1,11 +1,11 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
 from sqlalchemy import func
 from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
 from pyramid.renderers import render_to_response
 from datetime import timedelta
-
+from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
+from ccvpn.methods import BitcoinMethod
 
 def get_users(maxage, unit):
     q = DBSession.query(func.count(User.id).label('accounts'),
@@ -63,13 +63,18 @@ def admin_home(request):
         #users_year.x_labels = map(str, range(0, 12))
         #users_year_account = []
         #users_year_paid = []
-
-        return {'graph': True}
-
+        graph = True
     except ImportError as e:
         print(repr(e))
         request.session.flash(('error', 'Pygal not found: cannot make charts'))
-        return {'graph': False}
+        graph = False
+    btcm = BitcoinMethod()
+    btcrpc = btcm.getBTCRPC(request.registry.settings)
+    try:
+        btcd = btcrpc.getinfo()
+    except (ValueError, ConnectionRefusedError):
+        btcd = None
+    return {'graph': graph, 'btcd':btcd}
 
 
 class AdminView(object):
