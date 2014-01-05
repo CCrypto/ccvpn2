@@ -7,6 +7,7 @@ from datetime import timedelta
 from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
 from ccvpn.methods import BitcoinMethod
 
+
 def get_users(maxage, unit):
     q = DBSession.query(func.count(User.id).label('accounts'),
                         func.count(User.paid_until).label('paid'),
@@ -57,12 +58,7 @@ def admin_graph(request):
              permission='admin')
 def admin_home(request):
     try:
-        import pygal
-        #users_year = pygal.StackedLine(fill=True)
-        #users_year.title = 'Users (year)'
-        #users_year.x_labels = map(str, range(0, 12))
-        #users_year_account = []
-        #users_year_paid = []
+        import pygal  # noqa
         graph = True
     except ImportError as e:
         print(repr(e))
@@ -74,7 +70,7 @@ def admin_home(request):
         btcd = btcrpc.getinfo()
     except (ValueError, ConnectionRefusedError):
         btcd = None
-    return {'graph': graph, 'btcd':btcd}
+    return {'graph': graph, 'btcd': btcd}
 
 
 class AdminView(object):

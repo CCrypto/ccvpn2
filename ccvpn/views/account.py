@@ -229,9 +229,9 @@ def order_post(request):
     except (KeyError, AssertionError):
         # there should not be any problems here
         return HTTPBadRequest()
-    time = datetime.timedelta(days=30*int(request.POST['time']))
+    time = datetime.timedelta(days=30 * int(request.POST['time']))
     o = Order(user=request.user, time=time)
-    o.close_date = datetime.datetime.now()+datetime.timedelta(days=7)
+    o.close_date = datetime.datetime.now() + datetime.timedelta(days=7)
     o.payment = {}
     method = methods.METHODS[request.POST['method']]()
     method.init(request, o)

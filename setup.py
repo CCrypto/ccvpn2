@@ -19,18 +19,18 @@ requires = [
     'markdown',
     'bitcoin-python',
     'webtest',
-    ]
+]
 
 setup(name='ccvpn',
       version='0.0',
       description='ccvpn',
       long_description=README,
       classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pyramid",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
+          "Programming Language :: Python",
+          "Framework :: Pyramid",
+          "Topic :: Internet :: WWW/HTTP",
+          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+      ],
       author='',
       author_email='',
       url='',
