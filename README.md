@@ -4,13 +4,12 @@ CCrypto VPN
 Getting Started
 ---------------
 
-It only works with PostgreSQL for now, because of the INET type.
-
 ```bash
     git clone https://github.com/CCrypto/ccvpn.git
     cd ccvpn/
 
-    # Use --user if you're not root
+    pyvenv ccvpn_env
+    source ./ccvpn_env/bin/activate
     ./setup.py develop
     
     # Prepare the database
