@@ -50,13 +50,13 @@
         <h3>Settings</h3>
         <form action="/account/" method="post" class="vert">
             <label for="ins_password">Change password</label>
-            <input type="password" id="ins_password" name="password" />
+            <input type="password" id="ins_password" autocomplete="off" name="password" />
 
             <label for="ins_password2">Change password (repeat)</label>
-            <input type="password" id="ins_password2" name="password2" />
+            <input type="password" id="ins_password2" autocomplete="off" name="password2" />
 
             <label for="ins_email">E-mail</label>
-            <input type="email" id="ins_email" name="email" value="${email or ''}" />
+            <input type="email" id="ins_email" name="email" autocomplete="off" value="${email or ''}" />
             
             <input type="submit" />
         </form>
