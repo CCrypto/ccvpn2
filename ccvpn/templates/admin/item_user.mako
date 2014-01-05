@@ -40,7 +40,7 @@
             <tr><td>ID</td> <td>Time</td> <td>Paid?</td> <td>Method</td></tr>
             % for order in item.orders:
                 <tr>
-                    <td><a href="/admin/order/${order.id}">${order.id}</a></td>
+                    <td><a href="/admin/orders?id=${order.id}">${order.id}</a></td>
                     <td>${order.time}</td>
                     <td>${order.paid | check}</td>
                     <td>${order.method}</td>
@@ -58,7 +58,7 @@
             <tr><td>ID</td> <td>Code</td> <td>Time</td></tr>
             % for gc in item.giftcodes_used:
                 <tr>
-                    <td><a href="/admin/giftcode/${gc.id}">${gc.id}</a></td>
+                    <td><a href="/admin/giftcodes?id=${gc.id}">${gc.id}</a></td>
                     <td>${gc.code}</td>
                     <td>${gc.time}</td>
                 </tr>
