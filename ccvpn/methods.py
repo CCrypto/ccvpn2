@@ -1,34 +1,29 @@
-from pyramid.response import Response
-from pyramid.view import view_config
-from .models import DBSession, User, Order, PaypalAPI
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import func
-from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPMovedPermanently, HTTPBadRequest, HTTPNotFound
-import markdown
-import os
-import re
-import transaction
+from .models import DBSession, Order, PaypalAPI
+from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPBadRequest
 import bitcoinrpc
-from datetime import datetime, timedelta
-from pyramid.renderers import render_to_response
 import logging
 log = logging.getLogger(__name__)
+
 
 class PaypalMethod(object):
     def getAPI(self, request):
         if not PaypalMethod.api:
+            settings = request.registry
             api = PaypalAPI()
-            api.test = bool(request.registry.settings.get('paypal.test', False))
-            api.header_image = str(request.registry.settings.get('paypal.header_image', False))
-            api.title = str(request.registry.settings.get('paypal.title', 'CCrypto VPN'))
-            api.currency = str(request.registry.settings.get('paypal.currency', 'EUR'))
-            api.address = str(request.registry.settings.get('paypal.address', 'paypal@ccrypto.org'))
-            api.receiver = str(request.registry.settings.get('paypal.receiver', 'paypal@ccrypto.org'))
+            api.test = bool(settings.get('paypal.test', False))
+            api.header_image = str(settings.get('paypal.header_image', False))
+            api.title = str(settings.get('paypal.title', 'CCrypto VPN'))
+            api.currency = str(settings.get('paypal.currency', 'EUR'))
+            api.address = str(settings.get('paypal.address',
+                                           'paypal@ccrypto.org'))
+            api.receiver = str(settings.get('paypal.receiver',
+                                            'paypal@ccrypto.org'))
             PaypalMethod.api = api
         return PaypalMethod.api
-        
+
     def init(self, request, order):
-        month_price = float(request.registry.settings.get('paypal.month_price', 2))
+        settings = request.registry
+        month_price = float(settings.get('paypal.month_price', 2))
         order.method = Order.METHOD.PAYPAL
         log.debug(round(month_price * (order.time.days / 30), 2))
         order.amount = round(month_price * (order.time.days / 30), 2)
@@ -37,7 +32,7 @@ class PaypalMethod(object):
         api = self.getAPI(request)
         link = api.make_link(order, request)
         return HTTPSeeOther(location=link)
-    
+
     def callback(self, request, order):
         api = self.getAPI(request)
         if api.handle_notify(order, request):
@@ -46,6 +41,7 @@ class PaypalMethod(object):
             return HTTPBadRequest()
 
 PaypalMethod.api = None
+
 
 class BitcoinMethod(object):
     def getBTCRPC(self, settings):
@@ -62,15 +58,17 @@ class BitcoinMethod(object):
         return BitcoinMethod.rpc
 
     def init(self, request, order):
-        rpc = self.getBTCRPC(request.registry.settings)
-        account = str(request.registry.settings.get('bitcoin.account', 'ccvpn2'))
-        month_price = float(request.registry.settings.get('bitcoin.month_price', 0.02))
+        settings = request.registry
+        rpc = self.getBTCRPC(settings)
+        account = str(settings.get('bitcoin.account', 'ccvpn2'))
+        month_price = float(settings.get('bitcoin.month_price', 0.02))
         order.method = Order.METHOD.BITCOIN
         order.amount = round(month_price * (order.time.days / 30), 4)
         order.payment['btc_address'] = rpc.getnewaddress(account)
 
     def start(self, request, order):
-        return HTTPSeeOther(location=request.route_url('order_view', hexid=hex(order.id)[2:]))
+        loc = request.route_url('order_view', hexid=hex(order.id)[2:])
+        return HTTPSeeOther(location=loc)
 
     def check_paid(self, settings, order):
         rpc = self.getBTCRPC(settings)
@@ -89,6 +87,7 @@ METHOD_IDS = {
     Order.METHOD.PAYPAL: PaypalMethod,
     Order.METHOD.BITCOIN: BitcoinMethod,
 }
+
 METHODS = {
     'paypal': PaypalMethod,
     'bitcoin': BitcoinMethod,

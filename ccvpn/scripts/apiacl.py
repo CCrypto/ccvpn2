@@ -1,17 +1,12 @@
-import os
 import sys
-import transaction
 from argparse import ArgumentParser, RawTextHelpFormatter
 from sqlalchemy import engine_from_config
+from pyramid.paster import get_appsettings, setup_logging
 
-from pyramid.paster import (
-    get_appsettings,
-    setup_logging,
-    )
-
-from ccvpn.models import DBSession, Base, User, Order, APIAccessToken
+from ccvpn.models import DBSession, APIAccessToken
 import logging
 log = logging.getLogger(__name__)
+
 
 def add(args):
     t = APIAccessToken()
@@ -24,7 +19,8 @@ def add(args):
         t.remote_addr = args.remote_addr
     DBSession.add(t)
     DBSession.commit()
-    print('Inserted. token=%s'%t.token)
+    print('Inserted. token=%s' % t.token)
+
 
 def revoke(args):
     q = DBSession.query(APIAccessToken)
@@ -33,7 +29,7 @@ def revoke(args):
     if args.token:
         q = q.filter_by(token=args.token)
     if args.label:
-        q = q.filter_by(label = args.label)
+        q = q.filter_by(label=args.label)
     count = q.count()
     if count == 0:
         print('No token found.')
@@ -44,16 +40,19 @@ def revoke(args):
         else:
             print('Error: mutliple tokens match. Use -f to force.')
             return
-    if not args.yes and input('Sure revoking %d tokens? [y/n] '%q.count()).lower() != 'y':
+    sure_str = 'Sure revoking %d tokens? [y/n] ' % q.count()
+    if not args.yes and input(sure_str).lower() != 'y':
         return
     for t in q.all():
-        print('Revoking token #%d (%s)...'%(t.id, t.label))
+        print('Revoking token #%d (%s)...' % (t.id, t.label))
         DBSession.delete(t)
 
+
 def main(argv=sys.argv):
-    parser = ArgumentParser(description=__doc__, formatter_class=RawTextHelpFormatter)
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=RawTextHelpFormatter)
     parser.add_argument('-v', '--verbose', action='count',
-        help='Increase verbosity')
+                        help='Increase verbosity')
     parser.add_argument('config')
 
     subparsers = parser.add_subparsers(title='subcommands')
@@ -69,21 +68,22 @@ def main(argv=sys.argv):
     parser_rev.add_argument('-t', '--token', default='')
     parser_rev.add_argument('-r', '--remote-addr', default='')
     parser_rev.add_argument('-y', '--yes', default=False, action='store_true',
-        help='Dont ask for confirmation')
-    parser_rev.add_argument('-f', '--force', default=False, action='store_true',
-        help='Revoke even if multiple found')
+                            help='Dont ask for confirmation')
+    parser_rev.add_argument('-f', '--force', default=False,
+                            action='store_true',
+                            help='Revoke even if multiple found')
 
     args = parser.parse_args()
 
     log_level = logging.WARNING
-    if args.verbose != None:
+    if args.verbose is not None:
         verbose = int(args.verbose)
         if verbose == 1:
             log_level = logging.INFO
         elif verbose >= 2:
             log_level = logging.DEBUG
     logging.basicConfig(level=log_level)
-    
+
     config_uri = args.config
     setup_logging(config_uri)
     settings = get_appsettings(config_uri)
@@ -91,4 +91,4 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
 
     args.func(args)
-    
+

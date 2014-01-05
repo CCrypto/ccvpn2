@@ -1,18 +1,15 @@
 import os
 import sys
-import transaction
 
 from sqlalchemy import engine_from_config
+from pyramid.paster import get_appsettings, setup_logging
 
-from pyramid.paster import (
-    get_appsettings,
-    setup_logging,
-    )
-
-from ccvpn.models import DBSession, Base, User, Order
+from ccvpn.models import DBSession, Order
 from ccvpn.methods import BitcoinMethod
+
 import logging
 log = logging.getLogger(__name__)
+
 
 def usage(argv):
     cmd = os.path.basename(argv[0])
@@ -30,10 +27,11 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     method = BitcoinMethod()
-    
+
     orders = DBSession.query(Order) \
         .filter_by(paid=False, method=Order.METHOD.BITCOIN)
     for order in orders:
         method.check_paid(settings, order)
-        log.debug('Order#%d: amount=%f, paid=%f', order.id, order.amount, order.paid_amount)
+        log.debug('Order#%d: amount=%f, paid=%f', order.id, order.amount,
+                  order.paid_amount)
 

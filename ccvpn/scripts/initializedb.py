@@ -1,15 +1,10 @@
 import os
 import sys
-import transaction
 
 from sqlalchemy import engine_from_config
+from pyramid.paster import get_appsettings, setup_logging
 
-from pyramid.paster import (
-    get_appsettings,
-    setup_logging,
-    )
-
-from ccvpn.models import DBSession, Base, User, Order
+from ccvpn.models import DBSession, Base, User
 
 
 def usage(argv):
