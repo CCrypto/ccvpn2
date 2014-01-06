@@ -21,8 +21,12 @@
         %endif
     </article>
     % if graph:
-        <img src="/admin/graph/users_m.svg" height="49%" width="49%" />
-        <img src="/admin/graph/users_y.svg" height="49%" width="49%" />
+        <figure><embed src="/admin/graph/users.svg?period=m" /></figure>
+        <figure><embed src="/admin/graph/users.svg?period=y" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=m&amp;method=0" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=y&amp;method=0" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=m&amp;method=1" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=y&amp;method=1" /></figure>
     % endif
     <div style="clear: both"></div>
 </section>

@@ -1,57 +1,122 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from sqlalchemy import func
 from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
 from pyramid.renderers import render_to_response
-from datetime import timedelta
+from datetime import datetime, timedelta, date
 from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
-from ccvpn.methods import BitcoinMethod
+from ccvpn.methods import BitcoinMethod, METHOD_IDS
 
 
-def get_users(maxage, unit):
-    q = DBSession.query(func.count(User.id).label('accounts'),
-                        func.count(User.paid_until).label('paid'),
-                        func.extract(unit, User.signup_date).label('time')) \
-        .filter(func.age(func.now(), User.signup_date) < maxage) \
-        .group_by('time').all()
-    return q
+def monthdelta(date, delta):
+    m = (date.month + delta) % 12
+    y = date.year + (date.month + delta - 1) // 12
+    if not m:
+        m = 12
+    e = [28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    d = min(date.day, [31, 29 if y % 4 == 0 and not y % 400 == 0
+                       else e][m - 1])
+    return date.replace(day=d, month=m, year=y)
+
+
+def last_days(n=30):
+    now = date.today()
+    for i in range(n - 1, -1, -1):
+        yield now - timedelta(days=i)
+
+
+def last_months(n=12):
+    now = date.today().replace(day=1)
+    for i in range(n - 1, -1, -1):
+        yield monthdelta(now, -i)
+
+
+def time_filter(period, m, df):
+    def _filter(o):
+        if period == 'm':
+            return df(o).date() == m
+        if period == 'y':
+            return df(o).date().replace(day=1) == m
+    return _filter
+
+
+def time_filter_future(period, m, df):
+    def _filter(o):
+        if period == 'm':
+            return df(o).date() <= m
+        if period == 'y':
+            return df(o).date().replace(day=1) <= m
+    return _filter
 
 
 @view_config(route_name='admin_graph', permission='admin')
 def admin_graph(request):
-    graphs = {
-        'users_m': (
-            'Users (month)', 'Accounts', 'Paid Acc.',
-            lambda: get_users(timedelta(days=30), 'day'),
-            30,
-        ),
-        'users_y': (
-            'Users (year)', 'Accounts', 'Paid Acc.',
-            lambda: get_users(timedelta(days=365), 'month'),
-            12,
-        ),
-    }
+    graph_name = request.matchdict['name']
+
     try:
-        name = request.matchdict['name']
         import pygal
-        timescale = graphs[name][4] + 1
-        users_m = pygal.Line(fill=True)
-        users_m.title = graphs[name][0]
-        users_m.x_labels = map(str, range(0, timescale))
-        users_m_q = graphs[name][3]()
-        accounts_m = [0 for i in range(0, timescale)]
-        paid_m = [0 for i in range(0, timescale)]
-        for day in users_m_q:
-            accounts_m[int(day[2])] = day[0]
-            paid_m[int(day[2])] = day[1]
-            print(repr(day))
-
-        users_m.add(graphs[name][1], accounts_m)
-        users_m.add(graphs[name][2], paid_m)
-
-        return Response(users_m.render(), content_type='image/svg+xml')
     except ImportError:
-        return HTTPNotFound()
+        raise HTTPNotFound()
+
+    def get(name, default=None, type=str):
+        try:
+            return type(request.GET.get(name, default))
+        except ValueError:
+            raise HTTPBadRequest()
+
+    period = get('period', 'm')
+    if period == 'm':
+        period_time = timedelta(days=30)
+    if period == 'y':
+        period_time = timedelta(days=365)
+
+    if graph_name == 'users':
+        period = get('period', 'm')
+
+        chart = pygal.Line(fill=True, x_label_rotation=75, show_legend=False)
+        chart.title = 'Users (%s)' % period
+        chart.x_labels = []
+        values = []
+        gen = last_days(30) if period == 'm' else last_months(12)
+        users = DBSession.query(User) \
+            .filter(User.signup_date > datetime.now() - period_time) \
+            .all()
+
+        for m in gen:
+            filter_ = time_filter_future(period, m, lambda o: o.signup_date)
+            users_filtered = filter(filter_, users)
+            values.append(len(list(users_filtered)))
+            chart.x_labels.append('%s/%s/%s' % (m.year, m.month, m.day))
+
+        chart.add('Users', values)
+        return Response(chart.render(), content_type='image/svg+xml')
+
+    elif graph_name == 'income':
+        method = get('method', 0, int)
+        if not method in METHOD_IDS:
+            raise HTTPNotFound()
+        method_name = METHOD_IDS[method].__name__
+
+        chart = pygal.Line(fill=True, x_label_rotation=75, show_legend=False)
+        chart.title = 'Income (%s, %s)' % (method_name, period)
+        orders = DBSession.query(Order) \
+            .filter(Order.start_date > datetime.now() - period_time) \
+            .filter(Order.method == method) \
+            .all()
+
+        chart.x_labels = []
+        values = []
+        gen = last_days(30) if period == 'm' else last_months(12)
+        for m in gen:
+            filter_ = time_filter(period, m, lambda o: o.start_date)
+            orders_filtered = filter(filter_, orders)
+            sum_ = sum(o.paid_amount for o in orders_filtered)
+            values.append(round(sum_, 4))
+            chart.x_labels.append('%s/%s/%s' % (m.year, m.month, m.day))
+
+        chart.add('Income', values)
+        return Response(chart.render(), content_type='image/svg+xml')
+    else:
+        raise HTTPNotFound()
 
 
 @view_config(route_name='admin_home', renderer='admin/home.mako',
@@ -64,6 +129,7 @@ def admin_home(request):
         print(repr(e))
         request.session.flash(('error', 'Pygal not found: cannot make charts'))
         graph = False
+
     btcm = BitcoinMethod()
     btcrpc = btcm.getBTCRPC(request.registry.settings)
     try:
