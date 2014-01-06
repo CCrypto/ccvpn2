@@ -459,6 +459,12 @@ article ul {
     background-color: #EDDFE2;
 }
 
+figure {
+    display: inline-block;
+    width: 49%;
+    height: 49%;
+}
+
 @media screen and (max-width: 550px) {
     #topbar .topbar-left{
         display: none;
