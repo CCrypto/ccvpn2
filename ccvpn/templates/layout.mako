@@ -13,6 +13,12 @@
             k.append(' class=\"selected\"')
         else:
             k.append('')
+    
+    settings = request.registry.settings
+    use_https = settings.get('use_https', False)
+    if use_https:
+        ssl_port = settings.get('https_port', 443)
+        ssl_url = request.current_route_url(_scheme='https', _port=ssl_port)
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -28,6 +34,9 @@
             <p>
                 <a href="http://ccrypto.org">Cognitive Cryptography</a> :
                 <a href="http://tux-fh.net" title="Web Hosting">Tux-FreeHost</a>
+                % if request.host_port != str(ssl_port) and use_https:
+                    // <a href="${ssl_url}"><b>Secure version</b></a>
+                % endif
             </p>
         </div>
         <div class="topbar-right">
