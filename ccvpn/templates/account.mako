@@ -10,15 +10,21 @@
             <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>
             
             <hr />
+            <ul>
+                <li>You can only have <b>one connection per profile</b>,
+                    but up to 10 profiles. (10 running clients)</li>
+                <li>To use a profile, download the right config and use
+                    its identifier as your VPN username.</li>
+            </ul>
             
             <table>
-                <tr><td>Default profile</td>
-                    <td><!--delete--></td>
+                <tr><td>Profile: <b>${user.username}</b></td>
+                    <td>[default]</td>
                     <td><a href="/config/ccrypto.ovpn"><b>Get config</b></a></td>
                     <td><a href="/config/ccrypto.ovpn?android"><b>(For Android)</b></a></td>
                 </tr>
             % for profile in profiles:
-                <tr><td>Profile : ${profile.name}</td>
+                <tr><td>Profile: <b>${user.username}/${profile.name}</b></td>
                     <td><form class="profileform" method="post" action="/account/">
                         <input type="hidden" name="profiledelete" value="${profile.id}" />
                         <input type="submit" class="deletebutton" value="Delete" />
@@ -29,19 +35,12 @@
             % endfor
             </table>
 
-            <h3>Add :</h3>
             <form class="profileform" action="/account/" method="post">
-                <input type="text" name="profilename" id="fp_name" placeholder="Profile name" />
-                <input type="submit" />
+                <p>
+                <input type="text" name="profilename" id="fp_name" placeholder="Profile name" pattern="[a-zA-Z0-9]{1,16}" />
+                <input type="submit" value="Add" />
+                </p>
             </form>
-            <ul>
-                <li>You can only have <b>one connection per profile</b>,
-                    but up to 10 profiles. (10 running clients)</li>
-                <!--li>"Ask password" will ask password when connecting.
-                    If you uncheck it, the config file will incllude a random
-                    private key.</li-->
-            </ul>
-            <!-- TODO: put that in CSS -->
             <hr />
         </article>
     % endif
@@ -86,7 +85,7 @@
 
             <p>-- or --</p>
             <label for="ins_code">Gift code</label>
-            <input type="text" id="ins_code" name="code" pattern="[A-Z0-9]{1,16}" autocomplete="off" />
+            <input type="text" id="ins_code" name="code" pattern="[a-zA-Z0-9]{1,16}" autocomplete="off" />
 
             <input type="submit" />
         </form>

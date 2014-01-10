@@ -217,7 +217,7 @@ def order_post(request):
             request.user.add_paid_time(gc.time)
             gc.used = request.user.id
             added = gc.time.days
-            request.session.flash(('info', 'OK! Added %d days to your'
+            request.session.flash(('info', 'OK! Added %d days to your '
                                            'account.' % added))
         DBSession.commit()
         return HTTPSeeOther(location=request.route_url('account'))
