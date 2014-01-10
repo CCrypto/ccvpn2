@@ -96,9 +96,12 @@ def main(global_config, **settings):
 
     ca_path = settings.get('openvpn.ca-cert', None)
     if ca_path:
-        views.account.ca_content = open(ca_path, 'r').read()
+        views.account.openvpn_ca = open(ca_path, 'r').read()
     else:
-        views.account.ca_content = ''
+        views.account.openvpn_ca = ''
+
+    gw = settings.get('openvpn.gateway', 'gw.vpn.ccrypto.org')
+    views.account.openvpn_gateway = gw
 
     return config.make_wsgi_app()
 

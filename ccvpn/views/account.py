@@ -16,8 +16,9 @@ from ccvpn.models import (
 )
 
 
-openvpn_remote = ('gw.vpn.ccrypto.org',)
-ca_content = ""
+# Set in __init__.py from app settings
+openvpn_gateway = ''
+openvpn_ca = ''
 
 
 @view_config(route_name='account_login', renderer='login.mako')
@@ -268,7 +269,7 @@ def order_callback(request):
 def config(request):
     r = render_to_response('config.ovpn.mako', dict(
         username=request.user.username,
-        remotes=openvpn_remote, ca_content=ca_content,
+        gateway=openvpn_gateway, openvpn_ca=openvpn_ca,
         android='android' in request.GET
     ))
     r.content_type = 'test/plain'
@@ -285,7 +286,7 @@ def config_profile(request):
         return HTTPNotFound()
     r = render_to_response('config.ovpn.mako', dict(
         username=request.user.username, profile=profile,
-        remotes=openvpn_remote, ca_content=ca_content,
+        gateway=openvpn_gateway, openvpn_ca=openvpn_ca,
         android='android' in request.GET
     ))
     r.content_type = 'test/plain'
