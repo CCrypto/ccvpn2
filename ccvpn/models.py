@@ -223,7 +223,7 @@ class User(Base):
         return self.username_re.match(username)
 
     def validate_email(self, email):
-        return self.email_re.match(email)
+        return self.email_re.match(email) and len(email) <= 256
 
     def validate_password(self, clearpw):
         return 0 < len(clearpw) < 256
@@ -257,7 +257,7 @@ class Profile(Base):
     password = Column(Text, nullable=True, doc='Key')
 
     def validate_name(self, name):
-        return re.match('^[a-zA-Z0-9]+$', name)
+        return re.match('^[a-zA-Z0-9]{1,16}$', name)
 
     list_fields = ('id', 'uid', 'name')
     edit_fields = ('id', 'uid', 'name', 'password')
