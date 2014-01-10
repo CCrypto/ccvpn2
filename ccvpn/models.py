@@ -308,11 +308,14 @@ class Order(Base):
 
     list_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time',
                    'method', 'paid')
-    edit_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time',
-                   'method', 'paid')
+    edit_fields = ('id', 'user', 'start_date', 'close_date', 'amount',
+                   'paid_amount', 'time', 'method', 'paid', 'payment')
 
     def __str__(self):
         return hex(self.id)[2:]
+
+    def __repr__(self):
+        return '<Order %d by %s, %s>' % (self.id, self.user.username, self.time)
 
 
 class APIAccessToken(Base):

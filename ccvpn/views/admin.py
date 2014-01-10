@@ -94,24 +94,38 @@ def admin_graph(request):
             raise HTTPNotFound()
         method_name = METHOD_IDS[method].__name__
 
-        chart = pygal.Line(fill=True, x_label_rotation=75, show_legend=False)
+        chart = pygal.StackedBar(x_label_rotation=75, show_legend=True)
         chart.title = 'Income (%s, %s)' % (method_name, period)
         orders = DBSession.query(Order) \
             .filter(Order.start_date > datetime.now() - period_time) \
             .filter(Order.method == method) \
             .all()
 
+        # Prepare value dict
+        values = {}
+        for order in orders:
+            t = order.time
+            if t not in values:
+                values[t] = []
+
         chart.x_labels = []
-        values = []
         gen = last_days(30) if period == 'm' else last_months(12)
         for m in gen:
             filter_ = time_filter(period, m, lambda o: o.start_date)
-            orders_filtered = filter(filter_, orders)
-            sum_ = sum(o.paid_amount for o in orders_filtered)
-            values.append(round(sum_, 4))
-            chart.x_labels.append('%s/%s/%s' % (m.year, m.month, m.day))
+            orders_date = list(filter(filter_, orders))
+            
+            for duration in values.keys():
+                filter_ = lambda o: o.time == duration
+                orders_dd = list(filter(filter_, orders_date))
 
-        chart.add('Income', values)
+                sum_ = sum(o.paid_amount for o in orders_dd)
+                values[duration].append(round(sum_, 4) or None)
+                
+            chart.x_labels.append('%s' % m)
+        
+        for time, v in values.items():
+            label = '%sd' % time.days
+            chart.add(label, v)
         return Response(chart.render(), content_type='image/svg+xml')
     else:
         raise HTTPNotFound()
@@ -244,7 +258,7 @@ class AdminOrders(AdminView):
         item.time = post['time']
         item.method = post['method']  # TODO: permit text values
         item.paid = 'paid' in post
-        item.payment = post['payment']
+        #item.payment = post['payment']
 
 
 @view_config(route_name='admin_giftcodes', permission='admin')
