@@ -77,9 +77,7 @@ def admin_graph(request):
         chart.x_labels = []
         values = []
         gen = last_days(30) if period == 'm' else last_months(12)
-        users = DBSession.query(User) \
-            .filter(User.signup_date > datetime.now() - period_time) \
-            .all()
+        users = DBSession.query(User).all()
 
         for m in gen:
             filter_ = time_filter_future(period, m, lambda o: o.signup_date)
