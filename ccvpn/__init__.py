@@ -26,11 +26,26 @@ class AuthenticationPolicy(object):
         return ep
 
 
+class Messages(object):
+    ''' Simple class that manages session flash messages '''
+    def __init__(self, request):
+        self.request = request
+        self.session = request.session
+    
+    def add(self, level, text):
+        self.session.flash((level, text))
+
+    def error(self, text):
+        return self.add('error', text)
+    
+    def info(self, text):
+        return self.add('info', text)
+        
+
 class AuthorizationPolicy(object):
     ''' Why the fuck is ACLAuthorizationPolicy so complicated ? '''
     def permits(self, context, principals, permission):
         return permission in principals
-
 
 def setup_routes(config):
     a = config.add_route
@@ -45,6 +60,7 @@ def setup_routes(config):
     a('account_login', '/account/login')
     a('account_logout', '/account/logout')
     a('account_forgot', '/account/forgot')
+    a('account_reset', '/account/reset/{token:[a-zA-Z0-9]+}')
     a('account_signup', '/account/signup')
     a('order_post', '/order/', request_method='POST')
     a('order_view', '/order/view/{hexid:[a-f0-9]+}')
@@ -88,8 +104,12 @@ def main(global_config, **settings):
                           authentication_policy=authentication,
                           authorization_policy=authorization)
     config.include('pyramid_mako')
+    config.include('pyramid_mailer')
+    config.include('pyramid_tm')
     config.set_session_factory(session_factory)
     config.add_request_method(get_user, 'user', reify=True, property=True)
+    config.add_request_method(Messages, 'messages', reify=True,
+                              property=True)
     config.add_static_view('static', 'static', cache_max_age=3600)
     setup_routes(config)
     config.scan()

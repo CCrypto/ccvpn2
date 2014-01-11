@@ -3,6 +3,7 @@ import sys
 
 from sqlalchemy import engine_from_config
 from pyramid.paster import get_appsettings, setup_logging
+import transaction
 
 from ccvpn.models import DBSession, Base, User
 
@@ -24,8 +25,8 @@ def main(argv=sys.argv):
     DBSession.configure(bind=engine)
     Base.metadata.create_all(engine)
     if not DBSession.query(User).filter_by(username='admin').count():
-        admin = User(username='admin', is_admin=True)
-        admin.set_password('admin')
-        DBSession.add(admin)
-        DBSession.commit()
+        with transaction.manager:
+            admin = User(username='admin', is_admin=True)
+            admin.set_password('admin')
+            DBSession.add(admin)
 
