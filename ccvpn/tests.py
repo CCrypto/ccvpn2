@@ -156,7 +156,6 @@ class TestAPIConfigProfile(unittest.TestCase):
             user = User(username='test', password='testpw')
             user.add_paid_time(datetime.timedelta(days=30))
             self.session.add(user)
-        self.session.commit()
         with transaction.manager:
             token = APIAccessToken(token='apitoken')
             self.session.add(token)
