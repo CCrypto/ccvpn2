@@ -196,7 +196,7 @@ class AdminView(object):
             DBSession.rollback()
             raise
 
-        DBSession.commit()
+        DBSession.flush()
         self.request.session.flash(('info', 'Saved!'))
         route_name = 'admin_' + self.model.__name__.lower() + 's'
         location = self.request.route_url(route_name, _query={'id': item.id})

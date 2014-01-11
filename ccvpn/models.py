@@ -6,6 +6,7 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.dialects import postgresql  # INET
+from zope.sqlalchemy import ZopeTransactionExtension
 from datetime import datetime, timedelta
 import json
 import random
@@ -17,7 +18,7 @@ from urllib.request import urlopen
 
 log = logging.getLogger(__name__)
 
-DBSession = scoped_session(sessionmaker())
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=True)))
 Base = declarative_base()
 
 prng = random.SystemRandom()
@@ -193,6 +194,7 @@ class User(Base):
     giftcodes_used = relationship('GiftCode', backref='user')
     orders = relationship('Order', backref='user')
     profiles = relationship('Profile', backref='user')
+    pw_reset_tokens = relationship('PasswordResetToken', backref='user')
 
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re = re.compile('^.+@.+$')
@@ -247,6 +249,26 @@ class User(Base):
 
     def __str__(self):
         return self.username
+
+class PasswordResetToken(Base):
+    __tablename__ = 'pwresettoken'
+    id = Column(Integer, primary_key=True)
+    uid = Column(ForeignKey('users.id'), nullable=False)
+    token = Column(String(32), nullable=False)
+    expire_date = Column(DateTime, nullable=True)
+
+    def __init__(self, uid, token=None, expire=None):
+        if isinstance(uid, User):
+            uid = uid.id
+
+        default_ttl = timedelta(days=2)
+
+        self.uid = uid
+        self.token = token or random_access_token()
+        self.expire = expire or datetime.now() + default_ttl
+
+    def __str__(self):
+        return self.label
 
 
 class Profile(Base):

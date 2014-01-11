@@ -1,17 +1,20 @@
 import datetime
 
+import transaction
 from sqlalchemy import func
 from pyramid.view import view_config
-from pyramid.renderers import render_to_response
+from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
     HTTPSeeOther, HTTPMovedPermanently,
     HTTPBadRequest, HTTPNotFound, HTTPUnauthorized
 )
+from pyramid_mailer import get_mailer
+from pyramid_mailer.message import Message
 
 from ccvpn import methods
 from ccvpn.models import (
     DBSession,
-    User, Order, GiftCode, Profile,
+    User, Order, GiftCode, Profile, PasswordResetToken,
     random_profile_password
 )
 
@@ -87,7 +90,7 @@ def signup(request):
             u.email = request.POST['email']
             u.set_password(request.POST['password'])
             DBSession.add(u)
-            DBSession.commit()
+            DBSession.flush()
             request.session['uid'] = u.id
             return HTTPSeeOther(location=request.route_url('account'))
         except KeyError:
@@ -102,24 +105,76 @@ def signup(request):
 
 @view_config(route_name='account_forgot', renderer='forgot_password.mako')
 def forgot(request):
-    if request.method == 'POST':
-        try:
-            u = DBSession.query(User) \
-                .filter_by(username=request.POST['username']) \
-                .first()
-            if not u:
-                raise Exception('Unknown username.')
-            if not u.email:
-                raise Exception('No e-mail address associated.'
-                                'Contact the support.')
-            # TODO: Here, send a mail with a reset link
-            request.session.flash(('info', 'We sent a reset link.'
-                                           'Check your emails.'))
-        except KeyError:
-            return HTTPBadRequest()
-        except Exception as e:
-            request.session.flash(('error', e.args[0]))
+    if request.method != 'POST' or 'username' not in request.POST:
+        return {}
+
+    u = DBSession.query(User) \
+        .filter_by(username=request.POST['username']) \
+        .first()
+    if not u:
+        request.messages.error('Unknown username.')
+        return {}
+    if not u.email:
+        request.messages.error('No e-mail address associated with username.')
+        return {}
+
+    token = PasswordResetToken(u)
+    with transaction.manager:
+        DBSession.add(token)
+
+    mailer = get_mailer(request)
+    body = render('mail/password_reset.mako', {
+        'user': u,
+        'requested_by': request.remote_addr,
+        'url': request.route_url('account_reset', token=token.token)
+    })
+    message = Message(subject='CCVPN: Password reset request',
+                      recipients=[u.email],
+                      body=body)
+    mailer.send(message)
+    request.messages.info('We sent a reset link. Check your emails.')
     return {}
+
+
+@view_config(route_name='account_reset', renderer='reset_password.mako')
+def reset(request):
+    token = DBSession.query(PasswordResetToken) \
+        .filter_by(token=request.matchdict['token']) \
+        .first()
+
+    if not token or not token.user:
+        request.messages.error('Unknown password reset token.')
+        url = request.route_url('account_forgot')
+        raise HTTPMovedPermanently(location=url)
+    
+    password = request.POST.get('password')
+    password2 = request.POST.get('password2')
+
+    if request.method != 'POST' or not password or not password2:
+        return {'token': token}
+
+    if not token.user.validate_password(password) or password != password2:
+        request.messages.error('Invalid password.')
+        return {'token': token}
+
+    token.user.set_password(password)
+
+    mailer = get_mailer(request)
+    body = render('mail/password_reset_done.mako', {
+        'user': token.user,
+        'changed_by': request.remote_addr,
+    })
+    message = Message(subject='CCVPN: Password changed',
+                      recipients=[token.user.email],
+                      body=body)
+    mailer.send(message)
+
+    transaction.commit()
+
+    request.messages.info('You have changed the password for %s. You can now '
+                          'log in.' % (token.user.username))
+    url = request.route_url('account_login')
+    raise HTTPMovedPermanently(location=url)
 
 
 @view_config(route_name='account', request_method='POST', permission='logged',
@@ -150,7 +205,7 @@ def account_post(request):
             if not p.askpw:
                 p.password = random_profile_password()
             DBSession.add(p)
-            DBSession.commit()
+            DBSession.flush()
             return account(request)
 
         if 'profiledelete' in request.POST:
@@ -160,7 +215,7 @@ def account_post(request):
                 .first()
             assert p or errors.append('Unknown profile.')
             DBSession.delete(p)
-            DBSession.commit()
+            DBSession.flush()
             return account(request)
 
         u = request.user
@@ -184,8 +239,8 @@ def account_post(request):
             u.set_password(request.POST['password'])
         if request.POST['email'] != '':
             u.email = request.POST['email']
-        DBSession.commit()
         request.session.flash(('info', 'Saved!'))
+        DBSession.flush()
 
     except KeyError:
         return HTTPBadRequest()
@@ -220,7 +275,7 @@ def order_post(request):
             added = gc.time.days
             request.session.flash(('info', 'OK! Added %d days to your '
                                            'account.' % added))
-        DBSession.commit()
+        DBSession.flush()
         return HTTPSeeOther(location=request.route_url('account'))
 
     times = (1, 3, 6, 12)
@@ -237,7 +292,7 @@ def order_post(request):
     method = methods.METHODS[request.POST['method']]()
     method.init(request, o)
     DBSession.add(o)
-    DBSession.commit()
+    DBSession.flush()
     return method.start(request, o)
 
 
@@ -261,7 +316,7 @@ def order_callback(request):
         return HTTPNotFound()
     method = methods.METHOD_IDS[o.method]
     ret = method().callback(request, o)
-    DBSession.commit()
+    DBSession.flush()
     return ret
 
 

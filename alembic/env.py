@@ -9,6 +9,8 @@ from paste.deploy import loadapp
 from logging.config import fileConfig
 from sqlalchemy.engine.base import Engine
 
+from ccvpn import models
+
 
 try:
     # if pylons app already in, don't create a new app
@@ -22,16 +24,7 @@ except:
     fileConfig(config_file)
     wsgi_app = loadapp('config:%s' % config_file, relative_to='.')
 
-
-# customize this section for non-standard engine configurations.
-meta = __import__("%s.model.meta" % wsgi_app.config['pylons.package']).model.meta
-
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = None
-
+target_metadata = models.Base.metadata
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -58,9 +51,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    # specify here how the engine is acquired
-    # engine = meta.engine
-    raise NotImplementedError("Please specify engine connectivity here")
+    engine = models.Base.metadata.bind
 
     if isinstance(engine, Engine):
         connection = engine.connect()
