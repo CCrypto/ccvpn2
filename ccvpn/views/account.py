@@ -229,9 +229,10 @@ def account_post(request):
                 errors.append('Invalid email address.')
         assert not errors
 
-        if request.POST['email'] != '':
+        new_email = request.POST.get('email')
+        if new_email and new_email != request.user.email:
             c = DBSession.query(func.count(User.id).label('ec')) \
-                .filter_by(email=request.POST['email']).first()
+                .filter_by(email=new_email).first()
             if c.ec > 0:
                 errors.append('E-mail address already registered.')
         assert not errors
