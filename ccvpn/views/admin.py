@@ -62,6 +62,13 @@ def admin_graph(request):
             return type(request.GET.get(name, default))
         except ValueError:
             raise HTTPBadRequest()
+    
+    pygalopts = {
+        'js': [
+            request.static_url('ccvpn:static/pygal/svg.jquery.js'),
+            request.static_url('ccvpn:static/pygal/pygal-tooltips.js')
+        ]
+    }
 
     period = get('period', 'm')
     if period == 'm':
@@ -72,7 +79,8 @@ def admin_graph(request):
     if graph_name == 'users':
         period = get('period', 'm')
 
-        chart = pygal.Line(fill=True, x_label_rotation=75, show_legend=False)
+        chart = pygal.Line(fill=True, x_label_rotation=75, show_legend=False,
+                           **pygalopts)
         chart.title = 'Users (%s)' % period
         chart.x_labels = []
         values = []
@@ -94,7 +102,8 @@ def admin_graph(request):
             raise HTTPNotFound()
         method_name = METHOD_IDS[method].__name__
 
-        chart = pygal.StackedBar(x_label_rotation=75, show_legend=True)
+        chart = pygal.StackedBar(x_label_rotation=75, show_legend=True,
+                                 **pygalopts)
         chart.title = 'Income (%s, %s)' % (method_name, period)
         orders = DBSession.query(Order) \
             .filter(Order.start_date > datetime.now() - period_time) \
