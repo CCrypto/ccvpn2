@@ -103,9 +103,12 @@ def main(global_config, **settings):
     config = Configurator(settings=settings,
                           authentication_policy=authentication,
                           authorization_policy=authorization)
+
+    includes = settings.get('pyramid.includes', {})
     config.include('pyramid_mako')
-    config.include('pyramid_mailer')
     config.include('pyramid_tm')
+    if 'pyramid_mailer.testing' not in includes:
+        config.include('pyramid_mailer')
     config.set_session_factory(session_factory)
     config.add_request_method(get_user, 'user', reify=True, property=True)
     config.add_request_method(Messages, 'messages', reify=True,
