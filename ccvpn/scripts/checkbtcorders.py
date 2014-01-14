@@ -11,11 +11,22 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def usage(argv):
+def usage(argv, out=sys.stdout):
     cmd = os.path.basename(argv[0])
-    print('usage: %s <config_uri>\n'
-          '(example: "%s development.ini")' % (cmd, cmd))
+    out.write('usage: %s <config_uri>\n'
+              '(example: "%s development.ini")\n' % (cmd, cmd))
     sys.exit(1)
+
+
+def checkbtcorders(settings):
+    method = BitcoinMethod()
+
+    orders = DBSession.query(Order) \
+        .filter_by(paid=False, method=Order.METHOD.BITCOIN)
+    for order in orders:
+        method.check_paid(settings, order)
+        log.debug('Order#%d: amount=%f, paid=%f', order.id, order.amount,
+                  order.paid_amount)
 
 
 def main(argv=sys.argv):
@@ -26,12 +37,5 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
-    method = BitcoinMethod()
-
-    orders = DBSession.query(Order) \
-        .filter_by(paid=False, method=Order.METHOD.BITCOIN)
-    for order in orders:
-        method.check_paid(settings, order)
-        log.debug('Order#%d: amount=%f, paid=%f', order.id, order.amount,
-                  order.paid_amount)
+    checkbtcorders(settings)
 

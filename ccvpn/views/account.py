@@ -6,7 +6,7 @@ from pyramid.view import view_config
 from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
     HTTPSeeOther, HTTPMovedPermanently,
-    HTTPBadRequest, HTTPNotFound, HTTPUnauthorized
+    HTTPBadRequest, HTTPNotFound, HTTPUnauthorized, HTTPForbidden
 )
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
@@ -15,7 +15,7 @@ from ccvpn import methods
 from ccvpn.models import (
     DBSession,
     User, Order, GiftCode, Profile, PasswordResetToken,
-    random_profile_password
+    random_access_token
 )
 
 
@@ -26,27 +26,24 @@ openvpn_ca = ''
 
 @view_config(route_name='account_login', renderer='login.mako')
 def login(request):
-    return {}
+    if request.method != 'POST':
+        return {}
 
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    if not username or not password:
+        request.response.status_code = HTTPBadRequest.code
+        return {}
 
-@view_config(route_name='account_login', request_method='POST',
-             renderer='login.mako')
-def login_post(request):
-    try:
-        username = request.POST['username']
-        password = request.POST['password']
-        user = DBSession.query(User).filter_by(username=username).first()
-        assert user is not None
-        assert user.check_password(password)
-        request.session['uid'] = user.id
-        request.session.flash(('info', 'Logged in.'))
-        return HTTPSeeOther(location=request.route_url('account'))
-    except KeyError:
-        return HTTPBadRequest()
-    except AssertionError:
-        error = 'Invalid username/password.'
-    request.session.flash(('error', error))
-    return {}
+    user = DBSession.query(User).filter_by(username=username).first()
+    if not user or not user.check_password(password):
+        request.response.status_code = HTTPForbidden.code
+        request.messages.error('Invalid username or password.')
+        return {}
+
+    request.session['uid'] = user.id
+    request.messages.info('Logged in.')
+    return HTTPSeeOther(location=request.route_url('account'))
 
 
 @view_config(route_name='account_logout', permission='logged')
@@ -59,48 +56,46 @@ def logout(request):
 
 @view_config(route_name='account_signup', renderer='signup.mako')
 def signup(request):
-    if request.method == 'POST':
-        errors = []
-        u = User()
-        try:
-            u.validate_username(request.POST['username']) or \
-                errors.append('Invalid username.')
-            u.validate_password(request.POST['password']) or \
-                errors.append('Invalid password.')
-            if request.POST['email']:
-                u.validate_email(request.POST['email']) or \
-                    errors.append('Invalid email address.')
-            if request.POST['password'] != request.POST['password2']:
-                errors.append('Both passwords do not match.')
-            assert not errors
+    if request.method != 'POST':
+        return {}
+    errors = []
 
-            nc = DBSession.query(func.count(User.id).label('nc')) \
-                .filter_by(username=request.POST['username']) \
-                .subquery()
-            ec = DBSession.query(func.count(User.id).label('ec')) \
-                .filter_by(email=request.POST['email']) \
-                .subquery()
-            c = DBSession.query(nc, ec).first()
-            if c.nc > 0:
-                errors.append('Username already registered.')
-            if c.ec > 0 and request.POST['email'] != '':
-                errors.append('E-mail address already registered.')
-            assert not errors
-            u.username = request.POST['username']
-            u.email = request.POST['email']
-            u.set_password(request.POST['password'])
+    try:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+        email = request.POST.get('email')
+
+        if not User.validate_username(username):
+            errors.append('Invalid username.')
+        if not User.validate_password(password):
+            errors.append('Invalid password.')
+        if email and not User.validate_email(email):
+            errors.append('Invalid email address.')
+        if password != password2:
+            errors.append('Both passwords do not match.')
+
+        assert not errors
+
+        used = User.is_used(username, email)
+        if used[0] > 0:
+            errors.append('Username already registered.')
+        if used[1] > 0 and email:
+            errors.append('E-mail address already registered.')
+
+        assert not errors
+
+        with transaction.manager:
+            u = User(username=username, email=email, password=password)
             DBSession.add(u)
-            DBSession.flush()
-            request.session['uid'] = u.id
-            return HTTPSeeOther(location=request.route_url('account'))
-        except KeyError:
-            return HTTPBadRequest()
-        except AssertionError:
-            for error in errors:
-                request.session.flash(('error', error))
-            fields = ('username', 'password', 'password2', 'email')
-            return {k: request.POST[k] for k in fields}
-    return {}
+        request.session['uid'] = u.id
+        return HTTPSeeOther(location=request.route_url('account'))
+    except AssertionError:
+        for error in errors:
+            request.session.flash(('error', error))
+        fields = ('username', 'password', 'password2', 'email')
+        request.response.status_code = HTTPBadRequest.code
+        return {k: request.POST[k] for k in fields}
 
 
 @view_config(route_name='account_forgot', renderer='forgot_password.mako')
@@ -113,9 +108,11 @@ def forgot(request):
         .first()
     if not u:
         request.messages.error('Unknown username.')
+        request.response.status_code = HTTPBadRequest.code
         return {}
     if not u.email:
         request.messages.error('No e-mail address associated with username.')
+        request.response.status_code = HTTPBadRequest.code
         return {}
 
     token = PasswordResetToken(u)
@@ -145,7 +142,7 @@ def reset(request):
     if not token or not token.user:
         request.messages.error('Unknown password reset token.')
         url = request.route_url('account_forgot')
-        raise HTTPMovedPermanently(location=url)
+        return HTTPMovedPermanently(location=url)
     
     password = request.POST.get('password')
     password2 = request.POST.get('password2')
@@ -153,8 +150,9 @@ def reset(request):
     if request.method != 'POST' or not password or not password2:
         return {'token': token}
 
-    if not token.user.validate_password(password) or password != password2:
+    if not User.validate_password(password) or password != password2:
         request.messages.error('Invalid password.')
+        request.response.status_code = HTTPBadRequest.code
         return {'token': token}
 
     token.user.set_password(password)
@@ -169,12 +167,13 @@ def reset(request):
                       body=body)
     mailer.send(message)
 
-    transaction.commit()
-
     request.messages.info('You have changed the password for %s. You can now '
                           'log in.' % (token.user.username))
+    transaction.commit()
+    with transaction.manager:
+        DBSession.delete(token)
     url = request.route_url('account_login')
-    raise HTTPMovedPermanently(location=url)
+    return HTTPMovedPermanently(location=url)
 
 
 @view_config(route_name='account', request_method='POST', permission='logged',
@@ -203,7 +202,7 @@ def account_post(request):
             p.askpw = 'askpw' in request.POST and request.POST['askpw'] == '1'
             p.uid = request.user.id
             if not p.askpw:
-                p.password = random_profile_password()
+                p.password = random_access_token()
             DBSession.add(p)
             DBSession.flush()
             return account(request)
@@ -264,9 +263,10 @@ def account_redirect(request):
 
 @view_config(route_name='order_post', permission='logged')
 def order_post(request):
-    if 'code' in request.POST and request.POST['code'] != '':
+    code = request.POST.get('code')
+    if code:
         gc = DBSession.query(GiftCode) \
-            .filter_by(code=request.POST['code'], used=None) \
+            .filter_by(code=code, used=None) \
             .first()
         if not gc:
             request.session.flash(('error', 'Unknown or already used code.'))
@@ -281,16 +281,17 @@ def order_post(request):
 
     times = (1, 3, 6, 12)
     try:
-        assert request.POST['method'] in methods.METHODS
-        assert int(request.POST['time']) in times
-    except (KeyError, AssertionError):
-        # there should not be any problems here
-        return HTTPBadRequest()
-    time = datetime.timedelta(days=30 * int(request.POST['time']))
+        method_name = request.POST.get('method')
+        time_months = int(request.POST.get('time'))
+    except ValueError:
+        return HTTPBadRequest('invalid POST data')
+    if method_name not in methods.METHODS or time_months not in times:
+        return HTTPBadRequest('Invalid method/time')
+    time = datetime.timedelta(days=30 * time_months)
     o = Order(user=request.user, time=time)
     o.close_date = datetime.datetime.now() + datetime.timedelta(days=7)
     o.payment = {}
-    method = methods.METHODS[request.POST['method']]()
+    method = methods.METHODS[method_name]()
     method.init(request, o)
     DBSession.add(o)
     DBSession.flush()

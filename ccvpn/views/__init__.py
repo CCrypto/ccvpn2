@@ -24,6 +24,7 @@ def page(request):
     try:
         f = codecs.open(path, mode="r", encoding="utf-8")
         content = markdown.markdown(f.read())
+        f.close()
         return {'content': content}
     except FileNotFoundError:
         return HTTPNotFound()

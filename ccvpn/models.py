@@ -1,7 +1,8 @@
 from sqlalchemy import (
     TypeDecorator, Column, ForeignKey,
     Integer, Float, DateTime, Boolean, BigInteger,
-    String, UnicodeText, Text, LargeBinary, Interval
+    String, UnicodeText, Text, LargeBinary, Interval,
+    func
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
@@ -28,11 +29,6 @@ def random_access_token():
     charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     base = len(charset)
     return ''.join([charset[prng.randint(0, base - 1)] for n in range(32)])
-
-
-def random_profile_password():
-    # Every printable ASCII character
-    return ''.join([chr(prng.randint(32, 126)) for n in range(256)])
 
 
 def random_gift_code():
@@ -221,26 +217,27 @@ class User(Base):
         else:
             return 0
 
-    def validate_username(self, username):
-        return self.username_re.match(username)
+    @classmethod
+    def validate_username(cls, username):
+        return username and cls.username_re.match(username)
 
-    def validate_email(self, email):
-        return self.email_re.match(email) and len(email) <= 256
+    @classmethod
+    def validate_email(cls, email):
+        return email and cls.email_re.match(email) and len(email) <= 256
 
+    @classmethod
     def validate_password(self, clearpw):
-        return 0 < len(clearpw) < 256
+        return clearpw and 0 < len(clearpw) < 256
 
     def set_password(self, clearpw):
-        if 0 < len(clearpw) < 256:
-            salt = random_bytes(32)
-            password = bytearray(clearpw, 'utf-8')
-            hash = hashlib.sha512(salt + password).digest()
-            self.password = salt + hash
-            return True
-        return False
+        salt = random_bytes(32)
+        password = bytearray(clearpw, 'utf-8')
+        hash = hashlib.sha512(salt + password).digest()
+        self.password = salt + hash
+        return True
 
     def check_password(self, clearpw):
-        if len(self.password) != 96:
+        if not self.password or len(self.password) != 96:
             return False
         salt = self.password[:32]
         password = bytearray(clearpw, 'utf-8')
@@ -249,6 +246,17 @@ class User(Base):
 
     def __str__(self):
         return self.username
+
+    @classmethod
+    def is_used(cls, username, email):
+        nc = DBSession.query(func.count(User.id).label('nc')) \
+            .filter_by(username=username) \
+            .subquery()
+        ec = DBSession.query(func.count(User.id).label('ec')) \
+            .filter_by(email=email) \
+            .subquery()
+        c = DBSession.query(nc, ec).first()
+        return (c.nc, c.ec)
 
 class PasswordResetToken(Base):
     __tablename__ = 'pwresettoken'
@@ -265,10 +273,7 @@ class PasswordResetToken(Base):
 
         self.uid = uid
         self.token = token or random_access_token()
-        self.expire = expire or datetime.now() + default_ttl
-
-    def __str__(self):
-        return self.label
+        self.expire_date = expire or datetime.now() + default_ttl
 
 
 class Profile(Base):
@@ -293,6 +298,14 @@ class GiftCode(Base):
     time = Column(Interval, default=timedelta(days=30), nullable=False,
                   doc='Time')
     used = Column(ForeignKey('users.id'), nullable=True)
+
+    def __init__(self, time, code=None, used=None):
+        if isinstance(used, User):
+            used = used.id
+
+        self.time = time
+        self.used = used
+        self.code = code or random_gift_code()
 
     @property
     def username_if_used(self):
@@ -360,8 +373,9 @@ def get_user(request):
         return None
 
     uid = request.session['uid']
-    user = DBSession.query(User).filter_by(id=uid) .first()
+    user = DBSession.query(User).filter_by(id=uid).first()
     if not user:
         del request.session['uid']
         return None
     return user
+
