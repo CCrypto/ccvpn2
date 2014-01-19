@@ -1,21 +1,21 @@
 Install on GNU/Linux
---------------------
+====================
 
-You should check for a distribution-specific install howto :
+You will need a config file : In [your account](/account/), download the
+.ovpn file. You can rename it to .conf.
 
-* <a href="https://wiki.archlinux.org/index.php/OpenVPN">ArchLinux</a>
-* <a href="https://help.ubuntu.com/community/OpenVPN">Ubuntu</a>
-* <a href="http://doc.ubuntu-fr.org/openvpn">Ubuntu (FR)</a>
-* <a href="http://wiki.debian.org/OpenVPN">Debian</a>
+**Do not use Network-Manager. It is known to not work.**  
+N-M ignores some of OpenVPN's config options, and simply cannot connect to
+our VPN.  
+We are still waiting for this issue to be fixed.
 
-You will need a config file : In [your account](/account/), download the config file. It should be a .ovpn file, and you may need to rename it to *.conf.
-
-If you have any questions, go to the Support page.
+If you have any questions, go to the [Support page](/page/support).
 
 Debian/Ubuntu
 -------------
 Login as root.  
-Put the config file you have downloaded in `/etc/openvpn/`, ie: `/etc/openvpn/ccrypto.conf`  
+Put the config file you have downloaded in `/etc/openvpn/`.  
+ie: `/etc/openvpn/ccrypto.conf`
 
 Now, you can start it :
 
@@ -25,4 +25,10 @@ To start it on boot, edit `/etc/default/openvpn` and uncomment/change the `AUTOS
 
     AUTOSTART="ccrypto"
 
+Other
+-----
+
+You should check for a distribution-specific install howto :
+
+* <a href="https://wiki.archlinux.org/index.php/OpenVPN">ArchLinux</a>
 
