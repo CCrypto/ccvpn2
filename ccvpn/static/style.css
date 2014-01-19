@@ -170,11 +170,15 @@ section#homecreate a{
 }
 section#homecreate a:hover{
     background: #225469;
-    
+}
+
+section article {
+    line-height: 1.1em;
 }
 
 section article h1{
     font-size: 2.5em;
+    margin-bottom: 0.5em;
     color: #1c619a;
 }
 section article h2 {

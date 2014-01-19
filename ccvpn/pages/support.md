@@ -1,9 +1,10 @@
 Support
 =======
 
-Before asking for help, make sure you read our [guides](/page/docs).
+Before asking for help, make sure you read our [guides](/page/docs)
+and [FAQ](/page/faq).
 
-Cognitive Cryptography provides a fast support for the VPN on:
+Cognitive Cryptography provides a fast support for the VPN in french and english on:
 
   - **IRC**: Join #ccrypto on chat.freenode.net with your favorite client or
     [our webchat](http://ccrypto.org/irc.html).  

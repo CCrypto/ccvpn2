@@ -4,6 +4,18 @@ Frequently Asked Questions
 General
 -------
 
+### What is a VPN?
+A Virtual Private Network is a private network on the Internet.
+Here, it is made of our customers and our servers acts like routers.
+That means that everything goes through our servers, and you appear anonymous
+on the Internet. Because of the strong encryption used, your ISP cannot log or
+filter anything.
+
+### Why should I pay to use it instead of tor?
+Although tor may be free (and extremely good for some usage), tor is also very
+slow. This means that tor is good if you want full anonymity, but not for
+everyday web browsing, or to play an online game. For that, a VPN perfect.
+
 ### Do you support IPv6?
 Yes!
 
@@ -27,6 +39,25 @@ We only support OpenVPN for now.
 ### Which payment methods are supported?
 We support Paypal and Bitcoin.  
 Feel free to ask [the support](/page/support) if you need any other method.
+
+### Is it open-source?
+Yes! Our VPN is made with OpenVPN.  
+Our servers' config and this website are also open-source and available on our
+[GitHub project](https://github.com/CCrypto/ccvpn/).
+
+### Are my data kept secure?
+Yes, the VPN traffic is strongly encrypted and we do not keep any data on the
+VPN servers.  
+The website and database are on a different server, in a
+different datacenter.
+
+### Will there be more servers/countries available?
+Yes, but we first need money to pay the servers.  
+If you would like to have a server somewhere, know a good provider or would
+like to host one, please contact us.
+
+### How many kitten power this service?
+One. We called it Jack.
 
 Account
 -------
@@ -73,4 +104,13 @@ Rename your network connection to avoid spaces, for example "Connexion au résea
 
   - [(fr) Renommer une connexion réseau](http://windows.microsoft.com/fr-xf/windows-vista/rename-a-network-connection)
   - [(en) Rename a network connection](http://windows.microsoft.com/en-au/windows-vista/rename-a-network-connection)
+
+Our VPN servers
+---------------
+**gw.vpn.ccrypto.org** will always point to a random and working server.
+
+For now, we only have one VPN gateway:
+
+  - FR: vpn-gw1.ccrypto.org, hosted by [Tetaneutral](http://tetaneutral.net/)
+
 

@@ -10,7 +10,6 @@ Installation guides:
 
 Other:
 
-  - [make client remember password](/page/auth-user-pass)
-  - [our servers](/page/gateways)
+  - [save username/password in OpenVPN config](/page/auth-user-pass)
   - [tech stuff](/page/tech)
 
