@@ -13,7 +13,7 @@ If you have any questions, go to the [Support page](/page/support).
 
 Debian/Ubuntu
 -------------
-Login as root.  
+**Login as root.** (important)  
 Put the config file you have downloaded in `/etc/openvpn/`.  
 ie: `/etc/openvpn/ccrypto.conf`
 
@@ -21,7 +21,8 @@ Now, you can start it :
 
     service openvpn start ccrypto
 
-To start it on boot, edit `/etc/default/openvpn` and uncomment/change the `AUTOSTART` line:
+To start it on boot, [save your creditentials](/page/auth-user-pass) first, and
+edit `/etc/default/openvpn` and uncomment/change the `AUTOSTART` line:
 
     AUTOSTART="ccrypto"
 
