@@ -299,7 +299,7 @@ class GiftCode(Base):
                   doc='Time')
     used = Column(ForeignKey('users.id'), nullable=True)
 
-    def __init__(self, time, code=None, used=None):
+    def __init__(self, time=None, code=None, used=None):
         if isinstance(used, User):
             used = used.id
 
