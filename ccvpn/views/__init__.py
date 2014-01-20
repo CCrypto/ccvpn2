@@ -23,7 +23,7 @@ def page(request):
     path = os.path.join(root, page)
     try:
         f = codecs.open(path, mode="r", encoding="utf-8")
-        content = markdown.markdown(f.read())
+        content = markdown.markdown(f.read(), extensions=['toc'])
         f.close()
         return {'content': content}
     except FileNotFoundError:

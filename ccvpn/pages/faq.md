@@ -1,19 +1,23 @@
 Frequently Asked Questions
 ==========================
 
+[TOC]
+
 General
 -------
 
 ### What is a VPN?
-A Virtual Private Network is a private network on the Internet.
-Here, it is made of our customers and our servers acts like routers.
+A Virtual Private Network is a private network on the Internet.  
+Here, it is made of our customers and our servers acts like routers.  
 That means that everything goes through our servers, and you appear anonymous
-on the Internet. Because of the strong encryption used, your ISP cannot log or
+on the Internet.  
+Because of the strong encryption used, your ISP cannot log or
 filter anything.
 
 ### Why should I pay to use it instead of tor?
 Although tor may be free (and extremely good for some usage), tor is also very
-slow. This means that tor is good if you want full anonymity, but not for
+slow.  
+This means that tor is good if you want full anonymity, but not for
 everyday web browsing, or to play an online game. For that, a VPN perfect.
 
 ### Do you support IPv6?
