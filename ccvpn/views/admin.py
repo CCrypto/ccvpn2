@@ -212,7 +212,7 @@ class AdminView(object):
                                   self.tvars(dict(item=item)))
 
     def list_items(self):
-        items = DBSession.query(self.model).order_by(self.model.id)
+        items = DBSession.query(self.model).order_by(self.model.id).all()
         template = 'admin/list.mako'
         return render_to_response(self.list_template or template,
                                   self.tvars(dict(items=items)))
