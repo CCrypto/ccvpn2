@@ -1,10 +1,12 @@
+import logging
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 from pyramid_beaker import session_factory_from_settings
 from ccvpn import views
 
-from .models import DBSession, Base, get_user
+from .models import DBSession, Base, get_user, User
 
+logger = logging.getLogger(__name__)
 
 class AuthenticationPolicy(object):
     def authenticated_userid(self, request):
@@ -81,6 +83,41 @@ def setup_routes(config):
     a('api_server_disconnect', '/api/server/disconnect')
     a('api_server_config', '/api/server/config')
 
+def referral_handler(request):
+    ref = request.GET.get('ref')
+    if not ref:
+        return None
+    try:
+        iref = int(ref)
+    except ValueError:
+        return None
+    u = DBSession.query(User).filter_by(id=iref).first()
+    if not u:
+        return None
+    # Overwrite get_referrer to return u for this request
+    request.referrer = u
+    return u
+
+def get_referrer(request):
+    if 'referral_id' not in request.cookies:
+        return None
+    try:
+        iref = int(request.cookies['referral_id'])
+    except ValueError:
+        return None
+    u = DBSession.query(User).filter_by(id=iref).first()
+    if not u:
+        return None
+    return u
+
+def referral_handler_factory(handler, registry):
+    def decorator(request):
+        u = referral_handler(request)
+        response = handler(request)
+        if u:
+            response.set_cookie('referral_id', str(u.id), overwrite=True)
+        return response
+    return decorator
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -111,8 +148,11 @@ def main(global_config, **settings):
         config.include('pyramid_mailer')
     config.set_session_factory(session_factory)
     config.add_request_method(get_user, 'user', reify=True, property=True)
+    config.add_request_method(get_referrer, 'referrer', reify=True,
+                              property=True)
     config.add_request_method(Messages, 'messages', reify=True,
                               property=True)
+    config.add_tween('ccvpn.referral_handler_factory')
     config.add_static_view('static', 'static', cache_max_age=3600)
     setup_routes(config)
     config.scan()

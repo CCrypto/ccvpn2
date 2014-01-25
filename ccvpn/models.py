@@ -6,6 +6,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects import postgresql  # INET
 from zope.sqlalchemy import ZopeTransactionExtension
 from datetime import datetime, timedelta
@@ -20,9 +21,20 @@ from urllib.request import urlopen
 log = logging.getLogger(__name__)
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=True)))
-Base = declarative_base()
-
 prng = random.SystemRandom()
+
+
+class Base(object):
+    @classmethod
+    def one(cls, **kwargs):
+        return DBSession.query(cls).filter_by(**kwargs).one()
+
+    @classmethod
+    def all(cls, **kwargs):
+        return DBSession.query(cls).filter_by(**kwargs).all()
+
+
+Base = declarative_base(cls=Base)
 
 
 def random_access_token():
@@ -186,6 +198,7 @@ class User(Base):
     signup_date = Column(DateTime, nullable=False, default=datetime.now)
     last_login = Column(DateTime, nullable=True, default=None)
     paid_until = Column(DateTime, nullable=True, default=None)
+    referrer_id = Column(ForeignKey('users.id'), nullable=True)
 
     giftcodes_used = relationship('GiftCode', backref='user')
     orders = relationship('Order', backref='user')
@@ -289,6 +302,8 @@ class Profile(Base):
     list_fields = ('id', 'uid', 'name')
     edit_fields = ('id', 'uid', 'name', 'password')
 
+class AlreadyUsedGiftCode(Exception):
+    pass
 
 class GiftCode(Base):
     __tablename__ = 'giftcodes'
@@ -315,12 +330,27 @@ class GiftCode(Base):
         else:
             return False
 
+    def use(self, user, reuse=False):
+        """Use this GiftCode on user
+
+        :param user: User
+        :param reuse: bool allow to reuse a code?
+
+        """
+
+        if self.used and not reuse:
+            raise AlreadyUsedGiftCode()
+        self.used = user.id
+        user.add_paid_time(self.time)
+
     def __str__(self):
         return self.code
 
     list_fields = ('id', 'code', 'time', 'username_if_used')
     edit_fields = ('id', 'code', 'time', 'used')
 
+class OrderNotPaid(Exception):
+    pass
 
 class Order(Base):
     __tablename__ = 'orders'
@@ -345,6 +375,42 @@ class Order(Base):
                    'method', 'paid')
     edit_fields = ('id', 'user', 'start_date', 'close_date', 'amount',
                    'paid_amount', 'time', 'method', 'paid', 'payment')
+
+    def is_paid(self):
+        return self.paid_amount >= self.amount
+
+    def close(self, force=False):
+        """Close a paid order.
+
+        :raises: OrderNotPaid
+        """
+        if not self.is_paid() and not force:
+            raise OrderNotPaid(self)
+
+        self.paid = True
+        self.user.add_paid_time(self.time)
+
+        if self.user.referrer_id:
+            try:
+                referrer = User.one(id=self.user.referrer_id)
+                referrer.add_paid_time(timedelta(days=14))
+            except NoResultFound:
+                pass
+            # Given 14d or inexistent, we can remove it.
+            self.user.referrer_id = None
+
+    def __init__(self, user, amount, time, method, paid_amount=0, ttl=None):
+        self.uid = user.id if isinstance(user, User) else user
+        self.amount = amount
+        self.time = time
+        self.paid_amount = paid_amount
+        self.paid = paid_amount >= amount
+        self.method = method
+
+        ttl = ttl or timedelta(days=30)
+
+        self.start_date = datetime.now()
+        self.close_date = datetime.now() + ttl
 
     def __str__(self):
         return hex(self.id)[2:]

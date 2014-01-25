@@ -132,6 +132,38 @@ class TestSignupView(unittest.TestCase):
         self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
         self.assertTrue(resp.location.endswith('/account/'))
 
+    def test_valid_referral(self):
+        with transaction.manager:
+            referrer = User(username='test', password='testpw')
+            self.session.add(referrer)
+        self.assertFalse(referrer.is_paid)
+
+        req = DummyRequest(post={
+            'username': 'newtest',
+            'password': 'newpw',
+            'password2': 'newpw',
+            'email': 'email@host'
+        }, params={
+            'ref': str(referrer.id),
+        })
+        resp = views.account.signup(req)
+
+        newuser = self.session.query(User).filter_by(username='newtest').first()
+        self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
+        self.assertTrue(resp.location.endswith('/account/'))
+        self.assertEqual(newuser.referrer_id, referrer.id)
+
+        self.assertFalse(referrer.is_paid)
+
+        with transaction.manager:
+            testorder = Order(user=newuser, amount=1,
+                              method=Order.METHOD.BITCOIN,
+                              time=datetime.timedelta(days=30))
+            self.session.add(testorder)
+        testorder.close(force=True)
+
+        self.assertTrue(referrer.is_paid)
+
     def test_invalid_username(self):
         req = DummyRequest(post={
             'username': 'newtest!',
@@ -427,8 +459,9 @@ class TestOrderView(unittest.TestCase):
 
     def test_view_paypal(self):
         with transaction.manager:
-            testorder = Order(uid=self.testuser.id, amount=1,
-                              method=Order.METHOD.PAYPAL)
+            testorder = Order(user=self.testuser.id, amount=1,
+                              method=Order.METHOD.PAYPAL,
+                              time=datetime.timedelta(days=30))
             self.session.add(testorder)
 
         req = DummyRequest()
@@ -440,8 +473,9 @@ class TestOrderView(unittest.TestCase):
 
     def test_view_btc(self):
         with transaction.manager:
-            testorder = Order(uid=self.testuser.id, amount=1,
-                              method=Order.METHOD.BITCOIN)
+            testorder = Order(user=self.testuser.id, amount=1,
+                              method=Order.METHOD.BITCOIN,
+                              time=datetime.timedelta(days=30))
             testorder.payment = {'btc_address': 'TESTADDRESS'}
             self.session.add(testorder)
 
@@ -464,8 +498,9 @@ class TestOrderView(unittest.TestCase):
             otheruser = User(username='othertest', password='testpw')
             self.session.add(otheruser)
         with transaction.manager:
-            testorder = Order(uid=otheruser.id, amount=1,
-                              method=Order.METHOD.PAYPAL)
+            testorder = Order(user=otheruser.id, amount=1,
+                              method=Order.METHOD.PAYPAL,
+                              time=datetime.timedelta(days=30))
             self.session.add(testorder)
 
         req = DummyRequest()

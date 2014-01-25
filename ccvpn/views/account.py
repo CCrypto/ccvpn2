@@ -2,6 +2,7 @@ import datetime
 
 import transaction
 from sqlalchemy import func
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from pyramid.view import view_config
 from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
@@ -14,7 +15,8 @@ from pyramid_mailer.message import Message
 from ccvpn import methods
 from ccvpn.models import (
     DBSession,
-    User, Order, GiftCode, Profile, PasswordResetToken,
+    GiftCode, AlreadyUsedGiftCode,
+    User, Order, Profile, PasswordResetToken,
     random_access_token
 )
 
@@ -87,6 +89,8 @@ def signup(request):
 
         with transaction.manager:
             u = User(username=username, email=email, password=password)
+            if request.referrer:
+                u.referrer_id = request.referrer.id
             DBSession.add(u)
         request.session['uid'] = u.id
         return HTTPSeeOther(location=request.route_url('account'))
@@ -261,23 +265,25 @@ def account_redirect(request):
     return HTTPMovedPermanently(location=request.route_url('account'))
 
 
+def order_post_gc(request, code):
+    try:
+        gc = GiftCode.one(code=code)
+        gc.use(request.user)
+
+        time = gc.time.days
+        request.messages.info('OK! Added %d days to your account.' % time)
+        DBSession.flush()
+    except (NoResultFound, MultipleResultsFound):
+        request.messages.error('Unknown code.')
+    except AlreadyUsedGiftCode:
+        request.messages.error('Already used code')
+    return HTTPSeeOther(location=request.route_url('account'))
+
 @view_config(route_name='order_post', permission='logged')
 def order_post(request):
     code = request.POST.get('code')
     if code:
-        gc = DBSession.query(GiftCode) \
-            .filter_by(code=code, used=None) \
-            .first()
-        if not gc:
-            request.session.flash(('error', 'Unknown or already used code.'))
-        else:
-            request.user.add_paid_time(gc.time)
-            gc.used = request.user.id
-            added = gc.time.days
-            request.session.flash(('info', 'OK! Added %d days to your '
-                                           'account.' % added))
-        DBSession.flush()
-        return HTTPSeeOther(location=request.route_url('account'))
+        return order_post_gc(request, code)
 
     times = (1, 3, 6, 12)
     try:
@@ -287,8 +293,9 @@ def order_post(request):
         return HTTPBadRequest('invalid POST data')
     if method_name not in methods.METHODS or time_months not in times:
         return HTTPBadRequest('Invalid method/time')
+
     time = datetime.timedelta(days=30 * time_months)
-    o = Order(user=request.user, time=time)
+    o = Order(user=request.user, time=time, amount=0, method=0)
     o.close_date = datetime.datetime.now() + datetime.timedelta(days=7)
     o.payment = {}
     method = methods.METHODS[method_name]()
