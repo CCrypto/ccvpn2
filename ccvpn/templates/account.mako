@@ -5,6 +5,13 @@
 %>
 <section id="account">
     <h2>Account : ${user.username}</h2>
+
+    <article>
+        <p>Get two weeks for free for every referral that takes at least one month! Share this link: <br />
+            <input type="text" size="30" value="http://vpn.ccrypto.org/?ref=${request.user.id}" />
+        </p>
+    </article>
+
     % if user.is_paid:
         <article>
             <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>

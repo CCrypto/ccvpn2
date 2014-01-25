@@ -20,6 +20,10 @@ slow.
 This means that tor is good if you want full anonymity, but not for
 everyday web browsing, or to play an online game. For that, a VPN perfect.
 
+### Do you propose an affiliate program?
+Yes! Share your affiliate link and earn 2 weeks for each referral.  
+Invite 24 friends and you get one year of free VPN!
+
 ### Do you support IPv6?
 Yes!
 
