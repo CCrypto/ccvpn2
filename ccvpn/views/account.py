@@ -297,6 +297,7 @@ def order_post(request):
     time = datetime.timedelta(days=30 * time_months)
     o = Order(user=request.user, time=time, amount=0, method=0)
     o.close_date = datetime.datetime.now() + datetime.timedelta(days=7)
+    o.paid = False
     o.payment = {}
     method = methods.METHODS[method_name]()
     method.init(request, o)
