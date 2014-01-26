@@ -2,6 +2,7 @@ from .models import DBSession, Order, PaypalAPI
 from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPBadRequest
 import bitcoinrpc
 import logging
+import transaction
 log = logging.getLogger(__name__)
 
 
@@ -79,7 +80,7 @@ class BitcoinMethod(object):
         if order.paid_amount >= order.amount:
             order.paid = True
             order.user.add_paid_time(order.time)
-        DBSession.commit()
+        transaction.commit()
 
 BitcoinMethod.rpc = None
 

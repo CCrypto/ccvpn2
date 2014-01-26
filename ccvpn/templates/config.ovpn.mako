@@ -33,7 +33,7 @@ redirect-gateway def1
 route-ipv6 2000::/3 
 
 # Force Windows to apply new DNS settings
-register-dns
+#register-dns
 
 <ca>
 ${openvpn_ca}</ca>
