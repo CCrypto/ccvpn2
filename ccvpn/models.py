@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects import postgresql  # INET
+from sqlalchemy.sql.expression import true, false
 from zope.sqlalchemy import ZopeTransactionExtension
 from datetime import datetime, timedelta
 import json
@@ -223,6 +224,12 @@ class User(Base):
             self.paid_until = datetime.now()
         self.paid_until += time
 
+    def paid_time_left(self):
+        if self.is_paid:
+            return self.paid_until - datetime.now()
+        else:
+            return timedelta()
+
     def paid_days_left(self):
         if self.is_paid:
             days = (self.paid_until - datetime.now()).days
@@ -312,13 +319,14 @@ class GiftCode(Base):
                   default=random_gift_code)
     time = Column(Interval, default=timedelta(days=30), nullable=False,
                   doc='Time')
+    free_only = Column(Boolean, default=False, nullable=False, server_default=false())
     used = Column(ForeignKey('users.id'), nullable=True)
 
     def __init__(self, time=None, code=None, used=None):
         if isinstance(used, User):
             used = used.id
 
-        self.time = time
+        self.time = time or timedelta(days=30)
         self.used = used
         self.code = code or random_gift_code()
 
@@ -340,6 +348,8 @@ class GiftCode(Base):
 
         if self.used and not reuse:
             raise AlreadyUsedGiftCode()
+        if self.free_only and user.is_paid:
+            raise AlreadyUsedGiftCode()
         self.used = user.id
         user.add_paid_time(self.time)
 
@@ -347,7 +357,7 @@ class GiftCode(Base):
         return self.code
 
     list_fields = ('id', 'code', 'time', 'username_if_used')
-    edit_fields = ('id', 'code', 'time', 'used')
+    edit_fields = ('id', 'code', 'time', 'free_only', 'used')
 
 class OrderNotPaid(Exception):
     pass
