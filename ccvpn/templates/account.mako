@@ -6,24 +6,18 @@
 <section id="account">
     <h2>Account : ${user.username}</h2>
 
-    <article>
-        <p>Get two weeks for free for every referral that takes at least one month! Share this link: <br />
-            <input type="text" size="30" value="http://vpn.ccrypto.org/?ref=${request.user.id}" />
+    <article class="account-box">
+        <% url = 'http://vpn.ccrypto.org/?ref=' + str(request.user.id) %>
+        <p>Get two weeks for free for every referral that takes at least one
+        month!<br />
+        Share this link: <input type="text" size="30" value="${url}" />
         </p>
     </article>
 
     % if user.is_paid:
         <article>
             <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>
-            
-            <hr />
-            <ul>
-                <li>You can only have <b>one connection per profile</b>,
-                    but up to 10 profiles. (10 running clients)</li>
-                <li>To use a profile, download the right config and use
-                    its identifier as your VPN username.</li>
-            </ul>
-            
+
             <table>
                 <tr><td>Profile: <b>${user.username}</b></td>
                     <td>[default]</td>
@@ -48,6 +42,13 @@
                 <input type="submit" value="Add" />
                 </p>
             </form>
+
+            <ul class="account-box">
+                <li>You can only have <b>one connection per profile</b>,
+                    but up to 10 profiles. (10 running clients)</li>
+                <li>To use a profile, download the right config and use
+                    its identifier as your VPN username.</li>
+            </ul>
             <hr />
         </article>
     % endif
