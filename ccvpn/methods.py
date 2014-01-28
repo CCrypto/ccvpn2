@@ -23,7 +23,7 @@ class PaypalMethod(object):
         return PaypalMethod.api
 
     def init(self, request, order):
-        settings = request.registry
+        settings = request.registry.settings
         month_price = float(settings.get('paypal.month_price', 2))
         order.method = Order.METHOD.PAYPAL
         log.debug(round(month_price * (order.time.days / 30), 2))
@@ -59,7 +59,7 @@ class BitcoinMethod(object):
         return BitcoinMethod.rpc
 
     def init(self, request, order):
-        settings = request.registry
+        settings = request.registry.settings
         rpc = self.getBTCRPC(settings)
         account = str(settings.get('bitcoin.account', 'ccvpn2'))
         month_price = float(settings.get('bitcoin.month_price', 0.02))
