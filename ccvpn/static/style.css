@@ -477,6 +477,19 @@ figure {
     height: 49%;
 }
 
+.account-box {
+    display: block;
+    padding: 5px 10px 5px 10px;
+    background: #E6F5FF;
+    margin: 20px 0 20px 0;
+    border-radius: 4px;
+    border: 1px solid #72B6ED;
+}
+
+ul.account-box {
+    padding-left: 30px;
+}
+
 @media screen and (max-width: 550px) {
     #topbar .topbar-left{
         display: none;
