@@ -4,7 +4,7 @@ import unittest
 import transaction
 from pyramid import testing
 
-from ccvpn.models import DBSession, User
+from ccvpn.models import DBSession, User, GiftCode
 from ccvpn import models
 from ccvpn.tests import setup_database
 
@@ -145,6 +145,48 @@ class TestUserModel(unittest.TestCase):
         self.assertTrue(User.validate_password('password'))
         self.assertFalse(User.validate_password(''))
         self.assertFalse(User.validate_password(None))
+
+
+class TestGiftCodeModel(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.session = setup_database()
+        with transaction.manager:
+            self.u = User(username='freeuser', password='a')
+            DBSession.add(self.u)
+
+            self.pu = User(username='paiduser', password='a')
+            self.pu.add_paid_time(datetime.timedelta(days=30))
+            DBSession.add(self.pu)
+
+    def tearDown(self):
+        testing.tearDown()
+        self.session.remove()
+
+    def test_username_if_used(self):
+        gc = GiftCode()
+        self.assertIs(gc.username_if_used, False)
+        gc.used = self.u.id
+        gc.user = self.u
+        self.assertEqual(gc.username_if_used, self.u.username)
+
+    def test_use_freeonly(self):
+        gc = GiftCode()
+        gc.free_only = True
+        self.assertRaises(models.AlreadyUsedGiftCode, gc.use, self.pu)
+        gc.use(self.u)
+        self.assertTrue(self.u.is_paid)
+
+    def test_use_reuse(self):
+        time = datetime.timedelta(days=30, hours=11)
+        gc = GiftCode(time=time)
+        gc.use(self.u)
+        self.assertEqual(self.u.paid_time_left().days, time.days)
+        self.assertRaises(models.AlreadyUsedGiftCode, gc.use, self.u)
+        self.assertEqual(self.u.paid_time_left().days, time.days)
+        gc.use(self.u, reuse=True)
+        self.assertTrue(self.u.is_paid)
+        self.assertEqual(self.u.paid_time_left().days, time.days*2)
 
 
 class TestUserModelWithDB(unittest.TestCase):
