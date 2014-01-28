@@ -1,6 +1,13 @@
 CCrypto VPN 
 ===========
 
+CCVPN is all the software we use at CCrypto to provide our VPN.
+
+It is made of a Pyramid web app you can see live at
+http://vpn.ccrypto.org/ including an API, and OpenVPN config/scripts that
+checks user accounts and passwords with the API.
+
+
 Getting Started
 ---------------
 
