@@ -3,11 +3,11 @@ import datetime
 import transaction
 from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
     HTTPSeeOther, HTTPMovedPermanently,
-    HTTPBadRequest, HTTPNotFound, HTTPUnauthorized, HTTPForbidden
+    HTTPBadRequest, HTTPNotFound, HTTPUnauthorized, HTTPForbidden, HTTPFound
 )
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
@@ -24,6 +24,13 @@ from ccvpn.models import (
 # Set in __init__.py from app settings
 openvpn_gateway = ''
 openvpn_ca = ''
+
+
+@forbidden_view_config()
+def forbidden(request):
+    if not request.user:
+        return HTTPFound(location=request.route_url('account_login'))
+    return HTTPForbidden()
 
 
 @view_config(route_name='account_login', renderer='login.mako')
