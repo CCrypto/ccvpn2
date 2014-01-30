@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 class PaypalMethod(object):
     def getAPI(self, request):
         if not PaypalMethod.api:
-            settings = request.registry
+            settings = request.registry.settings
             api = PaypalAPI()
             api.test = bool(settings.get('paypal.test', False))
             api.header_image = str(settings.get('paypal.header_image', False))
