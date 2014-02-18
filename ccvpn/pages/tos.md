@@ -61,7 +61,9 @@ What do we collect?
 
 How is my Information used?  
 Your information is used to provide you and maintain the service.
-We do not sell or redistribute your information.
+We do not sell or redistribute your information.  
+Those informations will never leave our servers unless we are required to by
+the law. If this happens, we will inform all people concerned.
 
 We use cookies.
 

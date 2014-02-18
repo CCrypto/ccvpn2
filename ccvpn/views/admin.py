@@ -108,6 +108,7 @@ def admin_graph(request):
         orders = DBSession.query(Order) \
             .filter(Order.start_date > datetime.now() - period_time) \
             .filter(Order.method == method) \
+            .filter(Order.paid == True) \
             .all()
 
         # Prepare value dict
@@ -278,6 +279,7 @@ class AdminGiftCodes(AdminView):
         post = self.request.POST
         item.code = post['code']
         item.time = post['time']
+        item.free_only = post['free_only']
         #item.used = self._get_uid(post['used'])
 
 
