@@ -2,7 +2,7 @@ import codecs
 import markdown
 import os
 from pyramid.view import view_config
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPOk, HTTPNotFound
 
 from ccvpn.views import account, admin, api  # noqa
 
@@ -14,6 +14,11 @@ def home(request):
         'eur_price': float(settings.get('paypal.month_price', 2)),
         'btc_price': float(settings.get('bitcoin.month_price', 0.02))
     }
+
+
+@view_config(route_name='ca_crt')
+def ca_crt(request):
+    return HTTPOk(body=account.openvpn_ca)
 
 
 @view_config(route_name='page', renderer='page.mako')

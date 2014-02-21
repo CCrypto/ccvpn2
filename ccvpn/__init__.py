@@ -55,6 +55,7 @@ def setup_routes(config):
     # Public routes
     a('home', '/')
     a('page', '/page/{page:[a-zA-Z0-9_-]+}')
+    a('ca_crt', '/ca.crt')
 
     # Account related
     a('account_redirect', '/account')
