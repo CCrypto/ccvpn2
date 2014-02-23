@@ -1,7 +1,10 @@
 <%inherit file="layout.mako" />
 <section id="gateways">
-    <h2>Gateways</h2>
     <article>
+    <h1>Gateways</h1>
+        <p><b>gw.204vpn.net</b> will always point to a random and working server.<br />
+           <b>[country].204vpn.net</b> is a random server in a given country. (e.g. fr.204vpn.net)</p>
+
         <table>
             <thead>
                 <tr><td>Host</td> <td>ISP</td> <td>Location</td> <td>Uptime</td></tr>

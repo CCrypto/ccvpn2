@@ -113,12 +113,3 @@ Rename your network connection to avoid spaces, for example "Connexion au résea
   - [(fr) Renommer une connexion réseau](http://windows.microsoft.com/fr-xf/windows-vista/rename-a-network-connection)
   - [(en) Rename a network connection](http://windows.microsoft.com/en-au/windows-vista/rename-a-network-connection)
 
-
-Our VPN servers
----------------
-**gw.204vpn.net** will always point to a random and working server.  
-**[country].204vpn.net** is a random server in a given country. (e.g. fr.204vpn.net)
-
-  - teta.fr.204vpn.net, hosted by [Tetaneutral](http://tetaneutral.net/) (Toulouse, FR).
-  - tilaa.nl.204vpn.net, hosted by [Tilaa](https://www.tilaa.com/) (Haarlem, NL).
-

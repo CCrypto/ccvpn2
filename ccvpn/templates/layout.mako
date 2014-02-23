@@ -4,6 +4,7 @@
         ['Docs', '/page/docs'],
         ['FAQ', '/page/faq'],
         ['Support', '/page/support'],
+        ['Servers', '/gateways'],
     ]
     if request.user and request.user.is_admin:
         menuItems.append(['Admin', '/admin/'])
