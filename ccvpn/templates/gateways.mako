@@ -11,7 +11,7 @@
             </thead>
             <tbody>
                 % for h, d in gateways.items():
-                <tr><td>${h}</td>
+                <tr><td class="host_line"><span class="host_name">${h}</span> </td>
                     % if isinstance(d['isp'], str):
                         <td>${d['isp']}</td>
                     % else:
@@ -24,6 +24,8 @@
             </tbody>
         </table>
     </article>
+
+    <script type="text/javascript" src="/static/ping.js"></script>
     
     <div style="clear: both"></div>
 </section>
