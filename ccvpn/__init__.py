@@ -55,6 +55,7 @@ def setup_routes(config):
     # Public routes
     a('home', '/')
     a('page', '/page/{page:[a-zA-Z0-9_-]+}')
+    a('gateways', '/gateways')
     a('ca_crt', '/ca.crt')
 
     # Account related
@@ -144,6 +145,7 @@ def main(global_config, **settings):
 
     includes = settings.get('pyramid.includes', {})
     config.include('pyramid_mako')
+    config.include('pyramid_beaker')
     config.include('pyramid_tm')
     if 'pyramid_mailer.testing' not in includes:
         config.include('pyramid_mailer')
