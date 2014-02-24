@@ -20,6 +20,7 @@ requires = [
     'markdown',
     'bitcoin-python',
     'webtest',
+    'requests'
 ]
 
 setup(name='ccvpn',
