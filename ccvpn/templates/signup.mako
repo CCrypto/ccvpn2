@@ -3,7 +3,7 @@
 <section id="signuppage">
     <article class="signup">
     <h1>Sign up</h1>
-    <form class="vert" action="/account/signup" method="post" class="vertical">
+    <form class="vert" action="/account/signup" method="post">
         <label for="ins_username">Username</label>
         <input type="text" id="ins_username" name="username" pattern="[a-zA-Z0-9_-]{2,32}" required="required" value="${username or ''}" />
         <p class="inputhelp">2 to 32 alphanumeric characters.</p>
@@ -19,7 +19,7 @@
         <input type="email" id="ins_email" name="email" value="${email or ''}" />
         <p class="inputhelp"><b>Optional.</b> Used to recover your password and confirm stuff.</p>
 
-        <input type="submit" />
+        <input type="submit" value="Sign up" />
     </form>
     </article>
     <article class="rightsignup">
