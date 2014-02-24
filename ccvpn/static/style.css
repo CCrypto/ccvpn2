@@ -179,17 +179,16 @@ section article {
     line-height: 1.4em;
 }
 
-section article h1{
+section h1{
     font-size: 2.5em;
     margin-bottom: 0.5em;
     color: #1c619a;
 }
-section article h2 {
+section h2 {
     font-size: 1.3em;
     font-weight: bold;
-    margin-top: 1.5em;
 }
-section article h3 {
+section h3 {
     font-size: 1.3em;
     margin-top: 1em;
     margin-left: 1em;
@@ -271,6 +270,9 @@ article.login{
     border-radius: 4px;
     border-top: 7px solid #1c619a;
     background: #fff;
+}
+article.pwreset {
+    max-width: 400px;
 }
 article.login form{
     text-align: center;

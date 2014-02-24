@@ -4,7 +4,7 @@
     profiles = request.user.profiles
 %>
 <section id="account">
-    <h2>Account : ${user.username}</h2>
+    <h1>Account : ${user.username}</h1>
 
     <article class="account-box">
         <% url = 'http://vpn.ccrypto.org/?ref=' + str(request.user.id) %>
@@ -54,7 +54,7 @@
     % endif
 
     <article class="two">
-        <h3>Settings</h3>
+        <h2>Settings</h2>
         <form action="/account/" method="post" class="vert">
             <label for="ins_password">Change password</label>
             <input type="password" id="ins_password" autocomplete="off" name="password" />
@@ -65,11 +65,11 @@
             <label for="ins_email">E-mail</label>
             <input type="email" id="ins_email" name="email" autocomplete="off" value="${email or ''}" />
             
-            <input type="submit" />
+            <input type="submit" value="SAVE" />
         </form>
     </article>
     <article class="two">
-        <h3>Renew</h3>
+        <h2>Renew</h2>
         <form action="/order/" method="post" class="vert">
             <div class="inlinefield">
             <label for="ino_time">Time</label>
@@ -95,7 +95,7 @@
             <label for="ins_code">Gift code</label>
             <input type="text" id="ins_code" name="code" pattern="[a-zA-Z0-9]{1,16}" autocomplete="off" />
 
-            <input type="submit" />
+            <input type="submit" value="RENEW" />
         </form>
     </article>
     
