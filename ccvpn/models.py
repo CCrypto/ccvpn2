@@ -239,6 +239,8 @@ class User(Base):
 
     giftcodes_used = relationship('GiftCode', backref='user')
     orders = relationship('Order', backref='user')
+    paid_orders = relationship('Order', viewonly=True,
+                               primaryjoin='and_(Order.uid == User.id, Order.paid == True)')
     profiles = relationship('Profile', backref='user')
     pw_reset_tokens = relationship('PasswordResetToken', backref='user')
 

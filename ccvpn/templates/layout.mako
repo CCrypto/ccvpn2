@@ -33,8 +33,7 @@
     <div id="topbar">
         <div class="topbar-left">
             <p>
-                <a href="http://ccrypto.org">Cognitive Cryptography</a> :
-                <a href="http://tux-fh.net" title="Web Hosting">Tux-FreeHost</a>
+                <a href="http://ccrypto.org">Cognitive Cryptography</a>
                 % if use_https and request.host_port != str(ssl_port):
                     // <a href="${ssl_url}"><b>Secure version</b></a>
                 % endif

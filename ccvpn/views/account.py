@@ -264,7 +264,7 @@ def account_post(request):
 @view_config(route_name='account', permission='logged',
              renderer='account.mako')
 def account(request):
-    return {'email': request.user.email}
+    return {}
 
 
 @view_config(route_name='account_redirect')
