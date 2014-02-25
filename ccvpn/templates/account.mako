@@ -14,10 +14,40 @@
         </p>
     </article>
 
+    <article class="account-box">
+        % if user.is_paid:
+            <p>Your account is <b>paid for ${user.paid_days_left()} day(s)</b>.</p>
+        % else:
+            <p>Your account is <b>not paid</b>.</p>
+            % if len(user.paid_orders) == 0:
+            <p>You can request a free 4 days trial <a href="/page/support">here</a></p>
+            % endif
+            <hr />
+        % endif
+        <form action="/order/" method="post" class="inline">
+            <label for="ino_time">Add</label>
+            <select id="ino_time" name="time">
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="6">6 months</option>
+                <option value="12">12 months</option>
+            </select>
+            <label for="ino_method">with</label>
+            <select id="ino_method" name="method">
+                <option value="paypal">Paypal</option>
+                <option value="bitcoin">Bitcoin</option>
+            </select>
+            <input type="submit" value="Add" />
+        </form>
+        <form action="/order/" method="post" class="inline">
+            <input type="text" id="ins_code" name="code" maxlength="16"
+                   pattern="[a-zA-Z0-9]{1,16}" autocomplete="off" />
+            <input type="submit" value="Use gift code" />
+        </form>
+    </article>
+
     % if user.is_paid:
         <article>
-            <p>Your account is <b>paid</b> for ${user.paid_days_left()} day(s).</p>
-
             <table>
                 <tr><td>Profile: <b>${user.username}</b></td>
                     <td>[default]</td>
@@ -68,36 +98,6 @@
             <input type="submit" value="SAVE" />
         </form>
     </article>
-    <article class="two">
-        <h2>Renew</h2>
-        <form action="/order/" method="post" class="vert">
-            <div class="inlinefield">
-            <label for="ino_time">Time</label>
-            <select id="ino_time" name="time">
-                <option value="1">1 month</option>
-                <option value="3">3 months</option>
-                <option value="6">6 months</option>
-                <option value="12">12 months</option>
-            </select>
-            </div>
-            
-            <div class="inlinefield">
-            <label for="ino_method">Method</label>
-            <select id="ino_method" name="method">
-                <option value="paypal">Paypal</option>
-                <option value="bitcoin">Bitcoin</option>
-            </select>
-            </div>
 
-            <div style="clear:both"></div>
-
-            <p>-- or --</p>
-            <label for="ins_code">Gift code</label>
-            <input type="text" id="ins_code" name="code" pattern="[a-zA-Z0-9]{1,16}" autocomplete="off" />
-
-            <input type="submit" value="RENEW" />
-        </form>
-    </article>
-    
     <div style="clear: both"></div>
 </section>
