@@ -54,22 +54,22 @@ header{
 header #logo{
     float: left;
     height: 80px;
-    padding-left: 70px; 
+    padding-left: 75px; 
     background: url(bg-logo.svg) no-repeat;
     background-size: 70px;
     background-position: left center;
 }
 header #logo h1 a{
     margin: 0px;
-    margin-top: -17px;
+    position: relative;
+    top: -6px;
     font-size: 68px;
 }
 header #logo h2 a{
     display: block;
     margin: 0px;
-    margin-top: -6px;
-    margin-left: 15px;
-    font-size: 14px;
+    margin-top: 3px;
+    font-size: 16px;
     font-weight: normal;
     letter-spacing: 0.425em;
 }
