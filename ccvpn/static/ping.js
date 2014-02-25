@@ -4,11 +4,23 @@ function ping(host, callback, avg, count) {
     var start;
     var done = false;
     var img = new Image();
+    if (typeof(avg) === 'undefined') {
+        avg = 0;
+    }
+    if (typeof(count) === 'undefined') {
+        // -1 to ignore the first ping, so the DNS lookup does not change
+        // the average time.
+        count = -1;
+    }
     count = count + 1;
     function ok() {
         done = true;
         var time = new Date() - start;
-        avg = ((avg * (count-1)) + time) / (count)
+        if (count > 0) {
+            avg = ((avg * (count-1)) + time) / (count)
+        } else {
+            avg = 0;
+        }
         if (count >= npings) {
             callback(Math.round(avg) + 'ms');
         } else {
@@ -41,7 +53,7 @@ window.addEventListener('load', function() {
                 result = ping('http://' + line.children[0].innerHTML + '/ping',
                     function(r) {
                         line.children[1].innerHTML = '[ping: '+r+']';
-                    }, 0, 0);
+                    });
                 return false;
             }
         })(line);
