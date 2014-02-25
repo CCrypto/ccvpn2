@@ -549,7 +549,9 @@ ul.account-box {
 #gateways table tbody tr:nth-child(even) {
     background: #eee;
 }
-
+#gateways table tr td:not(:first-child) {
+    width: 20%;
+}
 
 
  /* FONTS */
