@@ -1,4 +1,4 @@
-from .models import DBSession, Order, PaypalAPI
+from .models import Order, PaypalAPI
 from pyramid.httpexceptions import HTTPOk, HTTPSeeOther, HTTPBadRequest
 import bitcoinrpc
 import logging

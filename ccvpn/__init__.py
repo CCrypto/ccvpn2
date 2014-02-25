@@ -8,6 +8,7 @@ from .models import DBSession, Base, get_user, User
 
 logger = logging.getLogger(__name__)
 
+
 class AuthenticationPolicy(object):
     def authenticated_userid(self, request):
         return request.user
@@ -33,21 +34,22 @@ class Messages(object):
     def __init__(self, request):
         self.request = request
         self.session = request.session
-    
+
     def add(self, level, text):
         self.session.flash((level, text))
 
     def error(self, text):
         return self.add('error', text)
-    
+
     def info(self, text):
         return self.add('info', text)
-        
+
 
 class AuthorizationPolicy(object):
     ''' Why the fuck is ACLAuthorizationPolicy so complicated ? '''
     def permits(self, context, principals, permission):
         return permission in principals
+
 
 def setup_routes(config):
     a = config.add_route
@@ -85,6 +87,7 @@ def setup_routes(config):
     a('api_server_disconnect', '/api/server/disconnect')
     a('api_server_config', '/api/server/config')
 
+
 def referral_handler(request):
     ref = request.GET.get('ref')
     if not ref:
@@ -100,6 +103,7 @@ def referral_handler(request):
     request.referrer = u
     return u
 
+
 def get_referrer(request):
     if 'referral_id' not in request.cookies:
         return None
@@ -112,6 +116,7 @@ def get_referrer(request):
         return None
     return u
 
+
 def referral_handler_factory(handler, registry):
     def decorator(request):
         u = referral_handler(request)
@@ -120,6 +125,7 @@ def referral_handler_factory(handler, registry):
             response.set_cookie('referral_id', str(u.id), overwrite=True)
         return response
     return decorator
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.

@@ -1,8 +1,6 @@
 import codecs
 import markdown
 import os
-import requests
-import json
 import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPOk, HTTPNotFound
@@ -10,6 +8,7 @@ from beaker import cache
 
 logger = logging.getLogger(__name__)
 
+from ccvpn.models import IcingaError, IcingaQuery
 from ccvpn.views import account, admin, api  # noqa
 
 
@@ -41,8 +40,6 @@ def page(request):
         return HTTPNotFound()
 
 
-from ccvpn.models import IcingaError, IcingaQuery
-
 @cache.cache_region('short_term')
 def get_uptime(request, l):
     settings = request.registry.settings
@@ -57,6 +54,7 @@ def get_uptime(request, l):
             l[host]['uptime'] = '[error]'
             logger.error('Icinga: %s', e.args[0])
     return l
+
 
 @view_config(route_name='gateways', renderer='gateways.mako')
 def gateways(request):

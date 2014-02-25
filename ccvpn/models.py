@@ -189,6 +189,7 @@ class PaypalAPI(object):
 class IcingaError(Exception):
     pass
 
+
 class IcingaQuery(object):
     def __init__(self, urlbase, auth):
         self.baseurl = urlbase
@@ -197,11 +198,12 @@ class IcingaQuery(object):
     def get_report(self, host):
         url = self.baseurl + '/avail.cgi?host=%s&show_log_entries&jsonoutput'
         try:
-            r = requests.get(url%host, auth=self.auth, verify=False, timeout=0.5)
+            r = requests.get(url % host, auth=self.auth,
+                             verify=False, timeout=0.5)
             data = json.loads(r.content.decode('utf-8'))
             return data
         except requests.RequestException as e:
-            raise IcingaError('failed to connect: '+str(e.args[0]))
+            raise IcingaError('failed to connect: ' + str(e.args[0]))
         except ValueError:
             raise IcingaError('failed to decode icinga response')
 
@@ -216,7 +218,7 @@ class IcingaQuery(object):
             raise IcingaError('failed to parse icinga report', host)
         except StopIteration:
             raise IcingaError('host unknown to icinga', host)
-        return str(uptime)+'%'
+        return str(uptime) + '%'
 
 
 class User(Base):
@@ -312,6 +314,7 @@ class User(Base):
         c = DBSession.query(nc, ec).first()
         return (c.nc, c.ec)
 
+
 class PasswordResetToken(Base):
     __tablename__ = 'pwresettoken'
     id = Column(Integer, primary_key=True)
@@ -343,8 +346,10 @@ class Profile(Base):
     list_fields = ('id', 'uid', 'name')
     edit_fields = ('id', 'uid', 'name', 'password')
 
+
 class AlreadyUsedGiftCode(Exception):
     pass
+
 
 class GiftCode(Base):
     __tablename__ = 'giftcodes'
@@ -393,8 +398,10 @@ class GiftCode(Base):
     list_fields = ('id', 'code', 'time', 'username_if_used')
     edit_fields = ('id', 'code', 'time', 'free_only', 'used')
 
+
 class OrderNotPaid(Exception):
     pass
+
 
 class Order(Base):
     __tablename__ = 'orders'
