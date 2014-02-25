@@ -16,6 +16,7 @@ import random
 import logging
 import re
 import hashlib
+import requests
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
@@ -183,6 +184,39 @@ class PaypalAPI(object):
             order.payment = dict(error=str(error))
             print('Error: ' + str(error))
             return True
+
+
+class IcingaError(Exception):
+    pass
+
+class IcingaQuery(object):
+    def __init__(self, urlbase, auth):
+        self.baseurl = urlbase
+        self.auth = auth
+
+    def get_report(self, host):
+        url = self.baseurl + '/avail.cgi?host=%s&show_log_entries&jsonoutput'
+        try:
+            r = requests.get(url%host, auth=self.auth, verify=False, timeout=0.5)
+            data = json.loads(r.content.decode('utf-8'))
+            return data
+        except requests.RequestException as e:
+            raise IcingaError('failed to connect: '+str(e.args[0]))
+        except ValueError:
+            raise IcingaError('failed to decode icinga response')
+
+    def get_uptime(self, host):
+        report = self.get_report(host)
+        try:
+            hosts = report['avail']['host_availability']['hosts']
+            hostdata = next(filter(lambda h: h['host_name'] == host, hosts))
+            uptime = int(hostdata['percent_known_time_up'])
+        except (KeyError, ValueError):
+            print(report)
+            raise IcingaError('failed to parse icinga report', host)
+        except StopIteration:
+            raise IcingaError('host unknown to icinga', host)
+        return str(uptime)+'%'
 
 
 class User(Base):

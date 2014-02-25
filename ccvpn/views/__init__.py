@@ -3,9 +3,12 @@ import markdown
 import os
 import requests
 import json
+import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPOk, HTTPNotFound
 from beaker import cache
+
+logger = logging.getLogger(__name__)
 
 from ccvpn.views import account, admin, api  # noqa
 
@@ -38,20 +41,21 @@ def page(request):
         return HTTPNotFound()
 
 
+from ccvpn.models import IcingaError, IcingaQuery
+
 @cache.cache_region('short_term')
 def get_uptime(request, l):
     settings = request.registry.settings
     base = settings.get('nagios.url')
     user = settings.get('nagios.user')
     password = settings.get('nagios.password')
-    url = base + '/avail.cgi?host=%s&show_log_entries&jsonoutput'
-
-    for host, data in l.items():
-        r = requests.get(url%host, auth=(user, password), verify=False)
-        data = json.loads(r.content.decode('ascii'))
-        hosts = data['avail']['host_availability']['hosts']
-        hostdata = next(filter(lambda h: h['host_name'] == host, hosts))
-        l[host]['uptime'] = str(int(hostdata['percent_known_time_up']))+'%'
+    r = IcingaQuery(base, (user, password))
+    for host in l.keys():
+        try:
+            l[host]['uptime'] = r.get_uptime(host)
+        except IcingaError as e:
+            l[host]['uptime'] = '[error]'
+            logger.error('Icinga: %s', e.args[0])
     return l
 
 @view_config(route_name='gateways', renderer='gateways.mako')
