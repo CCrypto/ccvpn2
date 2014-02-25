@@ -154,7 +154,7 @@ def reset(request):
         request.messages.error('Unknown password reset token.')
         url = request.route_url('account_forgot')
         return HTTPMovedPermanently(location=url)
-    
+
     password = request.POST.get('password')
     password2 = request.POST.get('password2')
 
@@ -285,6 +285,7 @@ def order_post_gc(request, code):
     except AlreadyUsedGiftCode:
         request.messages.error('Already used code')
     return HTTPSeeOther(location=request.route_url('account'))
+
 
 @view_config(route_name='order_post', permission='logged')
 def order_post(request):

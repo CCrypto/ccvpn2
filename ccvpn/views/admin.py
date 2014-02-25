@@ -62,7 +62,7 @@ def admin_graph(request):
             return type(request.GET.get(name, default))
         except ValueError:
             raise HTTPBadRequest()
-    
+
     pygalopts = {
         'js': [
             request.static_url('ccvpn:static/pygal/svg.jquery.js'),
@@ -123,16 +123,16 @@ def admin_graph(request):
         for m in gen:
             filter_ = time_filter(period, m, lambda o: o.start_date)
             orders_date = list(filter(filter_, orders))
-            
+
             for duration in values.keys():
                 filter_ = lambda o: o.time == duration
                 orders_dd = list(filter(filter_, orders_date))
 
                 sum_ = sum(o.paid_amount for o in orders_dd)
                 values[duration].append(round(sum_, 4) or None)
-                
+
             chart.x_labels.append('%s' % m)
-        
+
         for time, v in values.items():
             label = '%sd' % time.days
             chart.add(label, v)
