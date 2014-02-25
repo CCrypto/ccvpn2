@@ -56,8 +56,8 @@
     
     <header>
         <div id="logo">
+            <h2><a href="//ccrypto.org/">CCrypto</a></h2>
             <h1><a href="/">VPN</a></h1>
-            <h2><a href="//ccrypto.org/">By CCrypto</a></h2>
         </div>
         <nav>
             <ul>
