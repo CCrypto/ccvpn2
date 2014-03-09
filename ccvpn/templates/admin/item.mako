@@ -1,7 +1,9 @@
 <%inherit file="../layout.mako" />
 
 <section>
-    <h2><a href="/admin/">Admin</a> - <a href="/admin/${model_name.lower()}s">${model_name}</a> - ${str(item)} #${item.id}</h2>
+    <h2><a href="/admin/">Admin</a>
+        - <a href="/admin/${model_name.lower()}s">${model_name}</a>
+        - ${str(item)} #${item.id}</h2>
     <article>
         <form class="largeform" action="/admin/${model_name.lower()}s?id=${item.id}" method="post">
         % for field in model.edit_fields:

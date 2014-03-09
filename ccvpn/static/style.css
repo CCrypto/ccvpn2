@@ -398,7 +398,7 @@ form.largeform label[title] {
     border-bottom: 1px dotted black;
 }
 form.largeform input {
-    height: 16px;
+    height: 22px;
     display: block;
     padding: 4px 5px;
     margin: 2px 2px 2px 160px;

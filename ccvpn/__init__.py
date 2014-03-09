@@ -80,7 +80,7 @@ def setup_routes(config):
     a('admin_users', '/admin/users')
     a('admin_orders', '/admin/orders')
     a('admin_giftcodes', '/admin/giftcodes')
-    a('admin_apiaccess', '/admin/apiaccess')
+    a('admin_apiaccesstokens', '/admin/apiaccesstokens')
 
     # Server API
     a('api_server_auth', '/api/server/auth')
