@@ -18,8 +18,14 @@ class TestAPIViews(unittest.TestCase):
         with transaction.manager:
             user = User(username='test', password='testpw')
             user.add_paid_time(datetime.timedelta(days=30))
-            baduser = User(username='badtest', password='testpw')
             self.session.add(user)
+
+            duser = User(username='disabledtest', password='testpw')
+            duser.is_active = False
+            duser.add_paid_time(datetime.timedelta(days=30))
+            self.session.add(duser)
+
+            baduser = User(username='badtest', password='testpw')
             self.session.add(baduser)
         with transaction.manager:
             token = APIAccessToken(token='apitoken')
@@ -124,6 +130,16 @@ class TestAPIViews(unittest.TestCase):
         })
         resp = views.api.api_server_auth(req)
         self.assertEqual(resp.code, 200)
+
+    def test_user_auth_disabled(self):
+        req = DummyRequest(headers={
+            'X-API-Token': 'apitoken'
+        }, post={
+            'username': 'disabledtest',
+            'password': 'testpw'
+        })
+        resp = views.api.api_server_auth(req)
+        self.assertEqual(resp.code, 403)
 
     def test_user_auth_profile(self):
         req = DummyRequest(headers={
