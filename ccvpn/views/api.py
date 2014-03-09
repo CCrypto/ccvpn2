@@ -41,7 +41,7 @@ def api_server_auth(request):
         username = fullname
         profilename = None
     user = DBSession.query(User).filter_by(username=username).first()
-    if not user or not user.check_password(password):
+    if not user or not user.check_password(password) or not user.is_active:
         return HTTPForbidden()
     if not user.is_paid:
         return HTTPUnauthorized()
