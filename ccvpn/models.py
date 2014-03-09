@@ -484,7 +484,7 @@ class APIAccessToken(Base):
     edit_fields = ('id', 'token', 'label', 'remote_addr', 'expire_date')
 
     def __str__(self):
-        return self.label
+        return self.label or str(self.id)
 
 
 def get_user(request):

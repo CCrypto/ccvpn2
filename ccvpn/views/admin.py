@@ -6,6 +6,8 @@ from datetime import datetime, timedelta, date
 from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
 from ccvpn.methods import BitcoinMethod, METHOD_IDS
 
+import transaction
+from dateutil import parser
 
 def monthdelta(date, delta):
     m = (date.month + delta) % 12
@@ -181,26 +183,24 @@ class AdminView(object):
         raise NotImplementedError()
 
     def post_item(self):
-        if 'id' in self.request.POST and self.request.POST['id'] != '':
-            item = self.get_item(self.request.POST['id'])
-            item_id = self.request.POST['id']
-            item = DBSession.query(self.model).filter_by(id=item_id).first()
-            if not item:
+        with transaction.manager:
+            if 'id' in self.request.POST and self.request.POST['id'] != '':
+                item = self.get_item(self.request.POST['id'])
+                item_id = self.request.POST['id']
+                item = DBSession.query(self.model).filter_by(id=item_id).first()
+                if not item:
+                    item = self.model()
+                    DBSession.add(item)
+            else:
                 item = self.model()
                 DBSession.add(item)
-        else:
-            item = self.model()
-            DBSession.add(item)
-        try:
+            print(item)
             self.assign_from_form(item)
-        except:
-            DBSession.rollback()
-            raise
 
-        DBSession.flush()
         self.request.session.flash(('info', 'Saved!'))
         route_name = 'admin_' + self.model.__name__.lower() + 's'
         location = self.request.route_url(route_name, _query={'id': item.id})
+        DBSession.expire_all()
         return HTTPSeeOther(location=location)
 
     def get_item(self, id):
@@ -251,8 +251,10 @@ class AdminUsers(AdminView):
             item.set_password(post['password'])
         item.is_active = 'is_active' in post
         item.is_admin = 'is_admin' in post
-        item.paid_until = post['paid_until'] or None
-
+        if post['paid_until']:
+            item.paid_until = parser.parse(post['paid_until'])
+        else:
+            item.paid_until = None
 
 @view_config(route_name='admin_orders', permission='admin')
 class AdminOrders(AdminView):
@@ -283,14 +285,14 @@ class AdminGiftCodes(AdminView):
         #item.used = self._get_uid(post['used'])
 
 
-@view_config(route_name='admin_apiaccess', permission='admin')
+@view_config(route_name='admin_apiaccesstokens', permission='admin')
 class AdminAPIAccess(AdminView):
     model = APIAccessToken
 
     def assign_from_form(self, item):
         post = self.request.POST
-        item.token = post['token']
-        item.label = post['label']
-        item.remote_addr = post['remote_addr']
-        item.expire_date = post['expire_date']
+        item.token = post['token'] or None
+        item.label = post['label'] or None
+        item.remote_addr = post['remote_addr'] or None
+        item.expire_date = post['expire_date'] or None
 
