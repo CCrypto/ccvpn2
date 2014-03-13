@@ -1,5 +1,8 @@
-Docs
+Help
 ====
+
+-> [**Frequently Asked Questions**](/page/faq)  
+-> [**Contact support**](/page/support)
 
 Installation guides:
 
@@ -10,6 +13,5 @@ Installation guides:
 
 Other:
 
-  - [save username/password in OpenVPN config](/page/auth-user-pass)
   - [tech stuff](/page/tech)
 

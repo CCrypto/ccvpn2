@@ -8,7 +8,8 @@ Cognitive Cryptography provides a fast support for the VPN in french and english
 
   - **IRC**: Join #ccrypto on chat.freenode.net with your favorite client or
     [our webchat](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|?&theme=cli#ccrypto).  
-    Ask the channel operators and we will try to help you as soon as possible.
+    Ask the channel operators and we will try to help you as soon as possible.  
+    This is the fastest way to have an answer.
 
   - **Twitter**: Mention @CCrypto_VPN.
 
