@@ -101,15 +101,8 @@ However, French authorities can ask us for user data. That's why we
 recommend you to not use your usual username here so that your VPN account
 cannot be associated to anything you do with it.
 
+### Will you log traffic or send user data to authorities?
+Only if required by the law to keep the service running.  
+In this case, we'll try to contact you by email before doing anything.  
 
-Frequent errors on Windows
---------------------------
-
-    NETSH: C:\Windows\system32\netsh.exe interface ipv6 set address Connexion au réseau local
-    ERROR: netsh command failed: returned error code 1
-
-Rename your network connection to avoid spaces, for example "Connexion au réseau local" to "local".
-
-  - [(fr) Renommer une connexion réseau](http://windows.microsoft.com/fr-xf/windows-vista/rename-a-network-connection)
-  - [(en) Rename a network connection](http://windows.microsoft.com/en-au/windows-vista/rename-a-network-connection)
 

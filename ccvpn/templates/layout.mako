@@ -1,9 +1,7 @@
 <%
     menuItems = [
         ['Home', '/'],
-        ['Docs', '/page/docs'],
-        ['FAQ', '/page/faq'],
-        ['Support', '/page/support'],
+        ['Help', '/page/help'],
         ['Servers', '/gateways'],
     ]
     if request.user and request.user.is_admin:
