@@ -1,3 +1,4 @@
+<%! title = 'Gateways' %>
 <%inherit file="layout.mako" />
 <section id="gateways">
     <article>

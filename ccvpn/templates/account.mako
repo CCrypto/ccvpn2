@@ -1,3 +1,4 @@
+<%! title = 'Account' %>
 <%inherit file="layout.mako" />
 <%
     user = request.user

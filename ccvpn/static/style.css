@@ -204,116 +204,75 @@ pre {
     margin-bottom: 1em;
 }
 
-section#signuppage{
-    padding: 0px;
+
+
+section.centeredpage {
     border-radius: none;
-    border-top: none;
-    background: none;
-}
-section#signuppage h1{
-    padding: 20px 20px 0px;
-}
-section#signuppage form{
-    padding: 0px 20px 20px;
-}
-article.signup{
-    float: left;
-    width: 60%;
-    border-radius: 4px;
-    border-top: 7px solid #1c619a;
-    background: #fff;
-}
-article.rightsignup{
-    float: right;
-    width: 37%;
-    border-radius: 4px;
-    border-top: 7px solid #1c619a;
-    background: #fff;
-}
-article.rightsignup h2{
-    color: #1c619a;
-    padding: 20px;
-    margin: 0px;
-}
-article.rightsignup ul{
-    margin: 0px;
-    padding: 0px 20px 20px;
-}
-article.rightsignup ul li{
-    list-style: none;
-
-}
-article.rightsignup ul li:before{
-    content: "→ ";
-}
-article.rightsignup a{
-    text-decoration: none;
-}
-article.rightsignup a:hover{
-    text-decoration: underline;
-}
-
-
-section#loginpage{
+    border: 0;
     padding: 0px;
-    border-radius: none;
-    border-top: none;
-    background: none;
+    background: transparent;
+    box-shadow: none;
 }
-section#loginpage h1{
-    padding: 20px 20px 0px;
-}
-section#loginpage form{
-    padding: 0px 20px 20px;
-}
-article.login{
-    max-width: 300px;
-    margin: auto;
+section.centeredpage article {
     border-radius: 4px;
     border-top: 7px solid #1c619a;
     background: #fff;
+    box-shadow: 1px 1px 3px #aaa;
 }
-article.pwreset {
-    max-width: 400px;
-}
-article.login form{
+section.centeredpage article form{
     text-align: center;
+    padding: 0px 20px 20px;
 }
-article.login form input{
+section.centeredpage article form input{
     margin: auto;
     width: 80%;
 }
-article.linkslogin{
-    max-width: 300px;
-    margin: 20px auto;
-
-    border-radius: 4px;
-    border-top: 7px solid #1c619a;
-    background: #fff;
+section.centeredpage h1 {
+    padding: 20px 20px 0px;
 }
-article.linkslogin h2{
+
+section.centeredpage article.links h2 {
     color: #1c619a;
     padding: 20px;
     margin: 0px;
 }
-article.linkslogin ul{
-    margin: 0px;
+section.centeredpage article.links {
+    margin: 20px auto 0 auto;
+}
+section.centeredpage article.links ul{
     padding: 0px 20px 20px;
 }
-article.linkslogin ul li{
+section.centeredpage article.links ul li{
     list-style: none;
-
 }
-article.linkslogin ul li:before{
+section.centeredpage article.links ul li:before{
     content: "→ ";
 }
-article.linkslogin a{
+section.centeredpage article.links a{
     text-decoration: none;
 }
-article.linkslogin a:hover{
+section.centeredpage article.links a:hover{
     text-decoration: underline;
 }
 
+section#loginpage{
+    max-width: 300px;
+}
+section#pwresetpage {
+    max-width: 400px;
+}
+
+section#signuppage article.links {
+    margin: 0 0 20px 0;
+}
+section#signuppage article{
+    float: left;
+    width: 60%;
+}
+section#signuppage article.rightsignup{
+    float: right;
+    width: 37%;
+}
 
 section form label {
     font-weight: bold;
@@ -343,7 +302,7 @@ section form input[type=submit]:hover {
 
 section form.vert label {
     display: block;
-    margin-top: 1em;
+    margin-top: 24px;
     margin-bottom: 6px;
 }
 section form.vert input {
@@ -357,8 +316,8 @@ section form.vert .inputhelp {
     font-size: 0.8em;
 }
 section form.vert input[type=submit]{
-    margin-top: 10px;
-    padding: 7px 30px;
+    margin-top: 20px;
+    padding: 9px 30px;
 }
 
 section form.inline {

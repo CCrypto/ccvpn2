@@ -1,7 +1,8 @@
+<%! title = 'Password Reset' %>
 <%inherit file="layout.mako" />
 
-<section id="loginpage">
-    <article class="login">
+<section id="pwresetpage" class="centeredpage">
+    <article>
     <h1>Password Reset</h1>
     <form class="vert" action="/account/reset/${token.token}" method="post" class="vertical">
         <label for="ins_password">Password</label>
@@ -12,7 +13,7 @@
         <input type="submit" />
     </form>
     </article>
-    <article class="linkslogin">
+    <article class="links">
         <h2>Others Links</h2>
         <ul>
             <li><a href="/account/login">You remembered your password? Log in</a></li>
