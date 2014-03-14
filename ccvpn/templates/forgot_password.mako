@@ -1,8 +1,9 @@
+<%! title = 'Password Reset' %>
 <%inherit file="layout.mako" />
 
-<section id="loginpage">
-    <article class="login pwreset">
-    <h1>Password reset</h1>
+<section id="pwresetpage" class="centeredpage">
+    <article>
+    <h1>Password Reset</h1>
     <form class="vert" action="/account/forgot" method="post">
         <label for="ins_username">Username</label>
         <input type="text" id="ins_username" name="username" pattern="[a-zA-Z0-9_-]{2,32}" required="required" value="${username or ''}" />

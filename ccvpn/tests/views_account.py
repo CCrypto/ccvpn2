@@ -21,10 +21,10 @@ class TestPublicViews(unittest.TestCase):
 
     def test_page(self):
         req = DummyRequest()
-        req.matchdict['page'] = 'docs'
+        req.matchdict['page'] = 'help'
         resp = views.page(req)
         self.assertIsInstance(resp, dict)
-        self.assertIn('Docs', resp['content'])
+        self.assertIn('Installation guides:', resp['content'])
 
     def test_page_fail(self):
         req = DummyRequest()

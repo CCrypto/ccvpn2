@@ -1,3 +1,6 @@
+<%!
+    title_ = None
+%>
 <%
     menuItems = [
         ['Home', '/'],
@@ -18,11 +21,19 @@
     if use_https:
         ssl_port = settings.get('https_port', 443)
         ssl_url = request.current_route_url(_scheme='https', _port=ssl_port)
+
+    if title:
+        title_pre = title + ' - '
+    elif hasattr(self.attr, 'title') and self.attr.title:
+        title_pre = self.attr.title + ' - '
+    else:
+        title_pre = ''
+
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>CCrypto VPN</title>
+    <title>${title_pre}CCrypto VPN</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/static/reset.css" media="screen" />
     <link rel="stylesheet" href="/static/style.css" media="screen" />

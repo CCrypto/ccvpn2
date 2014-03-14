@@ -1,7 +1,8 @@
+<%! title = 'Login' %>
 <%inherit file="layout.mako" />
 
-<section id="loginpage">
-    <article class="login">
+<section id="loginpage" class="centeredpage">
+    <article>
     <h1>Log in</h1>
     <form class="vert" action="/account/login" method="post">
         <label for="ins_username">Username</label>
@@ -13,7 +14,7 @@
         <input type="submit" value="Log in" />
     </form>
     </article>
-    <article class="linkslogin">
+    <article class="links">
         <h2>Others Links</h2>
         <ul>
             <li><a href="/account/signup">Don't have an account? Create one</a></li>
