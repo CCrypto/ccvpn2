@@ -1,5 +1,4 @@
-Tech Stuff
-==========
+Title: Tech Stuff
 
 Software
 --------

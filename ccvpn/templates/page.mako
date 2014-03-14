@@ -2,8 +2,10 @@
 
 <section>
     <article>
-    ${content | n}
+        % if title:
+            <h1>${title}</h1>
+        % endif
+        ${content | n}
     </article>
-    <div style="clear: both"></div>
 </section>
 

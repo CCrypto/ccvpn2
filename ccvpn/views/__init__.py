@@ -33,9 +33,11 @@ def page(request):
     path = os.path.join(root, page)
     try:
         f = codecs.open(path, mode="r", encoding="utf-8")
-        content = markdown.markdown(f.read(), extensions=['toc'])
+        md = markdown.Markdown(extensions=['toc', 'meta'])
+        content = md.convert(f.read())
+        title = md.Meta['title'][0] if 'title' in md.Meta else None
         f.close()
-        return {'content': content}
+        return {'content': content, 'title': title}
     except FileNotFoundError:
         return HTTPNotFound()
 

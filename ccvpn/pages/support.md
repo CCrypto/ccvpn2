@@ -1,5 +1,4 @@
-Support
-=======
+Title: Support
 
 Before asking for help, make sure you read our [guides](/page/docs)
 and [FAQ](/page/faq).

@@ -1,5 +1,4 @@
-Help
-====
+Title: Help
 
 -> [**Frequently Asked Questions**](/page/faq)  
 -> [**Contact support**](/page/support)

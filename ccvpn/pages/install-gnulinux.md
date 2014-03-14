@@ -1,5 +1,4 @@
-Install on GNU/Linux
-====================
+Title: Install on GNU/Linux
 
 You will need a config file : In [your account](/account/), download the
 .ovpn file. You can rename it to .conf.

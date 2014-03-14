@@ -1,5 +1,4 @@
-Install on Android
-==================
+Title: Install on Android
 
 We recommend [Arne Schwabe's OpenVPN for Android][openvpn_android],
 as it is the only enough uptodate OpenVPN app at the moment.
