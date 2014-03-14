@@ -1,5 +1,4 @@
-Install on Mac OS X
-===================
+Title: Install on Mac OS X
 
 Download the .ovpn file you need in [your account](/account/) and save it
 in `~/Library/Application Support/Tunnelblick/Configurations/`.

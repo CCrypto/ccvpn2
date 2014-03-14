@@ -1,5 +1,4 @@
-Terms of Service
-================
+Title: Terms of Service
 
 Cognitive Cryptography provides virtual private networking (VPN) to its clients. You (Client)
 acknowledge that Cognitive Cryptography and/or any of its parent companies or constituents

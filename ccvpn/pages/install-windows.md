@@ -1,5 +1,4 @@
-Install on Windows
-==================
+Title: Install on Windows
 
 First, you need to download OpenVPN:
 [OpenVPN.net](http://openvpn.net/index.php/open-source/downloads.html)  
