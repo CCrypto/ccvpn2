@@ -20,7 +20,8 @@ requires = [
     'markdown',
     'bitcoin-python',
     'webtest',
-    'requests'
+    'requests',
+    'python-dateutil',
 ]
 
 setup(name='ccvpn',
