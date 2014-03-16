@@ -57,7 +57,7 @@ def setup_routes(config):
     # Public routes
     a('home', '/')
     a('page', '/page/{page:[a-zA-Z0-9_-]+}')
-    a('gateways', '/gateways')
+    a('status', '/status')
     a('ca_crt', '/ca.crt')
 
     # Account related

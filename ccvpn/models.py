@@ -5,6 +5,7 @@ from sqlalchemy import (
     func
 )
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects import postgresql  # INET
@@ -253,9 +254,10 @@ class User(Base):
             self.set_password(password)
         super().__init__(*args, **kwargs)
 
-    @property
+    @hybrid_property
     def is_paid(self):
         return self.paid_until is not None and self.paid_until > datetime.now()
+
 
     def add_paid_time(self, time):
         if not self.is_paid:

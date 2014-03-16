@@ -5,7 +5,7 @@
     menuItems = [
         ['Home', '/'],
         ['Help', '/page/help'],
-        ['Servers', '/gateways'],
+        ['Status', '/status'],
     ]
     if request.user and request.user.is_admin:
         menuItems.append(['Admin', '/admin/'])
