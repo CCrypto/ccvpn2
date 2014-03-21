@@ -183,20 +183,15 @@ class AdminView(object):
         raise NotImplementedError()
 
     def post_item(self):
-        if 'id' in self.request.POST and self.request.POST['id'] != '':
-            item = self.get_item(self.request.POST['id'])
+        if 'id' in self.request.POST and self.request.POST['id']:
             item_id = self.request.POST['id']
-            item = DBSession.query(self.model).filter_by(id=item_id).first()
-            if not item:
-                item = self.model()
-                DBSession.add(item)
-            self.assign_from_form(item)
-            transaction.commit()
+            query = DBSession.query(self.model).filter_by(id=item_id)
+            item = query.first() or self.model()
         else:
             item = self.model()
-            DBSession.add(item)
-            self.assign_from_form(item)
-            transaction.commit()
+        self.assign_from_form(item)
+        DBSession.add(item)
+        DBSession.flush()
 
         self.request.session.flash(('info', 'Saved!'))
         route_name = 'admin_' + self.model.__name__.lower() + 's'
@@ -205,8 +200,7 @@ class AdminView(object):
         return HTTPSeeOther(location=location)
 
     def get_item(self, id):
-        item_id = self.request.GET['id']
-        item = DBSession.query(self.model).filter_by(id=item_id).first()
+        item = DBSession.query(self.model).filter_by(id=id).first()
         template = 'admin/item.mako'
         if item is None:
             raise HTTPNotFound()
