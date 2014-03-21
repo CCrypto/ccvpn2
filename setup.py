@@ -50,5 +50,6 @@ setup(name='ccvpn',
       initialize_ccvpn_db = ccvpn.scripts.initializedb:main
       ccvpn_checkbtcorders = ccvpn.scripts.checkbtcorders:main
       ccvpn_apiacl = ccvpn.scripts.apiacl:main
+      ccvpn_mail = ccvpn.scripts.mail:main
       """,
       )
