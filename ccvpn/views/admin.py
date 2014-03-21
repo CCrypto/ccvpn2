@@ -183,19 +183,20 @@ class AdminView(object):
         raise NotImplementedError()
 
     def post_item(self):
-        with transaction.manager:
-            if 'id' in self.request.POST and self.request.POST['id'] != '':
-                item = self.get_item(self.request.POST['id'])
-                item_id = self.request.POST['id']
-                item = DBSession.query(self.model).filter_by(id=item_id).first()
-                if not item:
-                    item = self.model()
-                    DBSession.add(item)
-            else:
+        if 'id' in self.request.POST and self.request.POST['id'] != '':
+            item = self.get_item(self.request.POST['id'])
+            item_id = self.request.POST['id']
+            item = DBSession.query(self.model).filter_by(id=item_id).first()
+            if not item:
                 item = self.model()
                 DBSession.add(item)
-            print(item)
             self.assign_from_form(item)
+            transaction.commit()
+        else:
+            item = self.model()
+            DBSession.add(item)
+            self.assign_from_form(item)
+            transaction.commit()
 
         self.request.session.flash(('info', 'Saved!'))
         route_name = 'admin_' + self.model.__name__.lower() + 's'
