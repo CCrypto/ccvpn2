@@ -48,6 +48,8 @@ def main(argv=sys.argv):
         exit(1)
 
     q = DBSession.query(User)
+    q = q.filter(User.email != '')
+    q = q.filter(User.email is not None)
     if args.active:
         q = q.filter_by(is_paid=True)
     users = list(q.all())
