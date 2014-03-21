@@ -81,6 +81,12 @@ def status(request):
             'country': 'nl',
             'bw': 1e9,
         },
+        'poney0.fr.204vpn.net': {
+            'isp': ('Online', 'http://www.online.net/'),
+            'loc': 'Online DC3',
+            'country': 'fr',
+            'bw': 1e9,
+        },
     }
     for host in l.keys():
         l[host]['uptime'] = get_uptime(request, host)
