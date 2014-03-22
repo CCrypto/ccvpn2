@@ -260,9 +260,15 @@ class User(Base):
 
 
     def add_paid_time(self, time):
+        new_date = self.paid_until
         if not self.is_paid:
-            self.paid_until = datetime.now()
-        self.paid_until += time
+            new_date = datetime.now()
+        try:
+            new_date += time
+        except OverflowError:
+            return
+        self.paid_until = new_date
+
 
     def paid_time_left(self):
         if self.is_paid:
