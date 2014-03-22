@@ -276,7 +276,7 @@ class AdminGiftCodes(AdminView):
         post = self.request.POST
         item.code = post['code']
         item.time = post['time']
-        item.free_only = post['free_only']
+        item.free_only = 'free_only' in post
         #item.used = self._get_uid(post['used'])
 
 
