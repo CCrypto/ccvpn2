@@ -14,6 +14,11 @@ If you have any questions, go to the [Support page](/page/support).
 Debian/Ubuntu
 -------------
 **Login as root.** (important)  
+
+Download and install OpenVPN:
+
+    apt-get install openvpn resolvconf
+
 Put the config file you have downloaded in `/etc/openvpn/`.  
 ie: `/etc/openvpn/ccrypto.conf`
 
