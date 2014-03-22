@@ -4,7 +4,6 @@ import os
 import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPOk, HTTPNotFound
-from beaker import cache
 from sqlalchemy import func
 logger = logging.getLogger(__name__)
 
@@ -41,20 +40,6 @@ def page(request):
     except FileNotFoundError:
         return HTTPNotFound()
 
-@cache.cache_region('short_term')
-def get_uptime(request, host):
-    settings = request.registry.settings
-    base = settings.get('nagios.url')
-    user = settings.get('nagios.user')
-    password = settings.get('nagios.password')
-    if not base:
-        return '[unknown]'
-    r = IcingaQuery(base, (user, password))
-    try:
-        return r.get_uptime(host)
-    except IcingaError as e:
-        logger.error('Icinga: %s', e.args[0])
-        return '[error]'
 
 def format_bps(bits):
     multiples = ((1e9, 'G'), (1e6, 'M'), (1e3, 'K'), (0, ''))
@@ -62,7 +47,35 @@ def format_bps(bits):
         if bits < d:
             continue
         n = bits / (d or 1)
-        return '{:.2g}{}b/s'.format(n, m)
+        return '{:2g}{}bps'.format(n, m)
+
+
+def get_uptime_factory(settings):
+    base = settings.get('nagios.url')
+    user = settings.get('nagios.user')
+    password = settings.get('nagios.password')
+    services = settings.get('nagios.service').split(',')
+    services = [s.strip() for s in services]
+    if base:
+        try:
+            r = IcingaQuery(base, (user, password))
+        except IcingaError as e:
+            logger.error('Icinga: %s', e.args[0])
+            return lambda: '[error]'
+
+        def _get_uptime(host):
+            try:
+                uptimes = []
+                for s in services:
+                    uptimes.append(r.get_uptime(host, s))
+                return sum(uptimes) / len(uptimes)
+            except IcingaError as e:
+                logger.error('Icinga: %s', e.args[0])
+                return '[error]'
+
+        return _get_uptime
+    else:
+        return lambda: '[unknown]'
 
 
 @view_config(route_name='status', renderer='status.mako')
@@ -88,15 +101,21 @@ def status(request):
             'bw': 1e9,
         },
     }
+
+    get_uptime = get_uptime_factory(settings)
+
     for host in l.keys():
-        l[host]['uptime'] = get_uptime(request, host)
+        l[host]['uptime'] = get_uptime(host)
+        l[host]['bw_formatted'] = format_bps(l[host]['bw'])
+
     bw_graph_url = settings.get('munin.bw_graph_url', None)
     bw_graph_img = settings.get('munin.bw_graph_img', None)
     bw_graph = (bw_graph_url, bw_graph_img)
     return {
         'gateways': l,
         'bw_graph': bw_graph if all(bw_graph) else None,
-        'n_users': DBSession.query(func.count(User.id)).filter_by(is_paid=True).scalar(),
+        'n_users': DBSession.query(func.count(User.id))
+                            .filter_by(is_paid=True).scalar(),
         'n_countries': len(set(i['country'] for i in l.values())),
         'total_bw': format_bps(sum(i['bw'] for i in l.values())),
     }

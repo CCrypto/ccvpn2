@@ -5,7 +5,7 @@ from sqlalchemy import (
     func
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects import postgresql  # INET
@@ -18,6 +18,8 @@ import logging
 import re
 import hashlib
 import requests
+import socket
+from beaker import cache
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
@@ -196,30 +198,44 @@ class IcingaQuery(object):
         self.baseurl = urlbase
         self.auth = auth
 
-    def get_report(self, host):
-        url = self.baseurl + '/avail.cgi?host=%s&show_log_entries&jsonoutput'
         try:
-            r = requests.get(url % host, auth=self.auth,
-                             verify=False, timeout=0.5)
-            data = json.loads(r.content.decode('utf-8'))
-            return data
-        except requests.RequestException as e:
-            raise IcingaError('failed to connect: ' + str(e.args[0]))
-        except ValueError:
-            raise IcingaError('failed to decode icinga response')
+            content = self._get_availcgi()
+            data = json.loads(content)
+            self.report = data['avail']['service_availability']['services']
+        except (requests.RequestException, socket.timeout) as e:
+            raise IcingaError('failed to connect: ' + str(e))
+        except (ValueError, KeyError) as e:
+            raise IcingaError('failed to decode icinga response (%s)' % str(e))
 
-    def get_uptime(self, host):
-        report = self.get_report(host)
+    @cache.cache_region('short_term')
+    def _get_availcgi(self):
+        hostservices = 'all^all'
+        timeperiod = 'last31days'
+        backtrack = 4
+        url = '/avail.cgi?hostservice=%s&timeperiod=%s&backtrack=%d&jsonoutput'
+        url = url % (hostservices, timeperiod, backtrack)
+        r = requests.get(self.baseurl + url,
+                         auth=self.auth, verify=False, timeout=2)
+        content = r.content.decode('utf-8')
+
+        # When querying services availability, icinga can break the JSON
+        content = re.sub(',\n*(\]|\})', '\\1', content)
+
+        return content
+
+    def get_uptime(self, host, service):
         try:
-            hosts = report['avail']['host_availability']['hosts']
-            hostdata = next(filter(lambda h: h['host_name'] == host, hosts))
-            uptime = int(hostdata['percent_known_time_up'])
-        except (KeyError, ValueError):
-            print(report)
-            raise IcingaError('failed to parse icinga report', host)
+            def fn(h):
+                return h['host_name'] == host and \
+                       h['service_description'] == service
+            svcdata = next(filter(fn, self.report))
+            uptime = int(svcdata['percent_known_time_ok'])
+        except (KeyError, ValueError) as e:
+            raise IcingaError('failed to parse icinga report (%s)' % str(e),
+                              host, service)
         except StopIteration:
-            raise IcingaError('host unknown to icinga', host)
-        return str(uptime) + '%'
+            raise IcingaError('host/service unknown to icinga', host, service)
+        return uptime
 
 
 class User(Base):
@@ -258,7 +274,6 @@ class User(Base):
     def is_paid(self):
         return self.paid_until is not None and self.paid_until > datetime.now()
 
-
     def add_paid_time(self, time):
         new_date = self.paid_until
         if not self.is_paid:
@@ -268,7 +283,6 @@ class User(Base):
         except OverflowError:
             return
         self.paid_until = new_date
-
 
     def paid_time_left(self):
         if self.is_paid:
@@ -368,7 +382,8 @@ class GiftCode(Base):
                   default=random_gift_code)
     time = Column(Interval, default=timedelta(days=30), nullable=False,
                   doc='Time')
-    free_only = Column(Boolean, default=False, nullable=False, server_default=false())
+    free_only = Column(Boolean, default=False, nullable=False,
+                       server_default=false())
     used = Column(ForeignKey('users.id'), nullable=True)
 
     def __init__(self, time=None, code=None, used=None):
@@ -477,7 +492,8 @@ class Order(Base):
         return hex(self.id)[2:]
 
     def __repr__(self):
-        return '<Order %d by %s, %s>' % (self.id, self.user.username, self.time)
+        return '<Order %d by %s, %s>' % (self.id, self.user.username,
+                                         self.time)
 
 
 class APIAccessToken(Base):

@@ -22,18 +22,18 @@
         % if gateways:
         <table>
             <thead>
-                <tr><td>Host</td> <td>ISP</td> <td>Location</td> <td>Uptime</td></tr>
+                <tr><td>Host</td> <td>ISP / Bandwidth</td> <td>Location</td> <td>Uptime <span class="td-info">on 31 days</span></td></tr>
             </thead>
             <tbody>
                 % for h, d in gateways.items():
                 <tr><td class="host_line"><span class="host_name">${h}</span> </td>
                     % if isinstance(d['isp'], str):
-                        <td>${d['isp']}</td>
+                        <td>${d['isp']} / ${d['bw_formatted']}</td>
                     % else:
-                        <td><a href="${d['isp'][1]}">${d['isp'][0]}</a></td>
+                        <td><a href="${d['isp'][1]}">${d['isp'][0]}</a> / ${d['bw_formatted']}</td>
                     % endif
                     <td>${d['loc']}, ${d['country'].upper()}</td>
-                    <td>${d['uptime']}</td>
+                    <td>${d['uptime']}%</td>
                 </tr>
                 % endfor
             </tbody>

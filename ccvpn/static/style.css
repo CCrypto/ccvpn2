@@ -540,6 +540,11 @@ ul.account-box {
 #gateways table tr td:not(:first-child) {
     width: 20%;
 }
+#gateways table tr td .td-info {
+    display: block;
+    font-size: 0.8em;
+    font-weight: normal;
+}
 
  /* FONTS */
 
