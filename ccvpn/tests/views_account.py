@@ -49,9 +49,9 @@ class TestLoginView(unittest.TestCase):
         self.config = testing.setUp()
         setup_routes(self.config)
         self.session = setup_database()
-        with transaction.manager:
-            self.testuser = User(username='test', password='testpw')
-            self.session.add(self.testuser)
+        self.testuser = User(username='test', password='testpw')
+        self.session.add(self.testuser)
+        self.session.flush()
 
     def tearDown(self):
         self.session.remove()
@@ -134,8 +134,10 @@ class TestSignupView(unittest.TestCase):
 
     def test_valid_referral(self):
         with transaction.manager:
-            referrer = User(username='test', password='testpw')
-            self.session.add(referrer)
+            _referrer = User(username='test', password='testpw')
+            self.session.add(_referrer)
+
+        referrer = self.session.query(User).filter_by(username='test').first()
         self.assertFalse(referrer.is_paid)
 
         req = DummyRequest(post={
@@ -155,13 +157,16 @@ class TestSignupView(unittest.TestCase):
 
         self.assertFalse(referrer.is_paid)
 
-        with transaction.manager:
-            testorder = Order(user=newuser, amount=1,
-                              method=Order.METHOD.BITCOIN,
-                              time=datetime.timedelta(days=30))
-            self.session.add(testorder)
+        testorder = Order(user=newuser, amount=1,
+                          method=Order.METHOD.BITCOIN,
+                          time=datetime.timedelta(days=30))
+        self.session.add(testorder)
+        self.session.add(referrer)
+        self.session.flush()
         testorder.close(force=True)
+        self.session.flush()
 
+        self.session.refresh(referrer)
         self.assertTrue(referrer.is_paid)
 
     def test_invalid_username(self):
@@ -317,13 +322,13 @@ class TestResetView(unittest.TestCase):
         self.config.include('pyramid_mailer.testing')
         self.session = setup_database()
 
-        with transaction.manager:
-            testuser = User(username='test', password='testpw',
-                            email='user@host')
-            self.session.add(testuser)
-        with transaction.manager:
-            self.token = PasswordResetToken(uid=testuser.id)
-            self.session.add(self.token)
+        testuser = User(username='test', password='testpw',
+                        email='user@host')
+        self.session.add(testuser)
+        self.session.flush()
+        self.token = PasswordResetToken(uid=testuser.id)
+        self.session.add(self.token)
+        self.session.flush()
 
     def tearDown(self):
         self.session.remove()
@@ -402,12 +407,12 @@ class TestOrderView(unittest.TestCase):
         setup_routes(self.config)
         self.session = setup_database()
 
-        with transaction.manager:
-            self.testuser = User(username='test', password='testpw')
-            self.session.add(self.testuser)
-        with transaction.manager:
-            self.testcode = GiftCode(datetime.timedelta(days=7))
-            self.session.add(self.testcode)
+        self.testuser = User(username='test', password='testpw')
+        self.session.add(self.testuser)
+        self.session.flush()
+        self.testcode = GiftCode(datetime.timedelta(days=7))
+        self.session.add(self.testcode)
+        self.session.flush()
 
     def tearDown(self):
         self.session.remove()
@@ -458,11 +463,11 @@ class TestOrderView(unittest.TestCase):
         self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
 
     def test_view_paypal(self):
-        with transaction.manager:
-            testorder = Order(user=self.testuser.id, amount=1,
-                              method=Order.METHOD.PAYPAL,
-                              time=datetime.timedelta(days=30))
-            self.session.add(testorder)
+        testorder = Order(user=self.testuser.id, amount=1,
+                          method=Order.METHOD.PAYPAL,
+                          time=datetime.timedelta(days=30))
+        self.session.add(testorder)
+        self.session.flush()
 
         req = DummyRequest()
         req.session['uid'] = self.testuser.id
@@ -472,12 +477,12 @@ class TestOrderView(unittest.TestCase):
         self.assertEqual(resp['o'], testorder)
 
     def test_view_btc(self):
-        with transaction.manager:
-            testorder = Order(user=self.testuser.id, amount=1,
-                              method=Order.METHOD.BITCOIN,
-                              time=datetime.timedelta(days=30))
-            testorder.payment = {'btc_address': 'TESTADDRESS'}
-            self.session.add(testorder)
+        testorder = Order(user=self.testuser.id, amount=1,
+                          method=Order.METHOD.BITCOIN,
+                          time=datetime.timedelta(days=30))
+        testorder.payment = {'btc_address': 'TESTADDRESS'}
+        self.session.add(testorder)
+        self.session.flush()
 
         req = DummyRequest()
         req.session['uid'] = self.testuser.id
@@ -494,14 +499,15 @@ class TestOrderView(unittest.TestCase):
         self.assertIsInstance(resp, httpexceptions.HTTPNotFound)
 
     def test_view_not_owned(self):
-        with transaction.manager:
-            otheruser = User(username='othertest', password='testpw')
-            self.session.add(otheruser)
-        with transaction.manager:
-            testorder = Order(user=otheruser.id, amount=1,
-                              method=Order.METHOD.PAYPAL,
-                              time=datetime.timedelta(days=30))
-            self.session.add(testorder)
+        otheruser = User(username='othertest', password='testpw')
+        self.session.add(otheruser)
+        self.session.flush()
+
+        testorder = Order(user=otheruser.id, amount=1,
+                          method=Order.METHOD.PAYPAL,
+                          time=datetime.timedelta(days=30))
+        self.session.add(testorder)
+        self.session.flush()
 
         req = DummyRequest()
         req.session['uid'] = self.testuser.id
@@ -519,12 +525,12 @@ class TestConfigView(unittest.TestCase):
         setup_routes(self.config)
         self.session = setup_database()
 
-        with transaction.manager:
-            self.testuser = User(username='test', password='testpw')
-            self.session.add(self.testuser)
-        with transaction.manager:
-            profile = Profile(uid=self.testuser.id, name='testprofile')
-            self.session.add(profile)
+        self.testuser = User(username='test', password='testpw')
+        self.session.add(self.testuser)
+        self.session.flush()
+        profile = Profile(uid=self.testuser.id, name='testprofile')
+        self.session.add(profile)
+        self.session.flush()
 
     def tearDown(self):
         self.session.remove()

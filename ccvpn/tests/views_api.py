@@ -19,6 +19,10 @@ class TestAPIViews(unittest.TestCase):
             paiduser = User(username='paiduser', password='testpw')
             paiduser.add_paid_time(datetime.timedelta(days=30))
             self.session.add(paiduser)
+            self.session.flush()
+
+            profile = Profile(uid=paiduser.id, name='testprofile')
+            self.session.add(profile)
 
             freeuser = User(username='freeuser', password='testpw')
             self.session.add(freeuser)
@@ -47,10 +51,6 @@ class TestAPIViews(unittest.TestCase):
                           isp_name='', isp_url='', country='',
                           ipv6='1:2:3:4:5:6:7:8')
             self.session.add(gw3)
-
-        with transaction.manager:
-            profile = Profile(uid=paiduser.id, name='testprofile')
-            self.session.add(profile)
 
         self.testheaders = {
             'X-Gateway-Token': 'simple_gateway',

@@ -73,9 +73,9 @@ class TestGetUser(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.session = setup_database()
-        with transaction.manager:
-            self.testuser = User(username='test', password='testpw')
-            self.session.add(self.testuser)
+        self.testuser = User(username='test', password='testpw')
+        self.session.add(self.testuser)
+        self.session.flush()
 
     def tearDown(self):
         self.session.remove()
@@ -151,13 +151,14 @@ class TestGiftCodeModel(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.session = setup_database()
-        with transaction.manager:
-            self.u = User(username='freeuser', password='a')
-            DBSession.add(self.u)
+        self.u = User(username='freeuser', password='a')
+        DBSession.add(self.u)
+        self.session.flush()
 
-            self.pu = User(username='paiduser', password='a')
-            self.pu.add_paid_time(datetime.timedelta(days=30))
-            DBSession.add(self.pu)
+        self.pu = User(username='paiduser', password='a')
+        self.pu.add_paid_time(datetime.timedelta(days=30))
+        DBSession.add(self.pu)
+        self.session.flush()
 
     def tearDown(self):
         testing.tearDown()
@@ -193,9 +194,9 @@ class TestUserModelWithDB(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.session = setup_database()
-        with transaction.manager:
-            u = User(username='test', email='test@host', password='a')
-            DBSession.add(u)
+        u = User(username='test', email='test@host', password='a')
+        DBSession.add(u)
+        self.session.flush()
 
     def tearDown(self):
         testing.tearDown()
