@@ -50,6 +50,8 @@ def login(request):
         request.messages.error('Invalid username or password.')
         return {}
 
+    user.last_login = datetime.datetime.now()
+
     request.session['uid'] = user.id
     request.messages.info('Logged in.')
     return HTTPSeeOther(location=request.route_url('account'))
