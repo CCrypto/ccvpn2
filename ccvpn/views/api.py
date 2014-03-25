@@ -1,6 +1,7 @@
 import json
 import datetime
 
+import transaction
 from pyramid.view import view_config
 from ccvpn.models import DBSession, User, Gateway, Profile, VPNSession
 from pyramid.httpexceptions import (
@@ -149,7 +150,8 @@ def api_gateway_connect(request):
             return HTTPForbidden('Unknown profile')
         sess.profile_id = profile.id
 
-    DBSession.add(sess)
+    with transaction.manager:
+        DBSession.add(sess)
 
     params = {}
 

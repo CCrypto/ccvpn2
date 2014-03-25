@@ -99,7 +99,8 @@ def signup(request):
             if request.referrer:
                 u.referrer_id = request.referrer.id
             DBSession.add(u)
-        request.session['uid'] = u.id
+            DBSession.flush()
+            request.session['uid'] = u.id
         return HTTPSeeOther(location=request.route_url('account'))
     except AssertionError:
         for error in errors:
@@ -127,8 +128,8 @@ def forgot(request):
         return {}
 
     token = PasswordResetToken(u)
-    with transaction.manager:
-        DBSession.add(token)
+    DBSession.add(token)
+    DBSession.flush()
 
     mailer = get_mailer(request)
     body = render('mail/password_reset.mako', {
@@ -180,9 +181,7 @@ def reset(request):
 
     request.messages.info('You have changed the password for %s. You can now '
                           'log in.' % (token.user.username))
-    transaction.commit()
-    with transaction.manager:
-        DBSession.delete(token)
+    DBSession.delete(token)
     url = request.route_url('account_login')
     return HTTPMovedPermanently(location=url)
 

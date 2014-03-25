@@ -25,7 +25,7 @@ from urllib.request import urlopen
 
 log = logging.getLogger(__name__)
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=True)))
+DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=False)))
 prng = random.SystemRandom()
 
 
