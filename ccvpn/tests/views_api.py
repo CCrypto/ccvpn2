@@ -4,7 +4,7 @@ import unittest
 import transaction
 from pyramid import testing, httpexceptions
 
-from ccvpn.models import User, APIAccessToken, Profile
+from ccvpn.models import User, Gateway, Profile
 from ccvpn import views, setup_routes
 from ccvpn.tests import setup_database, DummyRequest
 
@@ -16,175 +16,214 @@ class TestAPIViews(unittest.TestCase):
         self.session = setup_database()
 
         with transaction.manager:
-            user = User(username='test', password='testpw')
-            user.add_paid_time(datetime.timedelta(days=30))
-            self.session.add(user)
+            paiduser = User(username='paiduser', password='testpw')
+            paiduser.add_paid_time(datetime.timedelta(days=30))
+            self.session.add(paiduser)
 
-            duser = User(username='disabledtest', password='testpw')
+            freeuser = User(username='freeuser', password='testpw')
+            self.session.add(freeuser)
+
+            duser = User(username='disableduser', password='testpw')
             duser.is_active = False
             duser.add_paid_time(datetime.timedelta(days=30))
             self.session.add(duser)
 
-            baduser = User(username='badtest', password='testpw')
-            self.session.add(baduser)
         with transaction.manager:
-            token = APIAccessToken(token='apitoken')
-            self.session.add(token)
+            gw0 = Gateway(name='gw0', token='simple_gateway',
+                          isp_name='', isp_url='', country='')
+            self.session.add(gw0)
 
-            restricted_token = APIAccessToken(token='restricted_apitoken')
-            restricted_token.remote_addr = '127.0.0.1'
-            self.session.add(restricted_token)
+            gw1 = Gateway(name='gw1', token='disabled_gateway',
+                          isp_name='', isp_url='', country='')
+            gw1.enabled = False
+            self.session.add(gw1)
+
+            gw2 = Gateway(name='gw2', token='ipv4_gateway',
+                          isp_name='', isp_url='', country='',
+                          ipv4='1.2.3.4')
+            self.session.add(gw2)
+
+            gw3 = Gateway(name='gw3', token='ipv6_gateway',
+                          isp_name='', isp_url='', country='',
+                          ipv6='1:2:3:4:5:6:7:8')
+            self.session.add(gw3)
+
         with transaction.manager:
-            profile = Profile(uid=user.id, name='testprofile')
+            profile = Profile(uid=paiduser.id, name='testprofile')
             self.session.add(profile)
+
+        self.testheaders = {
+            'X-Gateway-Token': 'simple_gateway',
+            'X-Gateway-Version': 'alpha',
+        }
 
     def tearDown(self):
         self.session.remove()
         testing.tearDown()
 
-    def test_disconnect(self):
+    def test_api_auth(self):
+        fn = views.api.require_api_token(None)(lambda req: True)
+
         req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
+            'X-Gateway-Token': 'simple_gateway',
+            'X-Gateway-Version': 'alpha',
         })
-        resp = views.api.api_server_disconnect(req)
-        self.assertEqual(resp.code, 200)
-        self.assertEqual(resp.body, b'')
+        self.assertEqual(fn(req), True)
 
-    def test_server_auth(self):
-        function = views.api.require_api_token(None)(lambda req: True)
-
+        # Invalid or missing headers
         req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
+            'X-Gateway-Token': 'simple_gateway',
+            'X-Gateway-Version': 'something_else',
         })
-        self.assertEqual(function(req), True)
+        self.assertIsInstance(fn(req), httpexceptions.HTTPBadRequest)
 
         req = DummyRequest(headers={
-            'X-API-Token': 'notapitoken'
+            'X-Gateway-Version': 'alpha',
         })
-        self.assertIsInstance(function(req), httpexceptions.HTTPForbidden)
+        self.assertIsInstance(fn(req), httpexceptions.HTTPBadRequest)
 
         req = DummyRequest(headers={
-            'X-API-Token': 'restricted_apitoken'
+            'X-Gateway-Token': 'simple_gateway',
+        })
+        self.assertIsInstance(fn(req), httpexceptions.HTTPBadRequest)
+
+        # Invalid header content
+        req = DummyRequest(headers={
+            'X-Gateway-Token': 'unknown_gateway',
+            'X-Gateway-Version': 'alpha',
+        })
+        self.assertIsInstance(fn(req), httpexceptions.HTTPForbidden)
+
+        req = DummyRequest(headers={
+            'X-Gateway-Token': 'disabled_gateway',
+            'X-Gateway-Version': 'alpha',
+        })
+        self.assertIsInstance(fn(req), httpexceptions.HTTPForbidden)
+
+        # Invalid source address
+        req = DummyRequest(headers={
+            'X-Gateway-Token': 'ipv4_gateway',
+            'X-Gateway-Version': 'alpha',
         }, remote_addr='1.2.3.4')
-        self.assertIsInstance(function(req), httpexceptions.HTTPUnauthorized)
+        self.assertEqual(fn(req), True)
 
         req = DummyRequest(headers={
-            'X-API-Token': 'restricted_apitoken'
-        }, remote_addr='127.0.0.1')
-        self.assertEqual(function(req), True)
+            'X-Gateway-Token': 'ipv4_gateway',
+            'X-Gateway-Version': 'alpha',
+        }, remote_addr='4.3.2.1')
+        self.assertIsInstance(fn(req), httpexceptions.HTTPForbidden)
 
-        req = DummyRequest()
-        self.assertIsInstance(function(req), httpexceptions.HTTPBadRequest)
-
-    def test_config(self):
         req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, params={
-            'username': 'test',
+            'X-Gateway-Token': 'ipv6_gateway',
+            'X-Gateway-Version': 'alpha',
+        }, remote_addr='1:2:3:4:5:6:7:8')
+        self.assertEqual(fn(req), True)
+
+        req = DummyRequest(headers={
+            'X-Gateway-Token': 'ipv6_gateway',
+            'X-Gateway-Version': 'alpha',
+        }, remote_addr='8:7:6:5:4:3:2:1')
+        self.assertIsInstance(fn(req), httpexceptions.HTTPForbidden)
+
+
+    def test_auth(self):
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
+            'password': 'testpw',
         })
-        resp = views.api.api_server_config(req)
-        self.assertEqual(resp.code, 200)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
         self.assertEqual(resp.body, b'')
 
-    def test_config_with_profile(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, params={
-            'username': 'test/testprofile',
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
         })
-        resp = views.api.api_server_config(req)
-        self.assertEqual(resp.code, 200)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
         self.assertEqual(resp.body, b'')
 
-    def test_config_no_post(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'freeuser',
+            'password': 'testpw',
         })
-        resp = views.api.api_server_config(req)
-        self.assertEqual(resp.code, 400)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
+        self.assertEqual(resp.body, b'')
 
-    def test_config_unknown_user(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, params={
-            'username': 'nottest',
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'disableduser',
+            'password': 'testpw',
         })
-        resp = views.api.api_server_config(req)
-        self.assertEqual(resp.code, 404)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
+        self.assertEqual(resp.body, b'')
 
-    def test_config_unknown_profile(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, params={
-            'username': 'test/nottesttprofile',
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/testprofile',
+            'password': 'testpw',
         })
-        resp = views.api.api_server_config(req)
-        self.assertEqual(resp.code, 404)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertEqual(resp.body, b'')
 
-    def test_user_auth(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'test',
-            'password': 'testpw'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/NOTtestprofile',
+            'password': 'testpw',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 200)
+        resp = views.api.api_gateway_auth(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
+        self.assertEqual(resp.body, b'')
 
-    def test_user_auth_disabled(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'disabledtest',
-            'password': 'testpw'
+    def test_connect(self):
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
+            'remote_addr': '1.2.3.4',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 403)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
 
-    def test_user_auth_profile(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'test/testprofile',
-            'password': 'testpw'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/testprofile',
+            'remote_addr': '1.2.3.4',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 200)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
 
-    def test_user_auth_no_post(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/NOTtestprofile',
+            'remote_addr': '1.2.3.4',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 400)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
 
-    def test_user_auth_unknown_user(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'nottest',
-            'password': 'testpw'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 403)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
+        self.assertEqual(resp.body, b'')
 
-    def test_user_auth_unknown_profile(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'test/nottestprofile',
-            'password': 'testpw'
+        req = DummyRequest(headers=self.testheaders, post={
+            'remote_addr': '',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 403)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
+        self.assertEqual(resp.body, b'')
 
-    def test_user_auth_expired(self):
-        req = DummyRequest(headers={
-            'X-API-Token': 'apitoken'
-        }, post={
-            'username': 'badtest',
-            'password': 'testpw'
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'freeuser',
+            'remote_addr': '',
         })
-        resp = views.api.api_server_auth(req)
-        self.assertEqual(resp.code, 401)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
+        self.assertEqual(resp.body, b'')
+
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'disableduser',
+            'remote_addr': '',
+        })
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
+        self.assertEqual(resp.body, b'')
+
 

@@ -260,6 +260,7 @@ class User(Base):
                                primaryjoin='and_(Order.uid == User.id, Order.paid == True)')
     profiles = relationship('Profile', backref='user')
     pw_reset_tokens = relationship('PasswordResetToken', backref='user')
+    sessions = relationship('VPNSession', backref='user')
 
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re = re.compile('^.+@.+$')
@@ -363,6 +364,8 @@ class Profile(Base):
     uid = Column(ForeignKey('users.id'))
     name = Column(String(16), nullable=False, doc='Name')
     password = Column(Text, nullable=True, doc='Key')
+
+    sessions = relationship('VPNSession', backref='profile')
 
     def validate_name(self, name):
         return re.match('^[a-zA-Z0-9]{1,16}$', name)
@@ -496,20 +499,47 @@ class Order(Base):
                                          self.time)
 
 
-class APIAccessToken(Base):
-    __tablename__ = 'apiaccesstok'
+class Gateway(Base):
+    __tablename__ = 'gateways'
     id = Column(Integer, primary_key=True)
+    name = Column(String(32), nullable=False)
+    isp_name = Column(String(32), nullable=False)
+    isp_url = Column(String, nullable=False)
+    country = Column(String(2), nullable=False)
     token = Column(String(32), nullable=False, default=random_access_token)
-    label = Column(String(256), nullable=True)
-    remote_addr = Column(INETWrapper, nullable=True)
-    expire_date = Column(DateTime, nullable=True)
+    ipv4 = Column(String, nullable=True)
+    ipv6 = Column(String, nullable=True)
+    bps = Column(BigInteger, nullable=True)
+    enabled = Column(Boolean, nullable=False, default=True,
+                     server_default=true())
 
-    list_fields = ('id', 'label', 'remote_addr')
-    edit_fields = ('id', 'token', 'label', 'remote_addr', 'expire_date')
+    sessions = relationship('VPNSession', backref='gateway')
 
-    def __str__(self):
-        return self.label or str(self.id)
+    list_fields = ('id', 'name', 'ipv4', 'ipv6', 'enabled')
+    edit_fields = ('id', 'name', 'isp_name', 'isp_url', 'country', 'token',
+                   'ipv4', 'ipv6', 'bps', 'enabled')
 
+    def __repr__(self):
+        return '<Gateway %s.%s>' % (self.name, self.country)
+
+
+class VPNSession(Base):
+    __tablename__ = 'vpnsessions'
+    id = Column(Integer, primary_key=True)
+    gateway_id = Column(ForeignKey('gateways.id'), nullable=False)
+    gateway_version = Column(Integer, nullable=False)
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    profile_id = Column(ForeignKey('profiles.id'), nullable=True)
+    connect_date = Column(DateTime, default=datetime.now, nullable=False)
+    disconnect_date = Column(DateTime, nullable=True)
+    remote_addr = Column(String, nullable=False)
+    bytes_up = Column(Integer, nullable=True)
+    bytes_down = Column(Integer, nullable=True)
+
+    def __repr__(self):
+        return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (
+            self.id, self.gateway_id, self.gateway_version, self.user_id,
+            self.connect_date, self.disconnect_date)
 
 def get_user(request):
     if 'uid' not in request.session:

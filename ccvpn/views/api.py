@@ -1,26 +1,44 @@
+import json
+import datetime
+
 from pyramid.view import view_config
-from ccvpn.models import DBSession, User, APIAccessToken, Profile
+from ccvpn.models import DBSession, User, Gateway, Profile, VPNSession
 from pyramid.httpexceptions import (
     HTTPOk,
-    HTTPBadRequest, HTTPForbidden, HTTPNotFound, HTTPUnauthorized
+    HTTPBadRequest, HTTPForbidden, HTTPNotFound, HTTPForbidden
 )
 
+gw_versions = {
+    'alpha': 1,
+    'beta': 2,
+}
 
 def require_api_token(function=None):
     def _dec(view_func):
         def _func(request):
-            if not 'X-API-Token' in request.headers:
-                return HTTPBadRequest('require API token header.')
-            token = request.headers['X-API-Token']
-            at = DBSession.query(APIAccessToken) \
+            if not 'X-Gateway-Token' in request.headers:
+                return HTTPBadRequest('require X-Gateway-Token header.')
+            if not 'X-Gateway-Version' in request.headers:
+                return HTTPBadRequest('require X-Gateway-Version header.')
+            if request.headers['X-Gateway-Version'] not in gw_versions:
+                return HTTPBadRequest('invalid X-Gateway-Version.')
+            version = gw_versions[request.headers['X-Gateway-Version']]
+
+            token = request.headers['X-Gateway-Token']
+            gw = DBSession.query(Gateway) \
                 .filter_by(token=token).first()
-            if not at:
-                return HTTPForbidden('wrong API token')
-            if at.remote_addr and at.remote_addr != request.remote_addr \
-               and at.remote_addr != '::ffff:' + request.remote_addr:
-                return HTTPUnauthorized('remote address not allowed for this'
-                                        'token')
-            return view_func(request)
+            if not gw:
+                return HTTPForbidden('Unknown token.')
+            if not gw.enabled:
+                return HTTPForbidden('Gateway disabled.')
+
+            ra = request.remote_addr
+            if gw.ipv4 == ra or gw.ipv6 == ra or gw.ipv6 == '::ffff:'+ra:
+                request.gw = gw
+                request.gw_version = version
+                return view_func(request)
+            return HTTPForbidden('Source address not authorized for this'
+                                    'gateway.')
         return _func
     if function is None:
         return _dec
@@ -28,60 +46,112 @@ def require_api_token(function=None):
         return _dec(function)
 
 
-@view_config(route_name='api_server_auth', request_method='POST')
+@view_config(route_name='api_gateway_auth', request_method='POST')
 @require_api_token
-def api_server_auth(request):
-    if 'username' not in request.POST or 'password' not in request.POST:
-        return HTTPBadRequest()
-    fullname = request.POST['username']
-    password = request.POST['password']
+def api_gateway_auth(request):
+    try:
+        fullname = request.POST['username']
+        password = request.POST['password']
+    except KeyError:
+        return HTTPBadRequest('Require username/password')
+
     if '/' in fullname:
         username, profilename = fullname.split('/', 1)
     else:
         username = fullname
         profilename = None
+
     user = DBSession.query(User).filter_by(username=username).first()
     if not user or not user.check_password(password) or not user.is_active:
-        return HTTPForbidden()
+        return HTTPForbidden('Invalid username or password.')
     if not user.is_paid:
-        return HTTPUnauthorized()
+        return HTTPForbidden('Free account')
+
     if profilename:
         profile = DBSession.query(Profile) \
-            .filter_by(name=profilename, uid=user.id).first()
+                           .filter_by(name=profilename, uid=user.id).first()
         if not profile:
-            return HTTPForbidden()
-    return HTTPOk()
-
-
-@view_config(route_name='api_server_disconnect', request_method='POST')
-@require_api_token
-def api_server_disconnect(request):
-    # May be used to count login/logouts
-    # Empty for now
+            return HTTPForbidden('Unknown profile')
     return HTTPOk(empty_body=True)
 
 
-@view_config(route_name='api_server_config', request_method='GET')
+@view_config(route_name='api_gateway_disconnect', request_method='POST')
 @require_api_token
-def api_server_config(request):
-    if 'username' not in request.GET:
-        return HTTPBadRequest()
-    fullname = request.GET['username']
+def api_gateway_disconnect(request):
+    try:
+        fullname = request.POST['username']
+        bytes_up = request.POST['bytes_up']
+        bytes_down = request.POST['bytes_down']
+    except KeyError:
+        return HTTPBadRequest('Require username/bytes_up/bytes_down')
+
     if '/' in fullname:
         username, profilename = fullname.split('/', 1)
     else:
         username = fullname
         profilename = None
+
+    sesq = DBSession.query(VPNSession) \
+                    .filter(VPNSession.disconnect_date == None) \
+                    .filter(Gateway.id == request.gw.id) \
+                    .filter(VPNSession.gateway_version == request.gw_version) \
+                    .filter(User.username == username)
+    if profilename:
+        sesq = sesq.filter(Profile.uid == User.id) \
+                   .filter(Profile.name == profilename)
+    sessions = list(sesq.all())
+
+    # First, we close every sessions except the last
+    # This can happen in /disconnect is not called
+    for sess in sessions[:-1]:
+        sess.disconnect_date = datetime.datetime.now()
+        sess.bytes_up = 0
+        sess.bytes_down = 0
+
+    # Now we can close the right session and save bw stats
+    if sessions:
+        sess = sessions[-1]
+        sess.disconnect_date = datetime.datetime.now()
+        sess.bytes_up = bytes_up
+        sess.bytes_down = bytes_down
+    return HTTPOk(empty_body=True)
+
+
+@view_config(route_name='api_gateway_connect', request_method='POST')
+@require_api_token
+def api_gateway_connect(request):
+    try:
+        fullname = request.POST['username']
+        client_addr = request.POST['remote_addr']
+    except KeyError:
+        return HTTPBadRequest('Require username/remote_addr')
+
+    if '/' in fullname:
+        username, profilename = fullname.split('/', 1)
+    else:
+        username = fullname
+        profilename = None
+
     user = DBSession.query(User).filter_by(username=username).first()
-    if not user:
-        return HTTPNotFound('unknown user')
+    if not user or not user.is_active or not user.is_paid:
+        return HTTPForbidden('Invalid account')
+
+    sess = VPNSession()
+    sess.gateway_id = request.gw.id
+    sess.gateway_version = request.gw_version
+    sess.user_id = user.id
+    sess.remote_addr = client_addr
+
     if profilename:
         profile = DBSession.query(Profile) \
-            .filter_by(name=profilename, uid=user.id) \
-            .first()
+                           .filter_by(name=profilename, uid=user.id).first()
         if not profile:
-            return HTTPNotFound('unknown profile')
-    # Nothing here, we do not need per-client configuration
-    # Mostly for future uses (BW limit, user routes, port forwarding, ...)
-    return HTTPOk(empty_body=True)
+            return HTTPForbidden('Unknown profile')
+        sess.profile_id = profile.id
+
+    DBSession.add(sess)
+
+    params = {}
+
+    return HTTPOk(body=json.dumps(params))
 

@@ -7,7 +7,7 @@ from webtest import TestApp
 from pyramid import testing
 from sqlalchemy import create_engine
 
-from ccvpn.models import DBSession, Base, User, APIAccessToken, Profile
+from ccvpn.models import DBSession, Base, User, Gateway, Profile
 from ccvpn import views, main, models, filters
 from ccvpn.scripts import initializedb, checkbtcorders, apiacl
 from ccvpn.tests import setup_database

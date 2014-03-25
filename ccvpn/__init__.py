@@ -81,11 +81,12 @@ def setup_routes(config):
     a('admin_orders', '/admin/orders')
     a('admin_giftcodes', '/admin/giftcodes')
     a('admin_apiaccesstokens', '/admin/apiaccesstokens')
+    a('admin_gateways', '/admin/gateways')
 
     # Server API
-    a('api_server_auth', '/api/server/auth')
-    a('api_server_disconnect', '/api/server/disconnect')
-    a('api_server_config', '/api/server/config')
+    a('api_gateway_auth', '/api/gateway/auth')
+    a('api_gateway_disconnect', '/api/gateway/disconnect')
+    a('api_gateway_connect', '/api/gateway/connect')
 
 
 def referral_handler(request):

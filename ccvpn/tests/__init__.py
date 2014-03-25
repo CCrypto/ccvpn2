@@ -19,6 +19,7 @@ class DummyRequest(testing.DummyRequest):
         super().__init__(*args, **kwargs)
         self.messages = Messages(self)
         self.referrer = None
+        self.remote_addr = kwargs.get('remote_addr')
         referral_handler(self)
 
     @property

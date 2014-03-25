@@ -7,7 +7,7 @@ from pyramid.httpexceptions import HTTPOk, HTTPNotFound
 from sqlalchemy import func
 logger = logging.getLogger(__name__)
 
-from ccvpn.models import DBSession, User, IcingaError, IcingaQuery
+from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway
 from ccvpn.views import account, admin, api  # noqa
 
 
@@ -61,7 +61,7 @@ def get_uptime_factory(settings):
             r = IcingaQuery(base, (user, password))
         except IcingaError as e:
             logger.error('Icinga: %s', e.args[0])
-            return lambda: '[error]'
+            return lambda h: '[error]'
 
         def _get_uptime(host):
             try:
@@ -75,38 +75,22 @@ def get_uptime_factory(settings):
 
         return _get_uptime
     else:
-        return lambda: '[unknown]'
+        return lambda h: '[unknown]'
 
 
 @view_config(route_name='status', renderer='status.mako')
 def status(request):
     settings = request.registry.settings
-    l = {
-        'teta.fr.204vpn.net': {
-            'isp': ('Tetaneutral', 'http://tetaneutral.net/'),
-            'loc': 'Toulouse',
-            'country': 'fr',
-            'bw': 100e6,
-        },
-        'tilaa.nl.204vpn.net': {
-            'isp': ('Tilaa', 'https://www.tilaa.com/'),
-            'loc': 'Haarlem',
-            'country': 'nl',
-            'bw': 1e9,
-        },
-        'poney0.fr.204vpn.net': {
-            'isp': ('Online', 'http://www.online.net/'),
-            'loc': 'Online DC3',
-            'country': 'fr',
-            'bw': 1e9,
-        },
-    }
+    domain = settings.get('net_domain', '')
+    ls = list(DBSession.query(Gateway).filter_by(enabled=True).all())
+    l = {g.name: g for g in ls}
 
     get_uptime = get_uptime_factory(settings)
 
     for host in l.keys():
-        l[host]['uptime'] = get_uptime(host)
-        l[host]['bw_formatted'] = format_bps(l[host]['bw'])
+        l[host].host_name = '%s.%s.%s'%(host, l[host].country, domain)
+        l[host].uptime = get_uptime(l[host].host_name)
+        l[host].bps_formatted = format_bps(l[host].bps)
 
     bw_graph_url = settings.get('munin.bw_graph_url', None)
     bw_graph_img = settings.get('munin.bw_graph_img', None)
@@ -116,7 +100,7 @@ def status(request):
         'bw_graph': bw_graph if all(bw_graph) else None,
         'n_users': DBSession.query(func.count(User.id))
                             .filter_by(is_paid=True).scalar(),
-        'n_countries': len(set(i['country'] for i in l.values())),
-        'total_bw': format_bps(sum(i['bw'] for i in l.values())),
+        'n_countries': len(set(i.country for i in l.values())),
+        'total_bw': format_bps(sum(i.bps for i in l.values())),
     }
 
