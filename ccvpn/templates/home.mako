@@ -39,8 +39,9 @@
     <article>
         <img src="/static/fast.svg" alt="" />
         <h2>Fast</h2>
-        <p><b>100Mbps</b><br/>
-            Even on Youtube.
+        <p><b>1Gbps</b><br/>
+            <b>Compressed</b> tunnel.<br />
+            Even on <b>Youtube</b>.
         </p>
     </article>
 
