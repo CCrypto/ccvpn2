@@ -3,7 +3,7 @@ from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
 from pyramid.renderers import render_to_response
 from datetime import datetime, timedelta, date
-from ccvpn.models import DBSession, User, Order, GiftCode, APIAccessToken
+from ccvpn.models import DBSession, User, Order, GiftCode, Gateway
 from ccvpn.methods import BitcoinMethod, METHOD_IDS
 
 import transaction
@@ -150,7 +150,6 @@ def admin_home(request):
         import pygal  # noqa
         graph = True
     except ImportError as e:
-        print(repr(e))
         request.session.flash(('error', 'Pygal not found: cannot make charts'))
         graph = False
 
@@ -280,14 +279,20 @@ class AdminGiftCodes(AdminView):
         #item.used = self._get_uid(post['used'])
 
 
-@view_config(route_name='admin_apiaccesstokens', permission='admin')
-class AdminAPIAccess(AdminView):
-    model = APIAccessToken
+@view_config(route_name='admin_gateways', permission='admin')
+class AdminGateways(AdminView):
+    model = Gateway
 
     def assign_from_form(self, item):
         post = self.request.POST
         item.token = post['token'] or None
-        item.label = post['label'] or None
-        item.remote_addr = post['remote_addr'] or None
-        item.expire_date = post['expire_date'] or None
+        item.name = post['name'] or None
+        item.isp_name = post['isp_name'] or None
+        item.isp_url = post['isp_url'] or None
+        item.country = post['country'] or None
+        item.ipv4 = post['ipv4'] or None
+        item.ipv6 = post['ipv6'] or None
+        item.bps = int(post['bps']) or None
+        item.enabled = 'enabled' in post
+
 

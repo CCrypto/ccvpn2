@@ -3,13 +3,13 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 from sqlalchemy import engine_from_config
 from pyramid.paster import get_appsettings, setup_logging
 
-from ccvpn.models import DBSession, APIAccessToken
+from ccvpn.models import DBSession, Gateway
 import logging
 log = logging.getLogger(__name__)
 
 
 def add(args):
-    t = APIAccessToken()
+    t = Gateway()
     t.label = args.label
     if args.token == '-':
         args.token = input('Token (empty=random): ')
@@ -23,7 +23,7 @@ def add(args):
 
 
 def revoke(args):
-    q = DBSession.query(APIAccessToken)
+    q = DBSession.query(Gateway)
     if args.token == '-':
         args.token = input('Search token (empty=*): ')
     if args.token:

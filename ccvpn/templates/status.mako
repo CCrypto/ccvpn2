@@ -8,7 +8,7 @@
     <ul>
         <li>We have ${n_users} active users.</li>
         <li>We provide ${len(gateways)} servers in ${n_countries} countries,
-            and a total bandwidth of ${total_bw}</li>
+            and a total bandwidth of <b>${total_bw}</b></li>
     </ul>
     % if bw_graph:
         <a href="${bw_graph[0]}">
@@ -26,14 +26,13 @@
             </thead>
             <tbody>
                 % for h, d in gateways.items():
-                <tr><td class="host_line"><span class="host_name">${h}</span> </td>
-                    % if isinstance(d['isp'], str):
-                        <td>${d['isp']} / ${d['bw_formatted']}</td>
-                    % else:
-                        <td><a href="${d['isp'][1]}">${d['isp'][0]}</a> / ${d['bw_formatted']}</td>
-                    % endif
-                    <td>${d['loc']}, ${d['country'].upper()}</td>
-                    <td>${d['uptime']}%</td>
+                <tr><td class="host_line">
+                        <span class="host_name">${d.host_name}</span>
+                    </td>
+                    <td><a href="${d.isp_url}">${d.isp_name}</a> /
+                        ${d.bps_formatted}</td>
+                    <td>${d.country.upper()}</td>
+                    <td>${d.uptime}%</td>
                 </tr>
                 % endfor
             </tbody>
