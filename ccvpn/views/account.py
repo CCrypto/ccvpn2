@@ -16,7 +16,7 @@ from ccvpn import methods
 from ccvpn.models import (
     DBSession,
     GiftCode, AlreadyUsedGiftCode,
-    User, Order, Profile, PasswordResetToken,
+    User, Order, Profile, PasswordResetToken, Gateway,
     random_access_token
 )
 
@@ -265,7 +265,9 @@ def account_post(request):
 @view_config(route_name='account', permission='logged',
              renderer='account.mako')
 def account(request):
-    return {}
+    return {
+        'gw_countries': set(i[0] for i in DBSession.query(Gateway.country).all()),
+    }
 
 
 @view_config(route_name='account_redirect')
@@ -341,27 +343,42 @@ def order_callback(request):
 
 @view_config(route_name='config', permission='logged')
 def config(request):
-    r = render_to_response('config.ovpn.mako', dict(
-        username=request.user.username,
-        gateway=openvpn_gateway, openvpn_ca=openvpn_ca,
-        android='android' in request.GET
-    ))
-    r.content_type = 'test/plain'
-    return r
+    settings = request.registry.settings
+    domain = settings.get('net_domain', '')
 
+    gw_countries = [i[0] for i in DBSession.query(Gateway.country).all()]
 
-@view_config(route_name='config_profile', permission='logged')
-def config_profile(request):
-    pname = request.matchdict['profile']
-    profile = DBSession.query(Profile) \
-        .filter_by(uid=request.user.id, name=pname) \
-        .first()
-    if not profile:
-        return HTTPNotFound()
+    pname = request.GET.get('profile')
+    if pname:
+        profile = DBSession.query(Profile) \
+            .filter_by(uid=request.user.id, name=pname) \
+            .first()
+        if not profile:
+            return HTTPNotFound()
+    else:
+        profile = None
+
+    gw = request.GET.get('gw')
+    if gw and gw[0:3] == 'rr_' and gw[3:] in gw_countries:
+        gateway = gw[3:] + '.' + domain
+    else:
+        gateway = 'gw.' + domain
+
+    os = request.GET.get('os')
+
+    # These clients do not fully support OpenVPN config
+    not_real_ovpn = os == 'android' or os == 'ios'
+
+    params = {
+        'force_tcp': not_real_ovpn or 'forcetcp' in request.GET,
+        'windows_dns': os == 'windows',
+        'resolvconf': os == 'ubuntu',
+    }
+
     r = render_to_response('config.ovpn.mako', dict(
         username=request.user.username, profile=profile,
-        gateway=openvpn_gateway, openvpn_ca=openvpn_ca,
-        android='android' in request.GET
+        gateway=gateway, openvpn_ca=openvpn_ca,
+        **params
     ))
     r.content_type = 'test/plain'
     return r

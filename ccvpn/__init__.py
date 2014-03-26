@@ -72,7 +72,6 @@ def setup_routes(config):
     a('order_view', '/order/view/{hexid:[a-f0-9]+}')
     a('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
     a('config', '/config/ccrypto.ovpn')
-    a('config_profile', '/config/ccrypto-{profile:[a-zA-Z0-9]+}.ovpn')
 
     # Admin related
     a('admin_home', '/admin/')

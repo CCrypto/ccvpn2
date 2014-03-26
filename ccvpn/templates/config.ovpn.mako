@@ -15,11 +15,14 @@ auth-user-pass
 # you can use this and put username/password, one per line, in a file
 # auth-user-pass cred.txt
 
-## de.blinkt.openvpn does not support <connection>, so we only use TCP.
-% if not android:
-remote ${gateway} 1194 udp
-% endif
+% if force_tcp:
 remote ${gateway} 443 tcp
+% else:
+<connection>
+remote ${gateway} 1194 udp
+remote ${gateway} 443 tcp
+</connection>
+% endif
 
 resolv-retry infinite
 nobind
@@ -32,8 +35,16 @@ dhcp-option DNS 10.99.0.20
 redirect-gateway def1
 route-ipv6 2000::/3 
 
+% if windows_dns:
 # Force Windows to apply new DNS settings
 #register-dns
+% endif
+
+% if resolvconf:
+# Update DNS with resolvconf
+up /etc/openvpn/update-resolv-conf
+down /etc/openvpn/update-resolv-conf
+% endif
 
 <ca>
 ${openvpn_ca}</ca>
