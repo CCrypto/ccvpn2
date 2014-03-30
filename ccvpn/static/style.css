@@ -590,6 +590,18 @@ ul.account-box {
     font-weight: normal;
 }
 
+.home-motd {
+    display: block;
+    padding: 5px 10px 5px 10px;
+    text-align: center;
+    background: #E6F5FF;
+    font-size: 1.1em;
+    margin: 20px 0 20px 0;
+    border-radius: 4px;
+    border: 1px solid #72B6ED;
+    box-shadow: 1px 1px 3px #aaa;
+}
+
  /* FONTS */
 
 @font-face {

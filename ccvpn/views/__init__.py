@@ -16,7 +16,8 @@ def home(request):
     settings = request.registry.settings
     return {
         'eur_price': float(settings.get('paypal.month_price', 2)),
-        'btc_price': float(settings.get('bitcoin.month_price', 0.02))
+        'btc_price': float(settings.get('bitcoin.month_price', 0.02)),
+        'motd': settings.get('motd'),
     }
 
 
