@@ -83,15 +83,18 @@ def get_uptime_factory(settings):
 def status(request):
     settings = request.registry.settings
     domain = settings.get('net_domain', '')
-    ls = list(DBSession.query(Gateway).filter_by(enabled=True).all())
-    l = {g.name: g for g in ls}
+    gateways = DBSession.query(Gateway) \
+                        .filter_by(enabled=True) \
+                        .order_by(Gateway.country, Gateway.name) \
+                        .all()
+    l = list(gateways)
 
     get_uptime = get_uptime_factory(settings)
 
-    for host in l.keys():
-        l[host].host_name = '%s.%s.%s'%(host, l[host].country, domain)
-        l[host].uptime = get_uptime(l[host].host_name)
-        l[host].bps_formatted = format_bps(l[host].bps)
+    for host in l:
+        host.host_name = '%s-%s.%s'%(host.country, host.name, domain)
+        host.uptime = get_uptime(host.host_name)
+        host.bps_formatted = format_bps(host.bps)
 
     bw_graph_url = settings.get('munin.bw_graph_url', None)
     bw_graph_img = settings.get('munin.bw_graph_img', None)
@@ -101,7 +104,7 @@ def status(request):
         'bw_graph': bw_graph if all(bw_graph) else None,
         'n_users': DBSession.query(func.count(User.id))
                             .filter_by(is_paid=True).scalar(),
-        'n_countries': len(set(i.country for i in l.values())),
-        'total_bw': format_bps(sum(i.bps for i in l.values())),
+        'n_countries': len(set(i.country for i in l)),
+        'total_bw': format_bps(sum(i.bps for i in l)),
     }
 

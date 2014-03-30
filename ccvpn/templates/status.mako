@@ -25,7 +25,7 @@
                 <tr><td>Host</td> <td>ISP / Bandwidth</td> <td>Location</td> <td>Uptime <span class="td-info">on 31 days</span></td></tr>
             </thead>
             <tbody>
-                % for h, d in gateways.items():
+                % for d in gateways:
                 <tr><td class="host_line">
                         <span class="host_name">${d.host_name}</span>
                     </td>

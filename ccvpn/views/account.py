@@ -360,9 +360,9 @@ def config(request):
 
     gw = request.GET.get('gw')
     if gw and gw[0:3] == 'rr_' and gw[3:] in gw_countries:
-        gateway = gw[3:] + '.' + domain
+        gateway = 'gw.' + gw[3:] + '.' + domain
     else:
-        gateway = 'gw.' + domain
+        gateway = 'gw.random.' + domain
 
     os = request.GET.get('os')
 
