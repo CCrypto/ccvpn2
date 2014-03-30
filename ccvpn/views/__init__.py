@@ -89,7 +89,7 @@ def status(request):
 
     for host in l.keys():
         l[host].host_name = '%s.%s.%s'%(host, l[host].country, domain)
-        l[host].uptime = int(get_uptime(l[host].host_name))
+        l[host].uptime = get_uptime(l[host].host_name)
         l[host].bps_formatted = format_bps(l[host].bps)
 
     bw_graph_url = settings.get('munin.bw_graph_url', None)
