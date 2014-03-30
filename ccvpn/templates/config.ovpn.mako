@@ -15,6 +15,8 @@ auth-user-pass
 # you can use this and put username/password, one per line, in a file
 # auth-user-pass cred.txt
 
+remote-random-hostname
+
 % if force_tcp:
 remote ${gateway} 443 tcp
 % else:
