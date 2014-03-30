@@ -1,6 +1,12 @@
 <%inherit file="layout.mako" />
 
 <section>
+% if motd:
+<article class="home-motd">
+    <p>${motd | n}</p>
+</article>
+% endif
+
 <article id="homepage">
     <div class="homeitem">
         <img src="/static/unlimited.svg" alt="" />
