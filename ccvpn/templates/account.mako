@@ -8,14 +8,6 @@
     <h1>Account : ${user.username}</h1>
 
     <article class="account-box">
-        <% url = 'http://vpn.ccrypto.org/?ref=' + str(request.user.id) %>
-        <p>Get two weeks for free for every referral that takes at least one
-        month!<br />
-        Share this link: <input type="text" size="30" value="${url}" />
-        </p>
-    </article>
-
-    <article class="account-box">
         % if user.is_paid:
             <p>Your account is <b>paid for ${user.paid_days_left()} day(s)</b>.</p>
         % else:
@@ -48,76 +40,83 @@
     </article>
 
     % if user.is_paid:
-        <article>
-            <ul>
-                <li>You can only have <b>one connection per profile</b>,
-                    but up to 10 profiles. (10 running clients)</li>
-                <li>To use a profile, download the right config and <b>use
-                    "name/profile" as your VPN username.</b></li>
-                <li>UDP is faster than TCP, but can lose packets on unstable
-                    network connections. Prefer TCP if you have packet loss.</li>
-                <li>Our TCP VPN uses port 443, the same as HTTPS.
-                    Most of the firewalls will not block it.</li>
-            </ul>
+    <article>
+        <ul>
+            <li>You can only have <b>one connection per profile</b>,
+                but up to 10 profiles. (10 running clients)</li>
+            <li>To use a profile, download the right config and <b>use
+                "name/profile" as your VPN username.</b></li>
+            <li>TCP is slower. Use it only if you have important packet
+                loss or a restrictive firewall.</li>
+        </ul>
 
-            <h3>Download config</h3>
-            <form action="/config/ccrypto.ovpn" method="get" class="largeform">
-                <label for="gc_username">Profile</label>
-                <select name="pname" id="gc_username">
-                    <option value="" selected>${user.username} [default]</option>
-                    % for profile in profiles:
-                        <option value="${profile.name}">${user.username}/${profile.name}</option>
-                    % endfor
-                </select>
+        <h3>Download config</h3>
+        <form action="/config/ccrypto.ovpn" method="get" class="largeform">
+            <label for="gc_username">Profile</label>
+            <select name="pname" id="gc_username">
+                <option value="" selected>${user.username} [default]</option>
+                % for profile in profiles:
+                    <option value="${profile.name}">${user.username}/${profile.name}</option>
+                % endfor
+            </select>
 
-                <label for="gc_os">OS</label>
-                <select name="os" id="gc_os">
-                    <option value="windows">Windows</option>
-                    <option value="android">Android</option>
-                    <option value="ubuntu">Ubuntu</option>
-                    <option value="osx">OS X</option>
-                    <option value="other-gnulinux">Other / GNU/Linux</option>
-                </select>
+            <label for="gc_os">OS</label>
+            <select name="os" id="gc_os">
+                <option value="windows">Windows</option>
+                <option value="android">Android</option>
+                <option value="ubuntu">Ubuntu</option>
+                <option value="osx">OS X</option>
+                <option value="other-gnulinux">Other / GNU/Linux</option>
+            </select>
 
-                <label for="gc_gw">Gateway</label>
-                <select name="gw" id="gc_gw">
-                    <option value="" selected>Random</option>
-                    % for country in gw_countries:
-                        <option value="rr_${country}">Country: ${country.upper()}</option>
-                    % endfor
-                </select>
+            <label for="gc_gw">Gateway</label>
+            <select name="gw" id="gc_gw">
+                <option value="" selected>Random</option>
+                % for country in gw_countries:
+                    <option value="rr_${country}">Country: ${country.upper()}</option>
+                % endfor
+            </select>
 
-                <label for="gc_ftcp">Force TCP</label>
-                <input type="checkbox" name="forcetcp" id="gc_ftcp" />
+            <label for="gc_ftcp">Force TCP</label>
+            <input type="checkbox" name="forcetcp" id="gc_ftcp" />
 
-                <input type="submit" value="Get config" />
-            </form>
+            <input type="submit" value="Get config" />
+        </form>
 
-            <h3>Manage Profiles</h3>
-            <form class="profileform" action="/account/" method="post">
-                <p>
-                <input type="text" name="profilename" id="fp_name" placeholder="Profile name" pattern="[a-zA-Z0-9]{1,16}" />
-                <input type="submit" value="Add" />
-                </p>
-            </form>
-            % if profiles:
-            <form class="profileform" action="/account/" method="post">
-                <p>
-                <select name="profiledelete">
-                    % for profile in profiles:
-                        <option value="${profile.id}">${user.username}/${profile.name}</option>
-                    % endfor
-                </select>
-                <input type="submit" value="Delete" />
-                </p>
-            </form>
-            % endif
-
-            <hr />
-        </article>
+        <h3>Manage Profiles</h3>
+        <form class="profileform" action="/account/" method="post">
+            <p>
+            <input type="text" name="profilename" id="fp_name" placeholder="Profile name" pattern="[a-zA-Z0-9]{1,16}" />
+            <input type="submit" value="Add" />
+            </p>
+        </form>
+        % if profiles:
+        <form class="profileform" action="/account/" method="post">
+            <p>
+            <select name="profiledelete">
+                % for profile in profiles:
+                    <option value="${profile.id}">${user.username}/${profile.name}</option>
+                % endfor
+            </select>
+            <input type="submit" value="Delete" />
+            </p>
+        </form>
+        % endif
+    </article>
     % endif
 
-    <article class="two">
+    <article class="account-box">
+        <% url = 'http://vpn.ccrypto.org/?ref=' + str(request.user.id) %>
+        <p>Get two weeks for free for every referral that takes at least one
+        month!<br />
+        Share this link: <input type="text" size="30" value="${url}" />
+        </p>
+    </article>
+</section>
+
+
+<section>
+    <article class="homehalf">
         <h2>Settings</h2>
         <form action="/account/" method="post" class="vert">
             <label for="ins_password">Change password</label>
@@ -132,6 +131,4 @@
             <input type="submit" value="SAVE" />
         </form>
     </article>
-
-    <div style="clear: both"></div>
 </section>
