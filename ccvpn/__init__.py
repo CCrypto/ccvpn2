@@ -172,7 +172,7 @@ def main(global_config, **settings):
     else:
         views.account.openvpn_ca = ''
 
-    gw = settings.get('openvpn.gateway', 'gw.vpn.ccrypto.org')
+    gw = settings.get('openvpn.gateway', 'gw.204vpn.net')
     views.account.openvpn_gateway = gw
 
     return config.make_wsgi_app()

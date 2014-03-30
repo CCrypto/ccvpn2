@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
 body{
     margin: 0 auto;
     font-family: 'Open Sans', Arial, sans-serif;
@@ -102,31 +108,40 @@ header nav a{
     color: #fff;
     text-decoration: none;
 }
-section{
-    max-width: 1300px;
-    margin: 3% auto;
-    padding: 20px;
+
+
+article, .box {
     border-radius: 4px;
     border-top: 7px solid #1c619a;
     background: #fff;
     box-shadow: 3px 3px 5px #888;
 }
-section#homepage{
+
+section {
+    max-width: 1300px;
+    margin: 2% auto;
+    position: relative;
+}
+article {
+    padding: 20px;
+}
+
+#homepage{
     padding-top: 20px;
     padding-bottom: 20px;
     background: #fff;
 }
-section#homepage article{
+#homepage .homeitem{
     float: left;
     width: 20%;
     min-width: 200px;
     text-align: center;
 }
-section#homepage article img{
+#homepage .homeitem img{
     width: 80%;
     margin: auto;
 }
-section#homepage article h2{
+#homepage .homeitem h2{
     color: #1c619a;
     text-transform: uppercase;
     font-weight: normal;
@@ -134,33 +149,43 @@ section#homepage article h2{
     font-size: 1.5em;
     margin: 0.80em 0 0.80em 0;
 }
-section#homepage article p{
+#homepage .homeitem p{
     margin: 0px;
     padding: 0.2em;
 }
-section#homepage article b{
+#homepage .homeitem b{
     color: #1c619a;
 }
-section#homepage article ul{
+#homepage .homeitem ul{
     margin: 0;
     padding: 0 1.5em;
 
 }
-section#homepage article ul li{
+#homepage .homeitem ul li{
     margin: 0px;
     padding: 0px;
     list-style: none;
 }
 
-section#homecreate{
-    text-align: center;
-    border-top: none;
-    background: #fff;
+.homehalf {
+    display: block;
+    width: 49%;
+    margin-left: 2%;
+    float: left;
 }
-section#homecreate a{
+.homehalf:first-child {
+    margin-left: 0;
+}
+
+
+
+#homecreate{
+    text-align: center;
+}
+#homecreate a{
     display: inline-block;
     color: #fff;
-    padding: 15px 30px;
+    padding: 15px 40px;
     margin-right: 10px;
     text-decoration: none;
     text-transform: uppercase;
@@ -172,9 +197,11 @@ section#homecreate a{
     background: -o-linear-gradient(top,#2c6983,#183c4b);
     background: linear-gradient(top,#2c6983,#183c4b);
 }
-section#homecreate a:hover{
+#homecreate a:hover{
     background: #225469;
 }
+
+
 
 section article {
     line-height: 1.4em;
@@ -190,6 +217,9 @@ section h2 {
     font-weight: bold;
     margin-top: 1em;
     margin-bottom: 0.5em;
+}
+section h2:first-child {
+    margin-top: 0;
 }
 section h3 {
     font-size: 1.3em;
@@ -402,6 +432,7 @@ section article.two {
 }
 
 footer{
+    clear: both;
     color: #1c619a;
     text-align: center;
     border-top: 1px dotted #1c619a;
