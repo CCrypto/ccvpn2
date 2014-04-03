@@ -3,10 +3,10 @@ Title: Support
 Before asking for help, make sure you read our [guides](/page/docs)
 and [FAQ](/page/faq).
 
-Cognitive Cryptography provides a fast support for the VPN in french and english on:
+We provide a fast support **in french and english** on:
 
   - **IRC**: Join #ccrypto on chat.freenode.net with your favorite client or
-    [our webchat](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|?&theme=cli#ccrypto).  
+    [our webchat](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|${irc_username}&theme=cli#ccrypto).  
     Ask the channel operators and we will try to help you as soon as possible.  
     This is the fastest way to have an answer.
 
