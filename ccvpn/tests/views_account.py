@@ -552,7 +552,7 @@ class TestConfigView(unittest.TestCase):
         req = DummyRequest()
         req.session['uid'] = self.testuser.id
         req.matchdict['profile'] = 'testprofile'
-        resp = views.account.config_profile(req)
+        resp = views.account.config(req)
         self.assertEqual(resp.status_code, 200)
         self.assertIn(gw, resp.body)
         self.assertIn(ca, resp.body)
@@ -560,7 +560,7 @@ class TestConfigView(unittest.TestCase):
     def test_unknown_profile(self):
         req = DummyRequest()
         req.session['uid'] = self.testuser.id
-        req.matchdict['profile'] = 'nottestprofile'
-        resp = views.account.config_profile(req)
+        req.GET['profile'] = 'nottestprofile'
+        resp = views.account.config(req)
         self.assertEqual(resp.status_code, 404)
 

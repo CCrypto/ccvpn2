@@ -5,6 +5,8 @@ import logging
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPOk, HTTPNotFound
 from sqlalchemy import func
+from mako.lookup import TemplateLookup
+import mako.exceptions
 logger = logging.getLogger(__name__)
 
 from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway
@@ -26,19 +28,27 @@ def ca_crt(request):
     return HTTPOk(body=account.openvpn_ca)
 
 
+page_lookup = None
+
 @view_config(route_name='page', renderer='page.mako')
 def page(request):
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    page = 'pages/' + request.matchdict['page'] + '.md'
-    path = os.path.join(root, page)
+    global page_lookup
+    if not page_lookup:
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache = request.registry.settings.get('pages_cache')
+        page_lookup = TemplateLookup(directories=[os.path.join(root, 'pages/')],
+                                     module_directory=cache)
+
     try:
-        f = codecs.open(path, mode="r", encoding="utf-8")
+        template = page_lookup.get_template(request.matchdict['page'] + '.md')
+        markdown_text = template.render(
+            irc_username=request.user.username if request.user else '?',
+        )
         md = markdown.Markdown(extensions=['toc', 'meta'])
-        content = md.convert(f.read())
+        content = md.convert(markdown_text)
         title = md.Meta['title'][0] if 'title' in md.Meta else None
-        f.close()
         return {'content': content, 'title': title}
-    except FileNotFoundError:
+    except mako.exceptions.TopLevelLookupException:
         return HTTPNotFound()
 
 
