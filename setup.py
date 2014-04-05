@@ -22,6 +22,7 @@ requires = [
     'webtest',
     'requests',
     'python-dateutil',
+    'stripe',
 ]
 
 setup(name='ccvpn',
