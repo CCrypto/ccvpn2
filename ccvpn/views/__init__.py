@@ -10,7 +10,7 @@ import mako.exceptions
 logger = logging.getLogger(__name__)
 
 from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway
-from ccvpn.views import account, admin, api  # noqa
+from ccvpn.views import account, admin, api, order  # noqa
 
 
 @view_config(route_name='home', renderer='home.mako')

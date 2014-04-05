@@ -3,6 +3,7 @@ from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 from pyramid_beaker import session_factory_from_settings
 from ccvpn import views
+from ccvpn import methods
 
 from .models import DBSession, Base, get_user, User
 
@@ -166,11 +167,20 @@ def main(global_config, **settings):
     setup_routes(config)
     config.scan()
 
+    methods_objs = {}
+    for c in methods.Method.__subclasses__():
+        obj = c(settings)
+        methods_objs[c.name] = obj
+        methods_objs[c.id] = obj
+    config.add_request_method(lambda r: methods_objs, 'payment_methods',
+                              reify=True, property=True)
+
     ca_path = settings.get('openvpn.ca-cert', None)
     if ca_path:
         views.account.openvpn_ca = open(ca_path, 'r').read()
     else:
         views.account.openvpn_ca = ''
+        logger.warning('Failed to open OpenVPN CA file: %s' % ca_path)
 
     gw = settings.get('openvpn.gateway', 'gw.204vpn.net')
     views.account.openvpn_gateway = gw

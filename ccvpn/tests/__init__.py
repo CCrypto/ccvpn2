@@ -2,7 +2,7 @@ from pyramid import testing
 from sqlalchemy import create_engine
 
 from ccvpn.models import DBSession, Base, get_user
-from ccvpn import Messages, get_referrer, referral_handler
+from ccvpn import Messages, referral_handler, methods
 
 
 def setup_database():
@@ -20,6 +20,14 @@ class DummyRequest(testing.DummyRequest):
         self.messages = Messages(self)
         self.referrer = None
         self.remote_addr = kwargs.get('remote_addr')
+
+        methods_objs = {}
+        for c in methods.Method.__subclasses__():
+            obj = c({})
+            methods_objs[c.name] = obj
+            methods_objs[c.id] = obj
+        self.payment_methods = methods_objs
+
         referral_handler(self)
 
     @property
@@ -31,4 +39,5 @@ from ccvpn.tests.models import *  # noqa
 from ccvpn.tests.scripts import *  # noqa
 from ccvpn.tests.views_account import *  # noqa
 from ccvpn.tests.views_api import *  # noqa
+from ccvpn.tests.views_order import *  # noqa
 

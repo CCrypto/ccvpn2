@@ -4,10 +4,9 @@ from pyramid.httpexceptions import HTTPSeeOther, HTTPBadRequest, HTTPNotFound
 from pyramid.renderers import render_to_response
 from datetime import datetime, timedelta, date
 from ccvpn.models import DBSession, User, Order, GiftCode, Gateway
-from ccvpn.methods import BitcoinMethod, METHOD_IDS
 
-import transaction
 from dateutil import parser
+
 
 def monthdelta(date, delta):
     m = (date.month + delta) % 12
@@ -100,9 +99,9 @@ def admin_graph(request):
 
     elif graph_name == 'income':
         method = get('method', 0, int)
-        if not method in METHOD_IDS:
+        if not method in request.payment_methods:
             raise HTTPNotFound()
-        method_name = METHOD_IDS[method].__name__
+        method_name = request.payment_methods[method].name
 
         chart = pygal.StackedBar(x_label_rotation=75, show_legend=True,
                                  **pygalopts)
@@ -153,8 +152,8 @@ def admin_home(request):
         request.session.flash(('error', 'Pygal not found: cannot make charts'))
         graph = False
 
-    btcm = BitcoinMethod()
-    btcrpc = btcm.getBTCRPC(request.registry.settings)
+    btcm = request.payment_methods['bitcoin']
+    btcrpc = btcm.rpc
     try:
         btcd = btcrpc.getinfo()
     except (ValueError, ConnectionRefusedError):
@@ -249,6 +248,7 @@ class AdminUsers(AdminView):
             item.paid_until = parser.parse(post['paid_until'])
         else:
             item.paid_until = None
+
 
 @view_config(route_name='admin_orders', permission='admin')
 class AdminOrders(AdminView):

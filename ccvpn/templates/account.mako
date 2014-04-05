@@ -27,6 +27,7 @@
             </select>
             <label for="ino_method">with</label>
             <select id="ino_method" name="method">
+                <option value="stripe">Stripe (credit card)</option>
                 <option value="paypal">Paypal</option>
                 <option value="bitcoin">Bitcoin</option>
             </select>

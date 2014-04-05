@@ -28,6 +28,8 @@
         <figure><embed src="/admin/graph/income.svg?period=y&amp;method=0" /></figure>
         <figure><embed src="/admin/graph/income.svg?period=m&amp;method=1" /></figure>
         <figure><embed src="/admin/graph/income.svg?period=y&amp;method=1" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=m&amp;method=2" /></figure>
+        <figure><embed src="/admin/graph/income.svg?period=y&amp;method=2" /></figure>
     % endif
     <div style="clear: both"></div>
 </section>

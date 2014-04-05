@@ -6,6 +6,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.mutable import Mutable
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects import postgresql  # INET
@@ -59,24 +60,46 @@ def random_bytes(length):
 
 
 class JSONEncodedDict(TypeDecorator):
-    """Represents an immutable structure as a json-encoded string.
-    """
-
     impl = UnicodeText
 
     def process_bind_param(self, value, dialect):
-        if value is not None and len(value) > 0:
-            value = json.dumps(value)
+        if value:
+            return json.dumps(value)
         else:
-            value = None
-        return value
+            return None
 
     def process_result_value(self, value, dialect):
         if value is not None:
-            value = json.loads(value)
+            return json.loads(value)
         else:
-            value = dict()
-        return value
+            return dict()
+
+
+class MutableDict(Mutable, dict):
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutableDict."
+
+        if not isinstance(value, MutableDict):
+            if isinstance(value, dict):
+                return MutableDict(value)
+
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __setitem__(self, key, value):
+        "Detect dictionary set events and emit change events."
+
+        dict.__setitem__(self, key, value)
+        self.changed()
+
+    def __delitem__(self, key):
+        "Detect dictionary del events and emit change events."
+
+        dict.__delitem__(self, key)
+        self.changed()
 
 
 class INETWrapper(TypeDecorator):
@@ -437,7 +460,7 @@ class Order(Base):
     class METHOD:
         BITCOIN = 0
         PAYPAL = 1
-        GIFTCODE = 2
+        STRIPE = 2
 
     id = Column(Integer, primary_key=True)
     uid = Column(ForeignKey('users.id'))
@@ -448,7 +471,7 @@ class Order(Base):
     time = Column(Interval, nullable=True)
     method = Column(Integer, nullable=False)
     paid = Column(Boolean, nullable=False, default=False)
-    payment = Column(JSONEncodedDict(), nullable=True)
+    payment = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 
     list_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time',
                    'method', 'paid')
@@ -484,6 +507,7 @@ class Order(Base):
         self.time = time
         self.paid_amount = paid_amount
         self.paid = paid_amount >= amount
+        self.payment = {}
         self.method = method
 
         ttl = ttl or timedelta(days=30)
@@ -540,6 +564,7 @@ class VPNSession(Base):
         return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (
             self.id, self.gateway_id, self.gateway_version, self.user_id,
             self.connect_date, self.disconnect_date)
+
 
 def get_user(request):
     if 'uid' not in request.session:

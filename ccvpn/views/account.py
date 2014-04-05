@@ -2,21 +2,18 @@ import datetime
 
 import transaction
 from sqlalchemy import func
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
     HTTPSeeOther, HTTPMovedPermanently,
-    HTTPBadRequest, HTTPNotFound, HTTPUnauthorized, HTTPForbidden, HTTPFound
+    HTTPBadRequest, HTTPNotFound, HTTPForbidden, HTTPFound
 )
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 
-from ccvpn import methods
 from ccvpn.models import (
     DBSession,
-    GiftCode, AlreadyUsedGiftCode,
-    User, Order, Profile, PasswordResetToken, Gateway,
+    User, Profile, PasswordResetToken, Gateway,
     random_access_token
 )
 
@@ -273,72 +270,6 @@ def account(request):
 @view_config(route_name='account_redirect')
 def account_redirect(request):
     return HTTPMovedPermanently(location=request.route_url('account'))
-
-
-def order_post_gc(request, code):
-    try:
-        gc = GiftCode.one(code=code)
-        gc.use(request.user)
-
-        time = gc.time.days
-        request.messages.info('OK! Added %d days to your account.' % time)
-        DBSession.flush()
-    except (NoResultFound, MultipleResultsFound):
-        request.messages.error('Unknown code.')
-    except AlreadyUsedGiftCode:
-        request.messages.error('Already used code')
-    return HTTPSeeOther(location=request.route_url('account'))
-
-
-@view_config(route_name='order_post', permission='logged')
-def order_post(request):
-    code = request.POST.get('code')
-    if code:
-        return order_post_gc(request, code)
-
-    times = (1, 3, 6, 12)
-    try:
-        method_name = request.POST.get('method')
-        time_months = int(request.POST.get('time'))
-    except ValueError:
-        return HTTPBadRequest('invalid POST data')
-    if method_name not in methods.METHODS or time_months not in times:
-        return HTTPBadRequest('Invalid method/time')
-
-    time = datetime.timedelta(days=30 * time_months)
-    o = Order(user=request.user, time=time, amount=0, method=0)
-    o.close_date = datetime.datetime.now() + datetime.timedelta(days=7)
-    o.paid = False
-    o.payment = {}
-    method = methods.METHODS[method_name]()
-    method.init(request, o)
-    DBSession.add(o)
-    DBSession.flush()
-    return method.start(request, o)
-
-
-@view_config(route_name='order_view', renderer='order.mako',
-             permission='logged')
-def order_view(request):
-    id = int(request.matchdict['hexid'], 16)
-    o = DBSession.query(Order).filter_by(id=id).first()
-    if not o:
-        return HTTPNotFound()
-    if not request.user.is_admin and request.user.id != o.uid:
-        return HTTPUnauthorized()
-    return {'o': o}
-
-
-@view_config(route_name='order_callback')
-def order_callback(request):
-    id = int(request.matchdict['hexid'], 16)
-    o = DBSession.query(Order).filter_by(id=id).first()
-    if not o:
-        return HTTPNotFound()
-    method = methods.METHOD_IDS[o.method]
-    ret = method().callback(request, o)
-    DBSession.flush()
-    return ret
 
 
 @view_config(route_name='config', permission='logged')
