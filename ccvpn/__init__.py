@@ -75,13 +75,9 @@ def setup_routes(config):
     a('config', '/config/ccrypto.ovpn')
 
     # Admin related
-    a('admin_home', '/admin/')
+    #a('admin_home', '/admin/')
     a('admin_graph', '/admin/graph/{name}.svg')
-    a('admin_users', '/admin/users')
-    a('admin_orders', '/admin/orders')
-    a('admin_giftcodes', '/admin/giftcodes')
-    a('admin_apiaccesstokens', '/admin/apiaccesstokens')
-    a('admin_gateways', '/admin/gateways')
+    a('admin_traversal', '/admin/*traverse', factory=views.admin.root_factory)
 
     # Server API
     a('api_gateway_auth', '/api/gateway/auth')
@@ -174,6 +170,7 @@ def main(global_config, **settings):
         methods_objs[c.id] = obj
     config.add_request_method(lambda r: methods_objs, 'payment_methods',
                               reify=True, property=True)
+    methods.payement_methods = methods_objs
 
     ca_path = settings.get('openvpn.ca-cert', None)
     if ca_path:
