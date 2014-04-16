@@ -393,9 +393,6 @@ class Profile(Base):
     def validate_name(self, name):
         return re.match('^[a-zA-Z0-9]{1,16}$', name)
 
-    list_fields = ('id', 'uid', 'name')
-    edit_fields = ('id', 'uid', 'name', 'password')
-
 
 class AlreadyUsedGiftCode(Exception):
     pass
@@ -446,9 +443,6 @@ class GiftCode(Base):
     def __str__(self):
         return self.code
 
-    list_fields = ('id', 'code', 'time', 'username_if_used')
-    edit_fields = ('id', 'code', 'time', 'free_only', 'used')
-
 
 class OrderNotPaid(Exception):
     pass
@@ -472,11 +466,6 @@ class Order(Base):
     method = Column(Integer, nullable=False)
     paid = Column(Boolean, nullable=False, default=False)
     payment = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
-
-    list_fields = ('id', 'user', 'start_date', 'amount', 'paid_amount', 'time',
-                   'method', 'paid')
-    edit_fields = ('id', 'user', 'start_date', 'close_date', 'amount',
-                   'paid_amount', 'time', 'method', 'paid', 'payment')
 
     def is_paid(self):
         return self.paid_amount >= self.amount
@@ -539,12 +528,11 @@ class Gateway(Base):
 
     sessions = relationship('VPNSession', backref='gateway')
 
-    list_fields = ('id', 'name', 'ipv4', 'ipv6', 'enabled')
-    edit_fields = ('id', 'name', 'isp_name', 'isp_url', 'country', 'token',
-                   'ipv4', 'ipv6', 'bps', 'enabled')
-
     def __repr__(self):
-        return '<Gateway %s.%s>' % (self.name, self.country)
+        return '<Gateway %s-%s>' % (self.country, self.name)
+
+    def __str__(self):
+        return self.country + '-' + self.name
 
 
 class VPNSession(Base):
