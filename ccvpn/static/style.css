@@ -376,30 +376,35 @@ section form.inline input[type=submit] {
     display: inline;
 }
 .profileform input[type=submit], .profileform input[type=text] {
-    display: inline;
+    display: block;
     margin: 0;
     padding: 4px 8px;
 }
 
+form.largeform {
+    padding-top: 4px;
+}
+
 form.largeform label {
-    display: inline-block;
-    float: left;
-    width: 140px;
+    display: block;
+    position: absolute;
+    width: 160px;
     padding: 4px 5px;
-    height: 24px;
-    clear: both;
+    margin: 4px 0 0 0;
+    height: 26px;
     font-weight: bold;
     color: #1c619a;
+    text-align: right;
 }
 form.largeform label[title] {
     border-bottom: 1px dotted black;
 }
 form.largeform input {
-    height: 22px;
+    height: 26px;
     min-width: 160px;
     display: block;
     padding: 4px 5px;
-    margin: 2px 0 0 160px;
+    margin: 4px 0 0 180px;
     border: 1px solid rgb(218, 223, 225);
     border-radius: 3px;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
@@ -407,19 +412,21 @@ form.largeform input {
 form.largeform select {
     display: block;
     min-width: 180px;
-    padding: 3px 5px;
-    margin: 2px 0 0 160px;
-    height: 28px;
+    padding: 2px 5px;
+    margin: 2px 0 0 180px;
+    height: 26px;
 }
 form.largeform input[type=checkbox] {
-    border: 0;
-    padding: 0;
-    margin: 11px 2px 10px 160px;
+    box-sizing: content-box;
+    display: block;
+    height: 26px;
+    padding: 4px 5px;
+    margin: 13px 0 0 180px;
 }
 form.largeform input[type=submit] {
     margin-top: 1em;
     padding: 6px 16px;
-    margin: 2px 0 0 0;
+    margin: 8px 0 0 0;
     height: 30px;
     clear: both;
 }

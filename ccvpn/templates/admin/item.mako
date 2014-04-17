@@ -9,7 +9,7 @@
         if value is None:
             value = ''
     %>
-    <label for="f_${field}">${field.name}</label>
+    <label for="f_${field.id}">${field.name}</label>
     <input
         name="${field.id}"
         id="f_${field.id}"
@@ -22,9 +22,18 @@
                 checked="checked"
             % endif
         % else:
-            value="${value}"
+            type="text"
+            % if field.placeholder:
+                value=""
+                placeholder \
+            % else:
+                value \
+            % endif
+            ="${field.ofilter(value)}"
         % endif
     />
 % endfor
+% if view_context.can_edit:
     <input type="submit" value="Save" />
+% endif
 </form>
