@@ -217,6 +217,8 @@ class AdminBaseModel(AdminBase):
         super().__init__(parent)
         self.model = model
         self.name = self.model.__name__.lower() + 's'
+        self.can_add = True
+        self.can_edit = True
 
         def filter(q):
             if self.id:
@@ -241,7 +243,10 @@ class AdminBaseModel(AdminBase):
     @property
     def title(self):
         if self.id:
-            return '#%d [ %s ]' % (self.id, str(self.item))
+            title = '#%d' % self.id
+            if isinstance(self.item.__class__.__str__, type(lambda: 1)):
+                title += ' [ %s ]' % self.item.__str__()
+            return title
         elif hasattr(self, '_title'):
             return self._title
         else:
@@ -250,6 +255,36 @@ class AdminBaseModel(AdminBase):
     @title.setter
     def title(self, value):
         self._title = value
+
+
+    def _post_common(self, request):
+        for field in self.edit_fields:
+            if not field.writable:
+                continue
+            in_value = request.POST.get(field.id)
+            if field.placeholder and not in_value:
+                # We do not set the attribute, to keep the previous or default
+                # value.
+                continue
+            if in_value:
+                value = field.ifilter(in_value)
+                value = value or None
+            else:
+                value = None
+            field.setter(value, self.item)
+        
+
+    def post_edit(self, request):
+        if not self.can_edit:
+            m = 'You are not allowed to edit this kind of object.'
+            raise HTTPMethodNotAllowed(m)
+        self._post_common(request)
+
+    def post_add(self, request):
+        if not self.can_add:
+            m = 'You are not allowed to create this kind of object.'
+            raise HTTPMethodNotAllowed(m)
+        self._post_common(request)
 
     def post(self, request):
         if self.id:
@@ -261,19 +296,10 @@ class AdminBaseModel(AdminBase):
                 query = query.filter(parent.model.id == parent.id)
                 parent = parent.parent
             self.item = query.first() or self.model()
+            self.post_edit(request)
         else:
             self.item = self.model()
-
-        for field in self.edit_fields:
-            if not field.writable:
-                continue
-            in_value = request.POST.get(field.id)
-            if in_value:
-                value = field.ifilter(in_value)
-                value = value or None
-            else:
-                value = None
-            setattr(self.item, field.attr, value)
+            self.post_add(request)
 
         DBSession.add(self.item)
         DBSession.flush()
@@ -284,6 +310,13 @@ class AdminBaseModel(AdminBase):
         DBSession.expire_all()
         return HTTPSeeOther(location=location)
 
+    def get_model_item(self, id):
+        query = DBSession.query(self.model).filter_by(id=id)
+        for f in self.get_item_filters:
+            query = f(query)
+        return query.first()
+        
+
     def get(self, request):
         if self.id:
             return self.get_item(self.id)
@@ -291,10 +324,7 @@ class AdminBaseModel(AdminBase):
             return self.get_list()
 
     def get_item(self, id):
-        query = DBSession.query(self.model).filter_by(id=id)
-        for f in self.get_item_filters:
-            query = f(query)
-        self.item = query.first()
+        self.item = self.get_model_item(id)
         self.main_template = 'item.mako'
         if self.item is None:
             raise HTTPNotFound()
@@ -306,6 +336,8 @@ class AdminBaseModel(AdminBase):
             query = f(query)
         items = query.all()
         self.main_template = 'list.mako'
+        if self.can_add:
+            self.templates.append('add.mako')
         return {'list_items': items}
 
     def __getitem__(self, name):
@@ -315,8 +347,8 @@ class AdminBaseModel(AdminBase):
         else:
             try:
                 self.id = int(name)
-                self.get_item(self.id)
-                # FIXME: split get_item()
+                if not hasattr(self, 'item') or not self.item:
+                    self.item = self.get_model_item(self.id)
             except ValueError:
                 raise HTTPNotFound('Invalid id')
             return self
@@ -344,11 +376,17 @@ class EditField(object):
         self.ifilter = kwargs.get('ifilter', (lambda v: v))
         self.ofilter = kwargs.get('ofilter', (lambda v: v))
         self.writable = kwargs.get('writable', True)
+        self.editonly = kwargs.get('editonly', False)
+        self.default = kwargs.get('default', '')
+        self.placeholder = kwargs.get('placeholder', False)
 
     @property
     def id(self):
         """ Unique ID for the Field. """
         return self.attr
+
+    def setter(self, value, item):
+        setattr(item, self.attr, value)
 
 
 class EditFieldID(EditField):
@@ -356,6 +394,7 @@ class EditFieldID(EditField):
         kwargs.setdefault('name', 'ID')
         kwargs.setdefault('attr', 'id')
         kwargs.setdefault('writable', False)
+        kwargs['editonly'] = True
         super().__init__(**kwargs)
 
 
@@ -406,6 +445,14 @@ class AdminUser(AdminBaseModel):
                     .limit(20)
         self.get_list_filters.append(list_f)
 
+        def password_of(password):
+            """ Displays the first 8 bytes of the password hash """
+            return ''.join('%02x' % c for c in password[:8]) + '...'
+
+        class EditFieldPassword(EditField):
+            def setter(self, value, item):
+                item.set_password(value)
+
         self.list_fields = (
             ListFieldID(link='/admin/users/{id}'),
             ListField('Username', 'username'),
@@ -416,6 +463,14 @@ class AdminUser(AdminBaseModel):
         self.edit_fields = (
             EditFieldID(),
             EditField('Username', 'username'),
+            EditFieldPassword('Password', 'password', placeholder=True,
+                      ofilter=password_of),
+            EditField('E-Mail', 'email'),
+            EditField('Signup date', 'signup_date', writable=False),
+            EditField('Last login', 'last_login', writable=False),
+            EditField('Paid until', 'paid_until'),
+            EditField('Active?', 'is_active', default=True),
+            EditField('Admin?', 'is_admin', default=False),
         )
 
     @property
@@ -429,6 +484,17 @@ class AdminUser(AdminBaseModel):
         else:
             return super().left_menu
 
+    def post_edit(self, request):
+        add_time = request.POST.get('_add_time')
+        if add_time:
+            try:
+                days = int(add_time)
+            except ValueError:
+                raise HTTPBadRequest('Invalid time')
+            self.item.add_paid_time(timedelta(days=days))
+            return
+        super().post(request)
+
     def get_list(self):
         r = super().get_list()
         r['list_title'] = 'New users'
@@ -436,6 +502,7 @@ class AdminUser(AdminBaseModel):
 
     def get_item(self, id):
         r = super().get_item(id)
+        self.templates.append('user_actions.mako')
         return r
 
 
@@ -443,6 +510,8 @@ class AdminSession(AdminBaseModel):
     def __init__(self, au):
         super().__init__(parent=au, model=VPNSession)
         self.title = 'VPN Sessions'
+        self.can_add = False
+        self.can_edit = False
 
         self.list_fields = (
             ListFieldID(link='/admin/users/{user_id}/vpnsessions/{id}'),
@@ -453,6 +522,13 @@ class AdminSession(AdminBaseModel):
         )
         self.edit_fields = (
             EditFieldID(),
+            EditField('Gateway', 'gateway', writable=False),
+            EditField('Gateway version', 'gateway_version', writable=False),
+            EditField('User', 'user', writable=False),
+            EditField('Profile', 'profile', writable=False),
+            EditField('Connect date', 'connect_date', writable=False),
+            EditField('Disconnect date', 'disconnect_date', writable=False),
+            EditField('Remote address', 'remote_addr', writable=False),
         )
 
 
@@ -460,6 +536,7 @@ class AdminOrder(AdminBaseModel):
     def __init__(self, au):
         super().__init__(parent=au, model=Order)
         self.title = 'Orders'
+        self.can_add = False
 
         def method_f(m):
             if m not in methods.payement_methods:
@@ -477,13 +554,27 @@ class AdminOrder(AdminBaseModel):
         )
         self.edit_fields = (
             EditFieldID(),
+            EditField('User', 'user', writable=False),
+            EditField('Time', 'time', writable=False),
+            EditField('Method', 'method', filter=method_f, writable=False),
+            EditField('Open date', 'start_date', writable=False),
+            EditField('Close date', 'close_date', writable=False),
+            EditField('Amount', 'amount', writable=False),
+            EditField('Paid amount', 'paid_amount', writable=False),
+            EditField('Paid?', 'paid', writable=False),
         )
+
+    def get_item(self, id):
+        r = super().get_item(id)
+        self.templates.append('order_payment.mako')
+        return r
 
 
 class AdminProfile(AdminBaseModel):
     def __init__(self, au):
         super().__init__(parent=au, model=Profile)
         self.title = 'Profiles'
+        self.can_add = False
 
         self.list_fields = (
             ListFieldID(link='/admin/users/{uid}/profiles/{id}'),
@@ -491,6 +582,7 @@ class AdminProfile(AdminBaseModel):
         )
         self.edit_fields = (
             EditFieldID(),
+            EditField('Name', 'name'),
         )
 
 
@@ -507,6 +599,9 @@ class AdminGiftCode(AdminBaseModel):
         )
         self.edit_fields = (
             EditFieldID(),
+            EditField('Code', 'code'),
+            EditField('Time', 'time'),
+            EditField('Free only?', 'free_only', default=False),
         )
 
 
@@ -525,6 +620,15 @@ class AdminGateway(AdminBaseModel):
         )
         self.edit_fields = (
             EditFieldID(),
+            EditField('Name', 'name'),
+            EditField('ISP Name', 'isp_name'),
+            EditField('ISP URL', 'isp_url'),
+            EditField('Country', 'country'),
+            EditField('API Token', 'token'),
+            EditField('IPv4', 'ipv4'),
+            EditField('IPv6', 'ipv6'),
+            EditField('Bits/s', 'bps'),
+            EditField('Enabled?', 'enabled'),
         )
 
 
