@@ -3,6 +3,7 @@ import sys
 
 from sqlalchemy import engine_from_config
 from pyramid.paster import get_appsettings, setup_logging
+import transaction
 
 from ccvpn.models import DBSession, Order
 from ccvpn.methods import BitcoinMethod
@@ -19,12 +20,12 @@ def usage(argv, out=sys.stdout):
 
 
 def checkbtcorders(settings):
-    method = BitcoinMethod()
+    method = BitcoinMethod(settings)
 
     orders = DBSession.query(Order) \
         .filter_by(paid=False, method=Order.METHOD.BITCOIN)
     for order in orders:
-        method.check_paid(settings, order)
+        method.check_paid(order)
         log.debug('Order#%d: amount=%f, paid=%f', order.id, order.amount,
                   order.paid_amount)
 
@@ -37,5 +38,6 @@ def main(argv=sys.argv):
     settings = get_appsettings(config_uri)
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
-    checkbtcorders(settings)
+    with transaction.manager:
+        checkbtcorders(settings)
 
