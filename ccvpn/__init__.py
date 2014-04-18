@@ -84,6 +84,9 @@ def setup_routes(config):
     a('api_gateway_disconnect', '/api/gateway/disconnect')
     a('api_gateway_connect', '/api/gateway/connect')
 
+    # Public API
+    a('api_public_gateways', '/api/public/gateways')
+
 
 def referral_handler(request):
     ref = request.GET.get('ref')

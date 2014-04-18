@@ -157,3 +157,45 @@ def api_gateway_connect(request):
 
     return HTTPOk(body=json.dumps(params))
 
+
+@view_config(route_name='api_public_gateways', request_method='GET')
+def api_public_gateways(request):
+    domain = request.registry.settings.get('net_domain', '')
+    q = DBSession.query(Gateway)
+
+    show_disabled = request.GET.get('show_disabled')
+
+    country = request.GET.get('country')
+    hostname = request.GET.get('hostname')
+
+    if country:
+        q = q.filter(Gateway.country == country)
+
+    if hostname:
+        if '-' in hostname:
+            hn_country, hn_name = hostname.split('-', 1)
+            q = q.filter(Gateway.country == hn_country)
+            q = q.filter(Gateway.name == hn_name)
+        elif country:
+            q = q.filter(Gateway.name == hostname)
+        else:
+            return HTTPOk(body=json.dumps([]), content_type="application/json")
+            
+
+    if not show_disabled:
+        q = q.filter(Gateway.enabled == True)
+
+    def out(g):
+        return {
+            'hostname': g.country + '-' + g.name,
+            'fqdn': g.country + '-' + g.name + '.' + domain,
+            'country': g.country,
+            'bandwidth': g.bps,
+            'ipv4': g.ipv4,
+            'ipv6': g.ipv6,
+            'enabled': g.enabled,
+        }
+
+    r = [out(g) for g in q.all()]
+    return HTTPOk(body=json.dumps(r), content_type="application/json")
+

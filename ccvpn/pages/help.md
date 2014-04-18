@@ -12,5 +12,6 @@ Installation guides:
 
 Other:
 
+  - [Public API](/page/api)
   - [tech stuff](/page/tech)
 

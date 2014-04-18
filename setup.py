@@ -23,6 +23,7 @@ requires = [
     'requests',
     'python-dateutil',
     'stripe',
+    'pygments',
 ]
 
 setup(name='ccvpn',
