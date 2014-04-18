@@ -220,21 +220,25 @@ class AdminBaseModel(AdminBase):
         self.can_add = True
         self.can_edit = True
 
-        def filter(q):
-            if self.id:
-                return q.filter(self.model.id == self.id)
-            return q
+        def make_id_filter(o, join=False):
+            def f(q):
+                if o.id:
+                    if join:
+                        q = q.join(o.model)
+                    return q.filter(o.model.id == o.id)
+                return q
+            return f
 
-        self.get_item_filters = [filter]
-        self.get_list_filters = [filter]
+        self.get_item_filters = [make_id_filter(self)]
+        self.get_list_filters = [make_id_filter(self)]
 
         p = parent
         while p:
             if not isinstance(p, AdminBaseModel):
                 # Skip AdminBase instances
                 break
-            self.get_item_filters += p.get_item_filters
-            self.get_list_filters += p.get_list_filters
+            self.get_item_filters.append(make_id_filter(p, join=True))
+            self.get_list_filters.append(make_id_filter(p, join=True))
             p = p.parent
 
         self.list_fields = []
@@ -398,6 +402,11 @@ class EditFieldID(EditField):
         super().__init__(**kwargs)
 
 
+class EditFieldBool(EditField):
+    def setter(self, value, item):
+        super().setter(bool(value), item)
+
+
 class AdminRoot(AdminBase):
     def __init__(self):
         super().__init__(None)
@@ -469,8 +478,8 @@ class AdminUser(AdminBaseModel):
             EditField('Signup date', 'signup_date', writable=False),
             EditField('Last login', 'last_login', writable=False),
             EditField('Paid until', 'paid_until'),
-            EditField('Active?', 'is_active', default=True),
-            EditField('Admin?', 'is_admin', default=False),
+            EditFieldBool('Active?', 'is_active', default=True),
+            EditFieldBool('Admin?', 'is_admin', default=False),
         )
 
     @property
@@ -561,7 +570,7 @@ class AdminOrder(AdminBaseModel):
             EditField('Close date', 'close_date', writable=False),
             EditField('Amount', 'amount', writable=False),
             EditField('Paid amount', 'paid_amount', writable=False),
-            EditField('Paid?', 'paid', writable=False),
+            EditFieldBool('Paid?', 'paid', writable=False),
         )
 
     def get_item(self, id):
@@ -601,7 +610,8 @@ class AdminGiftCode(AdminBaseModel):
             EditFieldID(),
             EditField('Code', 'code'),
             EditField('Time', 'time'),
-            EditField('Free only?', 'free_only', default=False),
+            EditFieldBool('Free only?', 'free_only', default=False),
+            EditField('Used by', 'user', writable=False),
         )
 
 
@@ -628,7 +638,7 @@ class AdminGateway(AdminBaseModel):
             EditField('IPv4', 'ipv4'),
             EditField('IPv6', 'ipv6'),
             EditField('Bits/s', 'bps'),
-            EditField('Enabled?', 'enabled'),
+            EditFieldBool('Enabled?', 'enabled', default=True),
         )
 
 
