@@ -40,11 +40,12 @@ def page(request):
         with open(template) as template_f:
             mdt = template_f.read()
             mdt = mdt.replace('${irc_username}', irc_username)
-            md = markdown.Markdown(extensions=['toc', 'meta'])
+            md = markdown.Markdown(extensions=['toc', 'meta',
+                                               'codehilite(noclasses=True)'])
             content = md.convert(mdt)
             title = md.Meta['title'][0] if 'title' in md.Meta else None
             return {'content': content, 'title': title}
-    except mako.exceptions.TopLevelLookupException:
+    except FileNotFoundError:
         return HTTPNotFound()
 
 
