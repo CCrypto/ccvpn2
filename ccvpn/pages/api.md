@@ -9,6 +9,16 @@ Title: Public API
   - **ipv4 and ipv6**: *string*, IP addresses of the gateway. Either can be null.
   - **enabled**: *boolean*, true if the gateway is enabled.
 
+Example:
+
+    {"hostname": "fr-poney0",
+     "fqdn": "fr-poney0.204vpn.net",
+     "country": "fr",
+     "bandwidth": 1000000000,
+     "ipv4": "195.154.79.147",
+     "ipv6": "2001:bc8:3505:1000::1",
+     "enabled": true}
+
 ## Get a list of Gateway objects:
 
 Parameters:
