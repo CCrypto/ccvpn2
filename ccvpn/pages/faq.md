@@ -52,6 +52,12 @@ Yes! Our VPN is made with OpenVPN.
 Our servers' config and this website are also open-source and available on our
 [GitHub project](https://github.com/CCrypto/ccvpn/).
 
+### Why is there a SSL error?
+We are using a SSL certificate signed by CACert.
+It is a non-profit, community-driven certificate authority.  
+While it is commonly found on GNU/Linux distributions, you may need to trust
+CACert [as explained on their wiki][http://wiki.cacert.org/FAQ/BrowserClients].
+
 ### Are my data kept secure?
 Yes, the VPN traffic is strongly encrypted and we do not keep any data on the
 VPN servers.  
