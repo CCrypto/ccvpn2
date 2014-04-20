@@ -3,12 +3,12 @@
 %>
 <%
     menuItems = [
-        ['Home', '/'],
-        ['Help', '/page/help'],
-        ['Status', '/status'],
+        [_('Home'), '/'],
+        [_('Help'), '/page/help'],
+        [_('Status'), '/status'],
     ]
     if request.user and request.user.is_admin:
-        menuItems.append(['Admin', '/admin/'])
+        menuItems.append([_('Admin'), '/admin/'])
     path = request.path
     for k in menuItems:
         if path == k[1] or (k[1] != '/' and k[1][-1] == '/' and path.startswith(k[1])):
@@ -29,6 +29,7 @@
     else:
         title_pre = ''
 
+    available_languages = request.registry.settings.get('available_languages')
 %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -44,18 +45,24 @@
             <p>
                 <a href="http://ccrypto.org">Cognitive Cryptography</a>
                 % if use_https and request.host_port != str(ssl_port):
-                    // <a href="${ssl_url}"><b>Secure version</b></a>
+                    // <a href="${ssl_url}"><b>${_('Secure version')}</b></a>
+                % endif
+                % if available_languages:
+                    |
+                    % for l in available_languages.split():
+                        <a href="?l=${l}">${l.upper()}</a>
+                    % endfor
                 % endif
             </p>
         </div>
         <div class="topbar-right">
             % if request.user:
-                <p><a class="create" href="/account/">Your account</a>
-                    <a class="create" href="/account/logout">Logout</a>
+                <p><a class="create" href="/account/">${_('Your account')}</a>
+                    <a class="create" href="/account/logout">${_('Logout')}</a>
                     </p>
             % else:
-                <p><a href="/account/signup" class="create">Sign up</a>
-                    <a href="/account/login" class="create">Log in</a>
+                <p><a href="/account/signup" class="create">${_('Sign up')}</a>
+                    <a href="/account/login" class="create">${_('Log in')}</a>
                     </p>
             % endif
         </div>
@@ -90,9 +97,9 @@
 
     <footer>
         <p>Copyleft 2013 <a href="//ccrypto.org/">Cognitive Cryptography</a>
-        - <a href="/page/tos">ToS</a>
-        - <a href="/page/support">Abuse report</a>
-        - <a href="https://github.com/CCrypto/ccvpn">It's open-source!</a>
+        - <a href="/page/tos">${_('ToS')}</a>
+        - <a href="/page/support">${_('Abuse report')}</a>
+        - <a href="https://github.com/CCrypto/ccvpn">${_('It\'s open-source!')}</a>
         </p>
     </footer>
 </body>

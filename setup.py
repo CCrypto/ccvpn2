@@ -24,6 +24,8 @@ requires = [
     'python-dateutil',
     'stripe',
     'pygments',
+    'Babel',
+    'lingua',
 ]
 
 setup(name='ccvpn',
@@ -54,4 +56,8 @@ setup(name='ccvpn',
       ccvpn_apiacl = ccvpn.scripts.apiacl:main
       ccvpn_mail = ccvpn.scripts.mail:main
       """,
+      message_extractors = { '.': [
+          ('**.py', 'python', None ),
+          ('**.mako', 'mako', None ),
+      ]},
       )

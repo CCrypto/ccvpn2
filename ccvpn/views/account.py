@@ -17,6 +17,9 @@ from ccvpn.models import (
     random_access_token
 )
 
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('ccvpn')
+
 
 # Set in __init__.py from app settings
 openvpn_gateway = ''
@@ -44,13 +47,13 @@ def login(request):
     user = DBSession.query(User).filter_by(username=username).first()
     if not user or not user.check_password(password):
         request.response.status_code = HTTPForbidden.code
-        request.messages.error('Invalid username or password.')
+        request.messages.error(_('Invalid username or password.'))
         return {}
 
     user.last_login = datetime.datetime.now()
 
     request.session['uid'] = user.id
-    request.messages.info('Logged in.')
+    request.messages.info(_('Logged in.'))
     return HTTPSeeOther(location=request.route_url('account'))
 
 
@@ -58,7 +61,7 @@ def login(request):
 def logout(request):
     if 'uid' in request.session:
         del request.session['uid']
-        request.session.flash(('info', 'Logged out.'))
+        request.messages.info(_('Logged out.'))
     return HTTPSeeOther(location=request.route_url('home'))
 
 
@@ -75,21 +78,21 @@ def signup(request):
         email = request.POST.get('email')
 
         if not User.validate_username(username):
-            errors.append('Invalid username.')
+            errors.append(_('Invalid username.'))
         if not User.validate_password(password):
-            errors.append('Invalid password.')
+            errors.append(_('Invalid password.'))
         if email and not User.validate_email(email):
-            errors.append('Invalid email address.')
+            errors.append(_('Invalid email address.'))
         if password != password2:
-            errors.append('Both passwords do not match.')
+            errors.append(_('Both passwords do not match.'))
 
         assert not errors
 
         used = User.is_used(username, email)
         if used[0] > 0:
-            errors.append('Username already registered.')
+            errors.append(_('Username already registered.'))
         if used[1] > 0 and email:
-            errors.append('E-mail address already registered.')
+            errors.append(_('E-mail address already registered.'))
 
         assert not errors
 
@@ -103,7 +106,7 @@ def signup(request):
         return HTTPSeeOther(location=request.route_url('account'))
     except AssertionError:
         for error in errors:
-            request.session.flash(('error', error))
+            request.messages.error(error)
         fields = ('username', 'password', 'password2', 'email')
         request.response.status_code = HTTPBadRequest.code
         return {k: request.POST[k] for k in fields}
@@ -118,11 +121,11 @@ def forgot(request):
         .filter_by(username=request.POST['username']) \
         .first()
     if not u:
-        request.messages.error('Unknown username.')
+        request.messages.error(_('Unknown username.'))
         request.response.status_code = HTTPBadRequest.code
         return {}
     if not u.email:
-        request.messages.error('No e-mail address associated with username.')
+        request.messages.error(_('No e-mail address associated with username.'))
         request.response.status_code = HTTPBadRequest.code
         return {}
 
@@ -136,11 +139,11 @@ def forgot(request):
         'requested_by': request.remote_addr,
         'url': request.route_url('account_reset', token=token.token)
     })
-    message = Message(subject='CCVPN: Password reset request',
+    message = Message(subject=_('CCVPN: Password reset request'),
                       recipients=[u.email],
                       body=body)
     mailer.send(message)
-    request.messages.info('We sent a reset link. Check your emails.')
+    request.messages.info(_('We sent a reset link. Check your emails.'))
     return {}
 
 
@@ -151,7 +154,7 @@ def reset(request):
         .first()
 
     if not token or not token.user:
-        request.messages.error('Unknown password reset token.')
+        request.messages.error(_('Unknown password reset token.'))
         url = request.route_url('account_forgot')
         return HTTPMovedPermanently(location=url)
 
@@ -162,7 +165,7 @@ def reset(request):
         return {'token': token}
 
     if not User.validate_password(password) or password != password2:
-        request.messages.error('Invalid password.')
+        request.messages.error(_('Invalid password.'))
         request.response.status_code = HTTPBadRequest.code
         return {'token': token}
 
@@ -173,13 +176,15 @@ def reset(request):
         'user': token.user,
         'changed_by': request.remote_addr,
     })
-    message = Message(subject='CCVPN: Password changed',
+    message = Message(subject=_('CCVPN: Password changed'),
                       recipients=[token.user.email],
                       body=body)
     mailer.send(message)
 
-    request.messages.info('You have changed the password for %s. You can now '
-                          'log in.' % (token.user.username))
+    msg = _('You have changed the password for %s.',
+            mapping={'user': token.user.username})
+    msg += ' ' + _('You can now log in.')
+    request.messages.info(msg)
     DBSession.delete(token)
     url = request.route_url('account_login')
     return HTTPMovedPermanently(location=url)
@@ -194,18 +199,18 @@ def account_post(request):
         if 'profilename' in request.POST:
             p = Profile()
             p.validate_name(request.POST['profilename']) or \
-                errors.append('Invalid name.')
+                errors.append(_('Invalid name.'))
             assert not errors
             name_used = DBSession.query(Profile) \
                 .filter_by(uid=request.user.id,
                            name=request.POST['profilename']) \
                 .first()
             if name_used:
-                errors.append('Name already used.')
+                errors.append(_('Name already used.'))
             profiles_count = DBSession.query(func.count(Profile.id)) \
                 .filter_by(uid=request.user.id).scalar()
             if profiles_count > 10:
-                errors.append('You have too many profiles.')
+                errors.append(_('You have too many profiles.'))
             assert not errors
             p.name = request.POST['profilename']
             p.askpw = 'askpw' in request.POST and request.POST['askpw'] == '1'
@@ -221,7 +226,7 @@ def account_post(request):
                 .filter_by(id=int(request.POST['profiledelete'])) \
                 .filter_by(uid=request.user.id) \
                 .first()
-            assert p or errors.append('Unknown profile.')
+            assert p or errors.append(_('Unknown profile.'))
             DBSession.delete(p)
             DBSession.flush()
             return account(request)
@@ -229,12 +234,12 @@ def account_post(request):
         u = request.user
         if request.POST['password'] != '':
             u.validate_password(request.POST['password']) or \
-                errors.append('Invalid password.')
+                errors.append(_('Invalid password.'))
             if request.POST['password'] != request.POST['password2']:
-                errors.append('Both passwords do not match.')
+                errors.append(_('Both passwords do not match.'))
         if request.POST['email'] != '':
             u.validate_email(request.POST['email']) or \
-                errors.append('Invalid email address.')
+                errors.append(_('Invalid email address.'))
         assert not errors
 
         new_email = request.POST.get('email')
@@ -242,13 +247,13 @@ def account_post(request):
             c = DBSession.query(func.count(User.id).label('ec')) \
                 .filter_by(email=new_email).first()
             if c.ec > 0:
-                errors.append('E-mail address already registered.')
+                errors.append(_('E-mail address already registered.'))
         assert not errors
         if request.POST['password'] != '':
             u.set_password(request.POST['password'])
         if request.POST['email'] != '':
             u.email = request.POST['email']
-        request.session.flash(('info', 'Saved!'))
+        request.messages.info(_('Saved!'))
         DBSession.flush()
 
     except KeyError:
@@ -311,6 +316,6 @@ def config(request):
         gateway=gateway, openvpn_ca=openvpn_ca,
         **params
     ))
-    r.content_type = 'test/plain'
+    r.content_type = 'text/plain'
     return r
 

@@ -502,7 +502,7 @@ class AdminUser(AdminBaseModel):
                 raise HTTPBadRequest('Invalid time')
             self.item.add_paid_time(timedelta(days=days))
             return
-        super().post(request)
+        super().post_edit(request)
 
     def get_list(self):
         r = super().get_list()

@@ -12,23 +12,24 @@
 </%def>
 
 <section id="account">
-    <h2>Order #${o.id}</h2>
+    <h2>${_('Order')} #${o.id}</h2>
 
 % if o.paid:
     <article>
-        <p>Thank you for using our VPN!<br />
-        Now, read our <a href="/page/docs">installation howtos</a> to start
-        using it or <a href="/page/support">ask the support</a> if you need help.</p>
+        <p>${_('Thank you for using our VPN!')}<br />
+        ${_('Now, read our')} <a href="/page/help">${_('installation howtos')}</a>
+        ${_('to start using it or')} <a href="/page/support">${_('ask the support')}</a>
+        ${_('if you need help.')}</p>
     </article>
 % else:
     <article>
     % if o.method == o.METHOD.BITCOIN:
-        <p>Please send <b>${o.amount - o.paid_amount} BTC</b>
-            to <b>${o.payment['btc_address']}</b> .</p>
+        <p>${_('Please send ${n} BTC to ${a}.',
+               mapping={'n': o.amount - o.paid_amount, 'a': o.payment['btc_address']})}
+        </p>
         ${autorefresh()}
     % elif o.method == o.METHOD.PAYPAL:
-        <p>If you already paid with Paypal, please wait for Paypal to confirm
-            the transaction, it can take up to 30 minutes.</p>
+        <p>${_('help_paypal_wait')}</p>
         ${autorefresh()}
     % elif o.method == o.METHOD.STRIPE:
         <form action="/order/callback/${'%x' % o.id}" method="POST">
@@ -41,13 +42,11 @@
                 data-description="${description}">
             </script>
             <noscript>
-                <p>You need JavaScript to use Stripe.</p>
+                <p>${_('You need JavaScript to use Stripe.')}</p>
             </noscript>
         </form>
     % endif
     </article>
 % endif
-    
-    <div style="clear: both"></div>
 </section>
 
