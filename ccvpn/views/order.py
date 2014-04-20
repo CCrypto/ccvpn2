@@ -12,6 +12,9 @@ from ccvpn.models import (
     Order,
 )
 
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('ccvpn')
+
 
 def order_post_gc(request, code):
     try:
@@ -19,12 +22,13 @@ def order_post_gc(request, code):
         gc.use(request.user)
 
         time = gc.time.days
-        request.messages.info('OK! Added %d days to your account.' % time)
+        request.messages.info(_('OK! Added ${time} days to your account.',
+                                mapping={'time': time}))
         DBSession.flush()
     except (NoResultFound, MultipleResultsFound):
-        request.messages.error('Unknown code.')
+        request.messages.error(_('Unknown gift code.'))
     except AlreadyUsedGiftCode:
-        request.messages.error('Already used code')
+        request.messages.error(_('Gift code already used.'))
     return HTTPSeeOther(location=request.route_url('account'))
 
 
@@ -38,8 +42,13 @@ def order_post(request):
     try:
         method_name = request.POST.get('method')
         time_months = int(request.POST.get('time'))
-    except ValueError:
-        return HTTPBadRequest('invalid POST data')
+    except (ValueError, TypeError):
+        return HTTPSeeOther(location=request.route_url('account'))
+
+    if method_name == 'admin' and request.user.is_admin:
+        time = datetime.timedelta(days=30 * time_months)
+        request.user.add_paid_time(time)
+        return HTTPSeeOther(location=request.route_url('account'))
 
     method = request.payment_methods.get(method_name)
     if not method or time_months not in times:

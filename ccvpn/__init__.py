@@ -127,6 +127,22 @@ def referral_handler_factory(handler, registry):
     return decorator
 
 
+def my_locale_negotiator(request):
+    if 'l' in request.GET:
+        locale = request.GET['l']
+        logger.debug('Locale (GET): %s', locale)
+        def save_locale(request, response):
+            response.set_cookie('locale', request.locale_name)
+        request.add_response_callback(save_locale)
+        return locale
+
+    if 'locale' in request.cookies:
+        locale = request.cookies['locale']
+        logger.debug('Locale (cookie): %s', locale)
+        return locale
+
+
+
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
@@ -148,6 +164,13 @@ def main(global_config, **settings):
     config = Configurator(settings=settings,
                           authentication_policy=authentication,
                           authorization_policy=authorization)
+
+    config.add_translation_dirs('ccvpn:locale')
+    config.add_subscriber('ccvpn.subscribers.add_renderer_globals',
+                          'pyramid.events.BeforeRender')
+    config.add_subscriber('ccvpn.subscribers.add_localizer',
+                          'pyramid.events.NewRequest')
+    config.set_locale_negotiator(my_locale_negotiator)
 
     includes = settings.get('pyramid.includes', {})
     config.include('pyramid_mako')

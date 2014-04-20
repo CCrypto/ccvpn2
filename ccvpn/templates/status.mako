@@ -1,28 +1,34 @@
-<%! title = 'Gateways' %>
+<%! title = 'Status' %>
 <%inherit file="layout.mako" />
 <section id="gateways">
     <article>
-    <h1>Status</h1>
+    <h1>${_('Status')}</h1>
 
-    <h2>Stats</h2>
+    <h2>${_('Stats')}</h2>
     <ul>
-        <li>We have ${n_users} active users.</li>
-        <li>We provide ${len(gateways)} servers in ${n_countries} countries,
-            and a total bandwidth of <b>${total_bw}</b></li>
+        <li>${_('We have ${n} active users.', mapping={'n': n_users})}</li>
+        <li>${_('We provide ${ns} servers in ${nc} countries,',
+                mapping={'ns': len(gateways), 'nc': n_countries})}
+            ${_('and a total bandwidth of ${bw}', mapping={'bw': total_bw})}</li>
     </ul>
     % if bw_graph:
         <a href="${bw_graph[0]}">
-            <img src="${bw_graph[1]}" alt="Network bandwidth graph" />
+            <img src="${bw_graph[1]}" alt="${_('Network bandwidth graph')}" />
         </a>
     % endif
 
-    <h2>Gateways</h2>
-        <p><code>gw.204vpn.net</code> will always point to a random and working server.<br />
-           <code>[country].204vpn.net</code> is a random server in a given country. (e.g. fr.204vpn.net)</p>
+    <h2>${_('Gateways')}</h2>
+        <p><code>gw.random.204vpn.net</code> ${_('points to a random server.')}<br />
+           <code>gw.[country].204vpn.net</code> ${_('to random server in a given country.')}
+           ${_('(e.g. ${e})', mapping={'e': 'gw.fr.204vpn.net'})}</p>
         % if gateways:
         <table>
             <thead>
-                <tr><td>Host</td> <td>ISP / Bandwidth</td> <td>Location</td> <td>Uptime <span class="td-info">on 31 days</span></td></tr>
+                <tr><td>${_('Host')}</td>
+                    <td>${_('ISP')} / ${_('Bandwidth')}</td>
+                    <td>${_('Location')}</td>
+                    <td>${_('Uptime')} <span class="td-info">${_('on 31 days')}</span></td>
+                </tr>
             </thead>
             <tbody>
                 % for d in gateways:
@@ -41,6 +47,4 @@
     </article>
 
     <script type="text/javascript" src="/static/ping.js"></script>
-
-    <div style="clear: both"></div>
 </section>
