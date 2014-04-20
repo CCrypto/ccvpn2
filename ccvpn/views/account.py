@@ -17,9 +17,6 @@ from ccvpn.models import (
     random_access_token
 )
 
-from pyramid.i18n import TranslationStringFactory
-_ = TranslationStringFactory('ccvpn')
-
 
 # Set in __init__.py from app settings
 openvpn_gateway = ''
@@ -28,6 +25,7 @@ openvpn_ca = ''
 
 @forbidden_view_config()
 def forbidden(request):
+    _ = request.translate
     if not request.user:
         return HTTPFound(location=request.route_url('account_login'))
     return HTTPForbidden()
@@ -35,6 +33,7 @@ def forbidden(request):
 
 @view_config(route_name='account_login', renderer='login.mako')
 def login(request):
+    _ = request.translate
     if request.method != 'POST':
         return {}
 
@@ -59,6 +58,7 @@ def login(request):
 
 @view_config(route_name='account_logout', permission='logged')
 def logout(request):
+    _ = request.translate
     if 'uid' in request.session:
         del request.session['uid']
         request.messages.info(_('Logged out.'))
@@ -67,6 +67,7 @@ def logout(request):
 
 @view_config(route_name='account_signup', renderer='signup.mako')
 def signup(request):
+    _ = request.translate
     if request.method != 'POST':
         return {}
     errors = []
@@ -114,6 +115,7 @@ def signup(request):
 
 @view_config(route_name='account_forgot', renderer='forgot_password.mako')
 def forgot(request):
+    _ = request.translate
     if request.method != 'POST' or 'username' not in request.POST:
         return {}
 
@@ -149,6 +151,7 @@ def forgot(request):
 
 @view_config(route_name='account_reset', renderer='reset_password.mako')
 def reset(request):
+    _ = request.translate
     token = DBSession.query(PasswordResetToken) \
         .filter_by(token=request.matchdict['token']) \
         .first()
@@ -181,7 +184,7 @@ def reset(request):
                       body=body)
     mailer.send(message)
 
-    msg = _('You have changed the password for %s.',
+    msg = _('You have changed the password for ${user}.',
             mapping={'user': token.user.username})
     msg += ' ' + _('You can now log in.')
     request.messages.info(msg)
@@ -193,6 +196,7 @@ def reset(request):
 @view_config(route_name='account', request_method='POST', permission='logged',
              renderer='account.mako')
 def account_post(request):
+    _ = request.translate
     # TODO: Fix that. split in two functions or something.
     errors = []
     try:
@@ -267,6 +271,7 @@ def account_post(request):
 @view_config(route_name='account', permission='logged',
              renderer='account.mako')
 def account(request):
+    _ = request.translate
     return {
         'gw_countries': set(i[0] for i in DBSession.query(Gateway.country).all()),
     }
@@ -274,11 +279,13 @@ def account(request):
 
 @view_config(route_name='account_redirect')
 def account_redirect(request):
+    _ = request.translate
     return HTTPMovedPermanently(location=request.route_url('account'))
 
 
 @view_config(route_name='config', permission='logged')
 def config(request):
+    _ = request.translate
     settings = request.registry.settings
     domain = settings.get('net_domain', '')
 

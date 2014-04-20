@@ -12,9 +12,6 @@ from ccvpn.models import (
     Order,
 )
 
-from pyramid.i18n import TranslationStringFactory
-_ = TranslationStringFactory('ccvpn')
-
 
 def order_post_gc(request, code):
     try:
@@ -34,6 +31,7 @@ def order_post_gc(request, code):
 
 @view_config(route_name='order_post', permission='logged')
 def order_post(request):
+    _ = request.translate
     code = request.POST.get('code')
     if code:
         return order_post_gc(request, code)
@@ -65,6 +63,7 @@ def order_post(request):
 @view_config(route_name='order_view', renderer='order.mako',
              permission='logged')
 def order_view(request):
+    _ = request.translate
     id = int(request.matchdict['hexid'], 16)
     o = DBSession.query(Order).filter_by(id=id).first()
     if not o:
@@ -82,6 +81,7 @@ def order_view(request):
 
 @view_config(route_name='order_callback')
 def order_callback(request):
+    _ = request.translate
     id = int(request.matchdict['hexid'], 16)
     o = DBSession.query(Order).filter_by(id=id).first()
     if not o:
