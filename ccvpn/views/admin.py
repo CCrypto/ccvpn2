@@ -344,14 +344,15 @@ class AdminBaseModel(AdminBase):
     def get_list(self, page):
         query = DBSession.query(self.model).order_by(self.model.id)
 
+        for f in self.get_list_filters:
+            query = f(query)
+
         # Pagination
         count = DBSession.query(func.count(self.model.id)).scalar()
         pages = ceil(count / self.list_page_items)
         query = query.limit(self.list_page_items)
         query = query.offset(self.list_page_items * page)
 
-        for f in self.get_list_filters:
-            query = f(query)
         items = query.all()
         self.main_template = 'list.mako'
         if self.can_add:
