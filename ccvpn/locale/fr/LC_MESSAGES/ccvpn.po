@@ -184,7 +184,7 @@ msgstr "Non-censuré"
 
 #: ccvpn/templates/home.mako:16
 msgid "We have porn and pirates."
-msgstr "Avec du porno et des pirates."
+msgstr "Avec du porn et des pirates."
 
 #: ccvpn/templates/home.mako:21
 msgid "Cheap"
@@ -269,7 +269,7 @@ msgstr "Essai gratuit !"
 
 #: ccvpn/templates/home.mako:76
 msgid "Try the VPN for 7 days for free!"
-msgstr "Essayez le VPN pour 7 jours gratuitement!"
+msgstr "Essayez le VPN pour 7 jours gratuitement !"
 
 #: ccvpn/templates/home.mako:77
 msgid "Sign up and ask for a free account"
