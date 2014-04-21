@@ -693,6 +693,21 @@ table.admin-list tbody tr:nth-child(even) {
     background: #eee;
 }
 
+.pages {
+    display: block;
+    text-align: center;
+}
+
+.pages a {
+    display: inline-block;
+    width: 30px;
+    border: 1px solid #72B6ED;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    background: #E6F5FF;
+    border-radius: 3px;
+}
 
 
 
