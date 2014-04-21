@@ -38,4 +38,15 @@
     % endfor
 </tbody>
 </table>
+<p class="pages">
+    % if page > 0:
+        <a href="?page=0">&lt;&lt;</a>
+        <a href="?page=${page - 1}">&lt;</a>
+    % endif
+    <a href="?page=${page}">${page}</a>
+    % if page < pages - 1:
+        <a href="?page=${page + 1}">&gt;</a>
+        <a href="?page=${pages - 1}">&gt;&gt;</a>
+    % endif
+</p>
 

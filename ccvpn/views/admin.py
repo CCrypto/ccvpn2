@@ -10,6 +10,8 @@ from pyramid.httpexceptions import (
 )
 from pyramid.renderers import render_to_response
 from dateutil import parser
+from sqlalchemy.sql import func
+from math import ceil
 
 from ccvpn.models import (
     DBSession,
@@ -219,6 +221,7 @@ class AdminBaseModel(AdminBase):
         self.name = self.model.__name__.lower() + 's'
         self.can_add = True
         self.can_edit = True
+        self.list_page_items = 3
 
         def make_id_filter(o, join=False):
             def f(q):
@@ -325,7 +328,11 @@ class AdminBaseModel(AdminBase):
         if self.id:
             return self.get_item(self.id)
         else:
-            return self.get_list()
+            try:
+                page = int(request.GET.get('page', 0))
+            except ValueError:
+                page = 0
+            return self.get_list(page)
 
     def get_item(self, id):
         self.item = self.get_model_item(id)
@@ -334,15 +341,22 @@ class AdminBaseModel(AdminBase):
             raise HTTPNotFound()
         return {'item': self.item}
 
-    def get_list(self):
+    def get_list(self, page):
         query = DBSession.query(self.model).order_by(self.model.id)
+
+        # Pagination
+        count = DBSession.query(func.count(self.model.id)).scalar()
+        pages = ceil(count / self.list_page_items)
+        query = query.limit(self.list_page_items)
+        query = query.offset(self.list_page_items * page)
+
         for f in self.get_list_filters:
             query = f(query)
         items = query.all()
         self.main_template = 'list.mako'
         if self.can_add:
             self.templates.append('add.mako')
-        return {'list_items': items}
+        return {'list_items': items, 'page': page, 'pages': pages}
 
     def __getitem__(self, name):
         if self.id:
@@ -449,11 +463,6 @@ class AdminUser(AdminBaseModel):
         }
         self.title = 'Users'
 
-        def list_f(q):
-            return q.order_by(self.model.id.desc()) \
-                    .limit(20)
-        self.get_list_filters.append(list_f)
-
         def password_of(password):
             """ Displays the first 8 bytes of the password hash """
             return ''.join('%02x' % c for c in password[:8]) + '...'
@@ -504,8 +513,8 @@ class AdminUser(AdminBaseModel):
             return
         super().post_edit(request)
 
-    def get_list(self):
-        r = super().get_list()
+    def get_list(self, *args, **kwargs):
+        r = super().get_list(*args, **kwargs)
         r['list_title'] = 'New users'
         return r
 
