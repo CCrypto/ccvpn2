@@ -221,7 +221,7 @@ class AdminBaseModel(AdminBase):
         self.name = self.model.__name__.lower() + 's'
         self.can_add = True
         self.can_edit = True
-        self.list_page_items = 3
+        self.list_page_items = 30
 
         def make_id_filter(o, join=False):
             def f(q):
