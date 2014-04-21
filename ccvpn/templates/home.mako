@@ -74,7 +74,7 @@
     <article class="homehalf">
         <h2>${_('Free Trial!')}</h2>
         <p>${_('Try the VPN for 7 days for free!')}<br />
-            <a href="/account/signup">${_('Sign up and ask for a free account')}</a></p>
+            <a href="/account/signup">${_('Sign up and ask for a free account')}</a>.</p>
 </section>
 
 
