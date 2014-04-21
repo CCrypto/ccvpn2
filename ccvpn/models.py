@@ -545,8 +545,8 @@ class VPNSession(Base):
     connect_date = Column(DateTime, default=datetime.now, nullable=False)
     disconnect_date = Column(DateTime, nullable=True)
     remote_addr = Column(String, nullable=False)
-    bytes_up = Column(Integer, nullable=True)
-    bytes_down = Column(Integer, nullable=True)
+    bytes_up = Column(BigInteger, nullable=True)
+    bytes_down = Column(BigInteger, nullable=True)
 
     def __repr__(self):
         return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (
