@@ -316,13 +316,13 @@ def config(request):
         'force_tcp': not_real_ovpn or 'forcetcp' in request.GET,
         'windows_dns': os == 'windows',
         'resolvconf': os == 'ubuntu',
+        'username': request.user.username,
+        'profile': profile,
+        'gateway': gateway,
+        'openvpn_ca': openvpn_ca,
     }
 
-    r = render_to_response('config.ovpn.mako', dict(
-        username=request.user.username, profile=profile,
-        gateway=gateway, openvpn_ca=openvpn_ca,
-        **params
-    ))
+    r = render_to_response('config.ovpn.mako', params, request=request)
     r.content_type = 'text/plain'
     return r
 
