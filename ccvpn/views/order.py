@@ -14,6 +14,7 @@ from ccvpn.models import (
 
 
 def order_post_gc(request, code):
+    _ = request.translate
     try:
         gc = GiftCode.one(code=code)
         gc.use(request.user)
