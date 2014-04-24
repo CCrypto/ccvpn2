@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ccvpn 0.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2014-04-20 14:08+0200\n"
+"PO-Revision-Date: 2014-04-24 21:40+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+"X-Language: en_US\n"
+"X-Source-Language: C\n"
+
+#: ccvpn/templates/account.mako:51
+msgid "help_connection_limit"
+msgstr ""
+"You can only have one connection per profile, but up to 10 profiles. (10 "
+"running clients)"
+
+#: ccvpn/templates/account.mako:52
+msgid "help_profile_usage"
+msgstr ""
+"To use a profile, download the right config and use \"username/profile\" as "
+"your VPN username."
+
+#: ccvpn/templates/account.mako:53
+msgid "help_tcp_usage"
+msgstr ""
+"TCP is slower. Use it only if you have important packet loss or if UDP is "
+"filtered."
+
+#: ccvpn/templates/account.mako:114
+msgid "help_ref"
+msgstr ""
+"Get two weeks for free for every referral that takes at least one month!"
+
+#: ccvpn/templates/order.mako:32
+msgid "help_paypal_wait"
+msgstr ""
+"If you already paid with Paypal, please wait for Paypal to confirm the "
+"transaction, it can take up to 30 minutes."
