@@ -94,12 +94,14 @@ def api_gateway_disconnect(request):
 
     sesq = DBSession.query(VPNSession) \
                     .filter(VPNSession.disconnect_date == None) \
-                    .filter(Gateway.id == request.gw.id) \
+                    .filter(VPNSession.gateway_id == request.gw.id) \
                     .filter(VPNSession.gateway_version == request.gw_version) \
-                    .filter(User.username == username)
+                    .filter(User.username == username) \
+                    .join(User)
     if profilename:
         sesq = sesq.filter(Profile.uid == User.id) \
-                   .filter(Profile.name == profilename)
+                   .filter(Profile.name == profilename) \
+                   .join(Profile)
     sessions = list(sesq.all())
 
     # First, we close every sessions except the last
