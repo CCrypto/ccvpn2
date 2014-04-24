@@ -348,7 +348,11 @@ class AdminBaseModel(AdminBase):
             query = f(query)
 
         # Pagination
-        count = DBSession.query(func.count(self.model.id)).scalar()
+        count_q = DBSession.query(func.count(self.model.id))
+        for f in self.get_list_filters:
+            count_q = f(count_q)
+        count = count_q.scalar()
+        
         pages = ceil(count / self.list_page_items)
         query = query.limit(self.list_page_items)
         query = query.offset(self.list_page_items * page)
