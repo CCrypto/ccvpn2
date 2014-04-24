@@ -4,7 +4,7 @@ import unittest
 import transaction
 from pyramid import testing, httpexceptions
 
-from ccvpn.models import User, Gateway, Profile
+from ccvpn.models import User, Gateway, Profile, VPNSession
 from ccvpn import views, setup_routes
 from ccvpn.tests import setup_database, DummyRequest
 
@@ -15,42 +15,41 @@ class TestAPIViews(unittest.TestCase):
         setup_routes(self.config)
         self.session = setup_database()
 
-        with transaction.manager:
-            paiduser = User(username='paiduser', password='testpw')
-            paiduser.add_paid_time(datetime.timedelta(days=30))
-            self.session.add(paiduser)
-            self.session.flush()
+        self.paiduser = User(username='paiduser', password='testpw')
+        self.paiduser.add_paid_time(datetime.timedelta(days=30))
+        self.session.add(self.paiduser)
+        self.session.flush()
 
-            profile = Profile(uid=paiduser.id, name='testprofile')
-            self.session.add(profile)
+        self.profile = Profile(uid=self.paiduser.id, name='testprofile')
+        self.session.add(self.profile)
 
-            freeuser = User(username='freeuser', password='testpw')
-            self.session.add(freeuser)
+        self.freeuser = User(username='freeuser', password='testpw')
+        self.session.add(self.freeuser)
 
-            duser = User(username='disableduser', password='testpw')
-            duser.is_active = False
-            duser.add_paid_time(datetime.timedelta(days=30))
-            self.session.add(duser)
+        duser = User(username='disableduser', password='testpw')
+        duser.is_active = False
+        duser.add_paid_time(datetime.timedelta(days=30))
+        self.session.add(duser)
 
-        with transaction.manager:
-            gw0 = Gateway(name='gw0', token='simple_gateway',
-                          isp_name='', isp_url='', country='')
-            self.session.add(gw0)
+        self.gw0 = Gateway(name='gw0', token='simple_gateway',
+                      isp_name='', isp_url='', country='')
+        self.session.add(self.gw0)
 
-            gw1 = Gateway(name='gw1', token='disabled_gateway',
-                          isp_name='', isp_url='', country='')
-            gw1.enabled = False
-            self.session.add(gw1)
+        self.gw1 = Gateway(name='gw1', token='disabled_gateway',
+                      isp_name='', isp_url='', country='')
+        self.gw1.enabled = False
+        self.session.add(self.gw1)
 
-            gw2 = Gateway(name='gw2', token='ipv4_gateway',
-                          isp_name='', isp_url='', country='',
-                          ipv4='1.2.3.4')
-            self.session.add(gw2)
+        self.gw2 = Gateway(name='gw2', token='ipv4_gateway',
+                      isp_name='', isp_url='', country='',
+                      ipv4='1.2.3.4')
+        self.session.add(self.gw2)
 
-            gw3 = Gateway(name='gw3', token='ipv6_gateway',
-                          isp_name='', isp_url='', country='',
-                          ipv6='1:2:3:4:5:6:7:8')
-            self.session.add(gw3)
+        self.gw3 = Gateway(name='gw3', token='ipv6_gateway',
+                      isp_name='', isp_url='', country='',
+                      ipv6='1:2:3:4:5:6:7:8')
+        self.session.add(self.gw3)
+        self.session.flush()
 
         self.testheaders = {
             'X-Gateway-Token': 'simple_gateway',
@@ -60,6 +59,20 @@ class TestAPIViews(unittest.TestCase):
     def tearDown(self):
         self.session.remove()
         testing.tearDown()
+
+    def assertSessionExists(self, **kwargs):
+        sess = self.session.query(VPNSession)
+        sess = sess.filter_by(**kwargs)
+        sess = sess.all()
+        self.assertGreaterEqual(len(sess), 1,
+                                msg='No session found for ' + str(kwargs))
+
+    def assertNSessionExists(self, n, **kwargs):
+        sess = self.session.query(VPNSession)
+        sess = sess.filter_by(**kwargs)
+        sess = sess.all()
+        msg = '%d != %d sessions found for %s' % (len(sess), n, str(kwargs))
+        self.assertEqual(len(sess), n, msg=msg)
 
     def test_api_auth(self):
         fn = views.api.require_api_token(None)(lambda req: True)
@@ -181,6 +194,7 @@ class TestAPIViews(unittest.TestCase):
         })
         resp = views.api.api_gateway_connect(req)
         self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertSessionExists(user_id=self.paiduser.id, disconnect_date=None)
 
         req = DummyRequest(headers=self.testheaders, post={
             'username': 'paiduser/testprofile',
@@ -226,4 +240,48 @@ class TestAPIViews(unittest.TestCase):
         self.assertIsInstance(resp, httpexceptions.HTTPForbidden)
         self.assertEqual(resp.body, b'')
 
+    def test_disconnect_one(self):
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/testprofile',
+            'remote_addr': '1.2.3.4',
+        })
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertNSessionExists(1, user_id=self.paiduser.id, disconnect_date=None)
+
+        # Missing POST data
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/testprofile',
+        })
+        resp = views.api.api_gateway_disconnect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
+        self.assertNSessionExists(1, user_id=self.paiduser.id, disconnect_date=None)
+
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser/testprofile',
+            'bytes_up': 1337,
+            'bytes_down': 42,
+        })
+        resp = views.api.api_gateway_disconnect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertNSessionExists(0, user_id=self.paiduser.id, disconnect_date=None)
+
+    def test_disconnect_multiple(self):
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
+            'remote_addr': '1.2.3.4',
+        })
+        resp = views.api.api_gateway_connect(req)
+        resp = views.api.api_gateway_connect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertNSessionExists(2, user_id=self.paiduser.id, disconnect_date=None)
+
+        req = DummyRequest(headers=self.testheaders, post={
+            'username': 'paiduser',
+            'bytes_up': 0,
+            'bytes_down': 0,
+        })
+        resp = views.api.api_gateway_disconnect(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPOk)
+        self.assertNSessionExists(0, user_id=self.paiduser.id, disconnect_date=None)
 

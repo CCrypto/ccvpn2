@@ -1,5 +1,6 @@
 from pyramid import testing
 from sqlalchemy import create_engine
+from pyramid.i18n import get_localizer, TranslationStringFactory
 
 from ccvpn.models import DBSession, Base, get_user
 from ccvpn import Messages, referral_handler, methods
@@ -20,6 +21,7 @@ class DummyRequest(testing.DummyRequest):
         self.messages = Messages(self)
         self.referrer = None
         self.remote_addr = kwargs.get('remote_addr')
+        self.translate = TranslationStringFactory('ccvpn')
 
         methods_objs = {}
         for c in methods.Method.__subclasses__():

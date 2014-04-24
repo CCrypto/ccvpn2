@@ -20,6 +20,9 @@ class TestOrderView(unittest.TestCase):
 
         self.testuser = User(username='test', password='testpw')
         self.session.add(self.testuser)
+        self.testadmin = User(username='testadmin', password='testpw')
+        self.testadmin.is_admin = True
+        self.session.add(self.testadmin)
         self.session.flush()
         self.testcode = GiftCode(datetime.timedelta(days=7))
         self.session.add(self.testcode)
@@ -36,6 +39,28 @@ class TestOrderView(unittest.TestCase):
         self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
         self.assertTrue(resp.location.endswith('/account/'))
         self.assertTrue(self.testuser.is_paid)
+        until = self.testuser.paid_until
+
+        resp = views.order.order_post(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
+        self.assertTrue(resp.location.endswith('/account/'))
+        self.assertTrue(self.testuser.is_paid)
+        self.assertEquals(self.testuser.paid_until, until)
+
+    def test_post_admin(self):
+        req = DummyRequest(post={'method': 'admin', 'time': '3'})
+
+        req.session['uid'] = self.testuser.id
+        resp = views.order.order_post(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
+        self.assertFalse(self.testuser.is_paid)
+
+        req = DummyRequest(post={'method': 'admin', 'time': '3'})
+        req.session['uid'] = self.testadmin.id
+        resp = views.order.order_post(req)
+        self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
+        self.assertTrue(resp.location.endswith('/account/'))
+        self.assertTrue(self.testadmin.is_paid)
 
     def test_post_unknown_code(self):
         req = DummyRequest(post={'code': 'fail'})
@@ -71,7 +96,7 @@ class TestOrderView(unittest.TestCase):
         })
         req.session['uid'] = self.testuser.id
         resp = views.order.order_post(req)
-        self.assertIsInstance(resp, httpexceptions.HTTPBadRequest)
+        self.assertIsInstance(resp, httpexceptions.HTTPSeeOther)
 
     def test_view_paypal(self):
         testorder = Order(user=self.testuser.id, amount=1,
