@@ -150,8 +150,7 @@ def api_gateway_connect(request):
             return HTTPForbidden('Unknown profile')
         sess.profile_id = profile.id
 
-    with transaction.manager:
-        DBSession.add(sess)
+    DBSession.add(sess)
 
     params = {}
 
