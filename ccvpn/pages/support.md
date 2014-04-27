@@ -1,6 +1,6 @@
 Title: Support
 
-Before asking for help, make sure you read our [guides](/page/docs)
+Before asking for help, make sure you read our [guides](/page/help)
 and [FAQ](/page/faq).
 
 We provide a fast support **in french and english** on:
