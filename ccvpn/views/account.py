@@ -323,6 +323,6 @@ def config(request):
     }
 
     r = render_to_response('config.ovpn.mako', params, request=request)
-    r.content_type = 'text/plain'
+    r.content_type = 'application/octet-stream'
     return r
 
