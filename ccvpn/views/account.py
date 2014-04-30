@@ -44,7 +44,7 @@ def login(request):
         return {}
 
     user = DBSession.query(User).filter_by(username=username).first()
-    if not user or not user.check_password(password):
+    if not user or not user.is_active or not user.check_password(password):
         request.response.status_code = HTTPForbidden.code
         request.messages.error(_('Invalid username or password.'))
         return {}
