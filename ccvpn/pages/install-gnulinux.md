@@ -11,9 +11,31 @@ We are still waiting for this issue to be fixed.
 If you have any questions, go to the [Support page](/page/support).
 
 
+Fedora 16 or later
+------------------
+**You need to login as root for all these commands, or use sudo.**  
+
+    yum install openvpn
+
+Put the config file you have downloaded in `/etc/openvpn/`.  
+ie: `/etc/openvpn/ccrypto.conf`
+
+    cd /lib/systemd/system
+    ln openvpn@.service openvpn@ccrypto.service
+
+Start it:
+
+    systemctl start openvpn@ccrypto.service
+
+Now, you can make it start on boot. It should ask for your password on boot.
+You can start it on boot:
+
+    systemctl enable openvpn@ccrypto.service
+
+
 Debian/Ubuntu
 -------------
-**Login as root.** (important)  
+**You need to login as root for all these commands, or use sudo.**  
 
 Download and install OpenVPN:
 
