@@ -19,7 +19,7 @@
 
     <h2>${_('Gateways')}</h2>
         <p><code>gw.random.204vpn.net</code> ${_('points to a random server.')}<br />
-           <code>gw.[country].204vpn.net</code> ${_('to random server in a given country.')}
+           <code>gw.[country].204vpn.net</code> ${_('to a random server in a given country.')}
            ${_('(e.g. ${e})', mapping={'e': 'gw.fr.204vpn.net'})}</p>
         % if gateways:
         <table>
