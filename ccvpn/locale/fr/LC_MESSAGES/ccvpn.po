@@ -445,7 +445,7 @@ msgid "points to a random server."
 msgstr "pointe vers un serveur aléatoire."
 
 #: ccvpn/templates/status.mako:22
-msgid "to random server in a given country."
+msgid "to a random server in a given country."
 msgstr "vers un serveur aléatoire dans un certain pays."
 
 #: ccvpn/templates/status.mako:23

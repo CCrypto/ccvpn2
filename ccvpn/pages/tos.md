@@ -8,7 +8,7 @@ and website.
 Services are provided "as is" with no express or implied warranty for quality
 and speed. While Cognitive Cryptography attempt to maintain the services available, it may
 be subject to inavailabilities for various including maintenances, failures and
-thirs-party services failure.
+third-party services failure.
 
 By using our services and/or website, you agree in full to the terms and
 conditions provided herein, in addition to all future amendments and modifications.
