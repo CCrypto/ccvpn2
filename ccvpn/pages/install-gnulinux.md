@@ -78,8 +78,8 @@ Now, if you restart OpenVPN, it should not ask you for your password anymore.
 
 You can make sure only root will be able to access this file:
 
-    chown root:root /etc/openvpn/openvpn-creds.txt
-    chmod 600 /etc/openvpn/openvpn-creds.txt
+    chown root:root /etc/openvpn/openvpn_creds.txt
+    chmod 600 /etc/openvpn/openvpn_creds.txt
 
 
 Other
