@@ -13,6 +13,11 @@ from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway
 from ccvpn.views import account, admin, api, order  # noqa
 
 
+@view_config(context=Exception)
+def error_view(exc, request):
+    logger.exception('Exception', exc_info=exc)
+    raise
+
 @view_config(route_name='home', renderer='home.mako')
 def home(request):
     settings = request.registry.settings
