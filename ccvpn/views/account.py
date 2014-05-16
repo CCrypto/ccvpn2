@@ -140,7 +140,7 @@ def forgot(request):
         'user': u,
         'requested_by': request.remote_addr,
         'url': request.route_url('account_reset', token=token.token)
-    })
+    }, request=request)
     message = Message(subject=_('CCVPN: Password reset request'),
                       recipients=[u.email],
                       body=body)
@@ -178,7 +178,7 @@ def reset(request):
     body = render('mail/password_reset_done.mako', {
         'user': token.user,
         'changed_by': request.remote_addr,
-    })
+    }, request=request)
     message = Message(subject=_('CCVPN: Password changed'),
                       recipients=[token.user.email],
                       body=body)
@@ -323,6 +323,6 @@ def config(request):
     }
 
     r = render_to_response('config.ovpn.mako', params, request=request)
-    r.content_type = 'application/octet-stream'
+    r.content_type = 'application/x-openvpn-profile'
     return r
 
