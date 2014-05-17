@@ -57,8 +57,7 @@ a OpenVPN problem with netsh.exe and IPv6.
 To fix it, rename your network connection to avoid spaces,
 for example "Local Area Network" to "lan".
 
-  - [(fr) Renommer une connexion réseau](http://windows.microsoft.com/fr-xf/windows-vista/rename-a-network-connection)
-  - [(en) Rename a network connection](http://windows.microsoft.com/en-au/windows-vista/rename-a-network-connection)
+  - [Rename a network connection](http://windows.microsoft.com/en-au/windows-vista/rename-a-network-connection)
 
 
 ### Multiple TAP-Windows adapters
