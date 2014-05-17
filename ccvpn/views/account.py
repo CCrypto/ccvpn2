@@ -313,9 +313,12 @@ def config(request):
     not_real_ovpn = os == 'android' or os == 'ios'
 
     params = {
+        'force_udp': os == 'freebox',
         'force_tcp': not_real_ovpn or 'forcetcp' in request.GET,
         'windows_dns': os == 'windows',
         'resolvconf': os == 'ubuntu',
+        'ipv6': os != 'freebox' and 'enable_ipv6' in request.GET,
+        'dhcp': os != 'freebox',
         'username': request.user.username,
         'profile': profile,
         'gateway': gateway,

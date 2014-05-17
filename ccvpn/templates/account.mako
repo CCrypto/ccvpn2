@@ -69,6 +69,7 @@
                 <option value="android">Android</option>
                 <option value="ubuntu">Ubuntu</option>
                 <option value="osx">OS X</option>
+                <option value="freebox">Freebox</option>
                 <option value="other-gnulinux">${_('Other')} / GNU/Linux</option>
             </select>
 
@@ -83,6 +84,9 @@
 
             <label for="gc_ftcp">${_('Force TCP')}</label>
             <input type="checkbox" name="forcetcp" id="gc_ftcp" />
+
+            <label for="gc_ipv6">${_('Enable IPv6')}</label>
+            <input type="checkbox" name="enable_ipv6" id="gc_ipv6" checked="checked" />
 
             <input type="submit" value="${_('Get config')}" />
         </form>
