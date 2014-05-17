@@ -35,12 +35,18 @@ def ca_crt(request):
 
 @view_config(route_name='page', renderer='page.mako')
 def page(request):
-    try:
-        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        pagesdir = os.path.join(root, 'pages/')
-        template = pagesdir + request.matchdict['page'] + '.md'
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    pagesdir = os.path.join(root, 'pages/')
+    basename = pagesdir + request.matchdict['page']
+    irc_username = request.user.username if request.user else '?'
 
-        irc_username = request.user.username if request.user else '?'
+    try:
+        translated_file = basename + '.' + request.locale_name + '.md'
+        fallback_file = basename + '.md'
+        if os.path.isfile(translated_file):
+            template = translated_file
+        elif os.path.isfile(fallback_file):
+            template = fallback_file
 
         with open(template) as template_f:
             mdt = template_f.read()
