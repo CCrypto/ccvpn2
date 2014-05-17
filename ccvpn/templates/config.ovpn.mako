@@ -7,6 +7,7 @@
 verb 4
 client
 tls-client
+script-security 2
 remote-cert-tls server
 dev tun0
 
