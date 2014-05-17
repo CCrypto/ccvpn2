@@ -1,8 +1,14 @@
+# Translations template for ccvpn.
+# Copyright (C) 2014 ORGANIZATION
+# This file is distributed under the same license as the ccvpn project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-20 14:08+0200\n"
+"POT-Creation-Date: 2014-05-17 17:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,7 +38,7 @@ msgid "Support"
 msgstr ""
 
 #: ccvpn/templates/account.mako:23 ccvpn/templates/account.mako:39
-#: ccvpn/templates/account.mako:94
+#: ccvpn/templates/account.mako:98
 msgid "Add"
 msgstr ""
 
@@ -85,67 +91,71 @@ msgstr ""
 msgid "OS"
 msgstr ""
 
-#: ccvpn/templates/account.mako:72
+#: ccvpn/templates/account.mako:73
 msgid "Other"
 msgstr ""
 
-#: ccvpn/templates/account.mako:75
+#: ccvpn/templates/account.mako:76
 msgid "Gateway"
 msgstr ""
 
-#: ccvpn/templates/account.mako:77
+#: ccvpn/templates/account.mako:78
 msgid "Random"
 msgstr ""
 
-#: ccvpn/templates/account.mako:79
+#: ccvpn/templates/account.mako:80
 msgid "Country"
 msgstr ""
 
-#: ccvpn/templates/account.mako:84
+#: ccvpn/templates/account.mako:85
 msgid "Force TCP"
 msgstr ""
 
-#: ccvpn/templates/account.mako:87
+#: ccvpn/templates/account.mako:88
+msgid "Enable IPv6"
+msgstr ""
+
+#: ccvpn/templates/account.mako:91
 msgid "Get config"
 msgstr ""
 
-#: ccvpn/templates/account.mako:90
+#: ccvpn/templates/account.mako:94
 msgid "Manage Profiles"
 msgstr ""
 
-#: ccvpn/templates/account.mako:93
+#: ccvpn/templates/account.mako:97
 msgid "Profile name"
 msgstr ""
 
-#: ccvpn/templates/account.mako:105
+#: ccvpn/templates/account.mako:109
 msgid "Delete"
 msgstr ""
 
-#: ccvpn/templates/account.mako:114
+#: ccvpn/templates/account.mako:118
 msgid "help_ref"
 msgstr ""
 
-#: ccvpn/templates/account.mako:115
+#: ccvpn/templates/account.mako:119
 msgid "Share this link"
 msgstr ""
 
-#: ccvpn/templates/account.mako:123
+#: ccvpn/templates/account.mako:127
 msgid "Settings"
 msgstr ""
 
-#: ccvpn/templates/account.mako:125 ccvpn/templates/account.mako:128
+#: ccvpn/templates/account.mako:129 ccvpn/templates/account.mako:132
 msgid "Change password"
 msgstr ""
 
-#: ccvpn/templates/account.mako:128 ccvpn/templates/reset_password.mako:10
+#: ccvpn/templates/account.mako:132 ccvpn/templates/reset_password.mako:10
 msgid "repeat"
 msgstr ""
 
-#: ccvpn/templates/account.mako:131 ccvpn/templates/signup.mako:19
+#: ccvpn/templates/account.mako:135 ccvpn/templates/signup.mako:19
 msgid "E-mail"
 msgstr ""
 
-#: ccvpn/templates/account.mako:134
+#: ccvpn/templates/account.mako:138
 msgid "Save"
 msgstr ""
 
@@ -226,7 +236,7 @@ msgstr ""
 msgid "Even on Youtube."
 msgstr ""
 
-#: ccvpn/templates/home.mako:60 ccvpn/templates/layout.mako:57
+#: ccvpn/templates/home.mako:60 ccvpn/templates/layout.mako:64
 #: ccvpn/templates/signup.mako:6 ccvpn/templates/signup.mako:23
 msgid "Sign up"
 msgstr ""
@@ -283,32 +293,32 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:47
+#: ccvpn/templates/layout.mako:48
 msgid "Secure version"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:53
+#: ccvpn/templates/layout.mako:60
 msgid "Your account"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:54
+#: ccvpn/templates/layout.mako:61
 msgid "Logout"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:58 ccvpn/templates/login.mako:6
+#: ccvpn/templates/layout.mako:65 ccvpn/templates/login.mako:6
 #: ccvpn/templates/login.mako:14
 msgid "Log in"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:93
+#: ccvpn/templates/layout.mako:100
 msgid "ToS"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:94
+#: ccvpn/templates/layout.mako:101
 msgid "Abuse report"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:95
+#: ccvpn/templates/layout.mako:102
 msgid "It's open-source!"
 msgstr ""
 
@@ -436,7 +446,7 @@ msgid "points to a random server."
 msgstr ""
 
 #: ccvpn/templates/status.mako:22
-msgid "to random server in a given country."
+msgid "to a random server in a given country."
 msgstr ""
 
 #: ccvpn/templates/status.mako:23
@@ -467,11 +477,11 @@ msgstr ""
 msgid "on 31 days"
 msgstr ""
 
-#: ccvpn/views/account.py:50
+#: ccvpn/views/account.py:49
 msgid "Invalid username or password."
 msgstr ""
 
-#: ccvpn/views/account.py:56
+#: ccvpn/views/account.py:55
 msgid "Logged in."
 msgstr ""
 
@@ -479,91 +489,91 @@ msgstr ""
 msgid "Logged out."
 msgstr ""
 
-#: ccvpn/views/account.py:81
+#: ccvpn/views/account.py:82
 msgid "Invalid username."
 msgstr ""
 
-#: ccvpn/views/account.py:83 ccvpn/views/account.py:168 ccvpn/views/account.py:237
+#: ccvpn/views/account.py:84 ccvpn/views/account.py:171 ccvpn/views/account.py:241
 msgid "Invalid password."
 msgstr ""
 
-#: ccvpn/views/account.py:85 ccvpn/views/account.py:242
+#: ccvpn/views/account.py:86 ccvpn/views/account.py:246
 msgid "Invalid email address."
 msgstr ""
 
-#: ccvpn/views/account.py:87 ccvpn/views/account.py:239
+#: ccvpn/views/account.py:88 ccvpn/views/account.py:243
 msgid "Both passwords do not match."
 msgstr ""
 
-#: ccvpn/views/account.py:93
+#: ccvpn/views/account.py:94
 msgid "Username already registered."
 msgstr ""
 
-#: ccvpn/views/account.py:95 ccvpn/views/account.py:250
+#: ccvpn/views/account.py:96 ccvpn/views/account.py:254
 msgid "E-mail address already registered."
 msgstr ""
 
-#: ccvpn/views/account.py:124
+#: ccvpn/views/account.py:126
 msgid "Unknown username."
 msgstr ""
 
-#: ccvpn/views/account.py:128
+#: ccvpn/views/account.py:130
 msgid "No e-mail address associated with username."
 msgstr ""
 
-#: ccvpn/views/account.py:142
+#: ccvpn/views/account.py:144
 msgid "CCVPN: Password reset request"
 msgstr ""
 
-#: ccvpn/views/account.py:146
+#: ccvpn/views/account.py:148
 msgid "We sent a reset link. Check your emails."
 msgstr ""
 
-#: ccvpn/views/account.py:157
+#: ccvpn/views/account.py:160
 msgid "Unknown password reset token."
 msgstr ""
 
-#: ccvpn/views/account.py:179
+#: ccvpn/views/account.py:182
 msgid "CCVPN: Password changed"
 msgstr ""
 
-#: ccvpn/views/account.py:184
+#: ccvpn/views/account.py:187
 msgid "You have changed the password for ${user}."
 msgstr ""
 
-#: ccvpn/views/account.py:186
+#: ccvpn/views/account.py:189
 msgid "You can now log in."
 msgstr ""
 
-#: ccvpn/views/account.py:202
+#: ccvpn/views/account.py:206
 msgid "Invalid name."
 msgstr ""
 
-#: ccvpn/views/account.py:209
+#: ccvpn/views/account.py:213
 msgid "Name already used."
 msgstr ""
 
-#: ccvpn/views/account.py:213
+#: ccvpn/views/account.py:217
 msgid "You have too many profiles."
 msgstr ""
 
-#: ccvpn/views/account.py:229
+#: ccvpn/views/account.py:233
 msgid "Unknown profile."
 msgstr ""
 
-#: ccvpn/views/account.py:256
+#: ccvpn/views/account.py:260
 msgid "Saved!"
 msgstr ""
 
-#: ccvpn/views/order.py:22
+#: ccvpn/views/order.py:23
 msgid "OK! Added ${time} days to your account."
 msgstr ""
 
-#: ccvpn/views/order.py:26
+#: ccvpn/views/order.py:27
 msgid "Unknown gift code."
 msgstr ""
 
-#: ccvpn/views/order.py:28
+#: ccvpn/views/order.py:29
 msgid "Gift code already used."
 msgstr ""
 

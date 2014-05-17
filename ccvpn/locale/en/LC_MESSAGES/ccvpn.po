@@ -1,18 +1,63 @@
+
 msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-04-20 14:08+0200\n"
+"POT-Creation-Date: 2014-05-17 17:29+0200\n"
 "PO-Revision-Date: 2014-04-24 21:40+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
-"X-Language: en_US\n"
-"X-Source-Language: C\n"
+
+#: ccvpn/templates/account.mako:8
+msgid "Account"
+msgstr ""
+
+#: ccvpn/templates/account.mako:13
+msgid "Your account is paid for ${time} day(s)."
+msgstr ""
+
+#: ccvpn/templates/account.mako:15
+msgid "Your account is not paid."
+msgstr ""
+
+#: ccvpn/templates/account.mako:17
+msgid "You can request a free 7 days trial here"
+msgstr ""
+
+#: ccvpn/templates/account.mako:18
+msgid "Support"
+msgstr ""
+
+#: ccvpn/templates/account.mako:23 ccvpn/templates/account.mako:39
+#: ccvpn/templates/account.mako:98
+msgid "Add"
+msgstr ""
+
+#: ccvpn/templates/account.mako:25
+msgid "month"
+msgstr ""
+
+#: ccvpn/templates/account.mako:26 ccvpn/templates/account.mako:27
+#: ccvpn/templates/account.mako:28
+msgid "months"
+msgstr ""
+
+#: ccvpn/templates/account.mako:30
+msgid "with"
+msgstr ""
+
+#: ccvpn/templates/account.mako:32
+msgid "credit card"
+msgstr ""
+
+#: ccvpn/templates/account.mako:44
+msgid "Use gift code"
+msgstr ""
 
 #: ccvpn/templates/account.mako:51
 msgid "help_connection_limit"
@@ -23,22 +68,523 @@ msgstr ""
 #: ccvpn/templates/account.mako:52
 msgid "help_profile_usage"
 msgstr ""
-"To use a profile, download the right config and use \"username/profile\" as "
-"your VPN username."
+"To use a profile, download the right config and use \"username/profile\" "
+"as your VPN username."
 
 #: ccvpn/templates/account.mako:53
 msgid "help_tcp_usage"
 msgstr ""
-"TCP is slower. Use it only if you have important packet loss or if UDP is "
-"filtered."
+"TCP is slower. Use it only if you have important packet loss or if UDP is"
+" filtered."
 
-#: ccvpn/templates/account.mako:114
-msgid "help_ref"
+#: ccvpn/templates/account.mako:56
+msgid "Download config"
 msgstr ""
-"Get two weeks for free for every referral that takes at least one month!"
+
+#: ccvpn/templates/account.mako:58
+msgid "Profile"
+msgstr ""
+
+#: ccvpn/templates/account.mako:60
+msgid "default"
+msgstr ""
+
+#: ccvpn/templates/account.mako:66
+msgid "OS"
+msgstr ""
+
+#: ccvpn/templates/account.mako:73
+msgid "Other"
+msgstr ""
+
+#: ccvpn/templates/account.mako:76
+msgid "Gateway"
+msgstr ""
+
+#: ccvpn/templates/account.mako:78
+msgid "Random"
+msgstr ""
+
+#: ccvpn/templates/account.mako:80
+msgid "Country"
+msgstr ""
+
+#: ccvpn/templates/account.mako:85
+msgid "Force TCP"
+msgstr ""
+
+#: ccvpn/templates/account.mako:88
+msgid "Enable IPv6"
+msgstr ""
+
+#: ccvpn/templates/account.mako:91
+msgid "Get config"
+msgstr ""
+
+#: ccvpn/templates/account.mako:94
+msgid "Manage Profiles"
+msgstr ""
+
+#: ccvpn/templates/account.mako:97
+#, fuzzy
+#| msgid "help_profile_usage"
+msgid "Profile name"
+msgstr ""
+"To use a profile, download the right config and use \"username/profile\" "
+"as your VPN username."
+
+#: ccvpn/templates/account.mako:109
+msgid "Delete"
+msgstr ""
+
+#: ccvpn/templates/account.mako:118
+msgid "help_ref"
+msgstr "Get two weeks for free for every referral that takes at least one month!"
+
+#: ccvpn/templates/account.mako:119
+msgid "Share this link"
+msgstr ""
+
+#: ccvpn/templates/account.mako:127
+msgid "Settings"
+msgstr ""
+
+#: ccvpn/templates/account.mako:129 ccvpn/templates/account.mako:132
+msgid "Change password"
+msgstr ""
+
+#: ccvpn/templates/account.mako:132 ccvpn/templates/reset_password.mako:10
+msgid "repeat"
+msgstr ""
+
+#: ccvpn/templates/account.mako:135 ccvpn/templates/signup.mako:19
+msgid "E-mail"
+msgstr ""
+
+#: ccvpn/templates/account.mako:138
+msgid "Save"
+msgstr ""
+
+#: ccvpn/templates/forgot_password.mako:6 ccvpn/templates/reset_password.mako:6
+msgid "Password Reset"
+msgstr ""
+
+#: ccvpn/templates/forgot_password.mako:8 ccvpn/templates/login.mako:8
+#: ccvpn/templates/signup.mako:8
+msgid "Username"
+msgstr ""
+
+#: ccvpn/templates/forgot_password.mako:11
+msgid "Send a reset link"
+msgstr ""
+
+#: ccvpn/templates/home.mako:13
+msgid "Unlimited"
+msgstr ""
+
+#: ccvpn/templates/home.mako:14
+msgid "Unlimited bandwidth"
+msgstr ""
+
+#: ccvpn/templates/home.mako:15
+msgid "Uncensored"
+msgstr ""
+
+#: ccvpn/templates/home.mako:16
+msgid "We have porn and pirates."
+msgstr ""
+
+#: ccvpn/templates/home.mako:21
+msgid "Cheap"
+msgstr ""
+
+#: ccvpn/templates/home.mako:22
+msgid "per month!"
+msgstr ""
+
+#: ccvpn/templates/home.mako:23
+msgid "We accept Paypal, Bitcoins and Stripe."
+msgstr ""
+
+#: ccvpn/templates/home.mako:28
+msgid "Secure"
+msgstr ""
+
+#: ccvpn/templates/home.mako:29
+msgid "Encrypted tunnel"
+msgstr ""
+
+#: ccvpn/templates/home.mako:30
+msgid "with an <b>anonymous address</b>."
+msgstr ""
+
+#: ccvpn/templates/home.mako:31
+msgid "Supports DNSSEC and PFS."
+msgstr ""
+
+#: ccvpn/templates/home.mako:36
+msgid "OpenVPN"
+msgstr ""
+
+#: ccvpn/templates/home.mako:37
+msgid "Secure, Free, easy to use. On:"
+msgstr ""
+
+#: ccvpn/templates/home.mako:48
+msgid "Fast"
+msgstr ""
+
+#: ccvpn/templates/home.mako:50
+msgid "Compressed tunnel."
+msgstr ""
+
+#: ccvpn/templates/home.mako:51
+msgid "Even on Youtube."
+msgstr ""
+
+#: ccvpn/templates/home.mako:60 ccvpn/templates/layout.mako:64
+#: ccvpn/templates/signup.mako:6 ccvpn/templates/signup.mako:23
+msgid "Sign up"
+msgstr ""
+
+#: ccvpn/templates/home.mako:65
+msgid "Why?"
+msgstr ""
+
+#: ccvpn/templates/home.mako:67
+msgid "Hide any personal data found from your IP address"
+msgstr ""
+
+#: ccvpn/templates/home.mako:68
+msgid "Protect your privacy on open networks"
+msgstr ""
+
+#: ccvpn/templates/home.mako:69
+msgid "Compress traffic on slow connections"
+msgstr ""
+
+#: ccvpn/templates/home.mako:70
+msgid "Bypass restrictive firewalls"
+msgstr ""
+
+#: ccvpn/templates/home.mako:71
+msgid "Enable IPv6 on IPv4-only networks"
+msgstr ""
+
+#: ccvpn/templates/home.mako:75
+msgid "Free Trial!"
+msgstr ""
+
+#: ccvpn/templates/home.mako:76
+msgid "Try the VPN for 7 days for free!"
+msgstr ""
+
+#: ccvpn/templates/home.mako:77
+msgid "Sign up and ask for a free account"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:6
+msgid "Home"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:7
+#, fuzzy
+#| msgid "help_ref"
+msgid "Help"
+msgstr "Get two weeks for free for every referral that takes at least one month!"
+
+#: ccvpn/templates/layout.mako:8 ccvpn/templates/status.mako:5
+msgid "Status"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:11
+msgid "Admin"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:48
+msgid "Secure version"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:60
+msgid "Your account"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:61
+msgid "Logout"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:65 ccvpn/templates/login.mako:6
+#: ccvpn/templates/login.mako:14
+msgid "Log in"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:100
+msgid "ToS"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:101
+msgid "Abuse report"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:102
+msgid "It's open-source!"
+msgstr ""
+
+#: ccvpn/templates/login.mako:11 ccvpn/templates/reset_password.mako:8
+#: ccvpn/templates/reset_password.mako:10 ccvpn/templates/signup.mako:12
+msgid "Password"
+msgstr ""
+
+#: ccvpn/templates/login.mako:18 ccvpn/templates/reset_password.mako:17
+#: ccvpn/templates/signup.mako:27
+msgid "Others Links"
+msgstr ""
+
+#: ccvpn/templates/login.mako:20 ccvpn/templates/reset_password.mako:20
+msgid "Don't have an account? Create one"
+msgstr ""
+
+#: ccvpn/templates/login.mako:21 ccvpn/templates/signup.mako:30
+msgid "Forgot your password?"
+msgstr ""
+
+#: ccvpn/templates/login.mako:22 ccvpn/templates/reset_password.mako:21
+#: ccvpn/templates/signup.mako:31
+msgid "Need help?"
+msgstr ""
+
+#: ccvpn/templates/order.mako:15
+msgid "Order"
+msgstr ""
+
+#: ccvpn/templates/order.mako:19
+msgid "Thank you for using our VPN!"
+msgstr ""
+
+#: ccvpn/templates/order.mako:20
+msgid "Now, read our"
+msgstr ""
+
+#: ccvpn/templates/order.mako:20
+msgid "installation howtos"
+msgstr ""
+
+#: ccvpn/templates/order.mako:21
+msgid "to start using it or"
+msgstr ""
+
+#: ccvpn/templates/order.mako:21
+msgid "ask the support"
+msgstr ""
+
+#: ccvpn/templates/order.mako:22
+msgid "if you need help."
+msgstr ""
+
+#: ccvpn/templates/order.mako:27
+msgid "Please send ${n} BTC to ${a}."
+msgstr ""
 
 #: ccvpn/templates/order.mako:32
 msgid "help_paypal_wait"
 msgstr ""
 "If you already paid with Paypal, please wait for Paypal to confirm the "
 "transaction, it can take up to 30 minutes."
+
+#: ccvpn/templates/order.mako:45
+msgid "You need JavaScript to use Stripe."
+msgstr ""
+
+#: ccvpn/templates/reset_password.mako:13
+msgid "Reset"
+msgstr ""
+
+#: ccvpn/templates/reset_password.mako:19
+msgid "You remembered your password? Log in"
+msgstr ""
+
+#: ccvpn/templates/signup.mako:10
+msgid "2 to 32 alphanumeric characters."
+msgstr ""
+
+#: ccvpn/templates/signup.mako:14
+msgid "Anything from 1 to 256 characters. Better choose a strong one."
+msgstr ""
+
+#: ccvpn/templates/signup.mako:16
+msgid "Repeat"
+msgstr ""
+
+#: ccvpn/templates/signup.mako:21
+msgid "Optional."
+msgstr ""
+
+#: ccvpn/templates/signup.mako:21
+msgid "Used to recover your password and confirm stuff."
+msgstr ""
+
+#: ccvpn/templates/signup.mako:29
+msgid "Already a member? Log in"
+msgstr ""
+
+#: ccvpn/templates/status.mako:7
+msgid "Stats"
+msgstr ""
+
+#: ccvpn/templates/status.mako:9
+msgid "We have ${n} active users."
+msgstr ""
+
+#: ccvpn/templates/status.mako:11
+msgid "We provide ${ns} servers in ${nc} countries,"
+msgstr ""
+
+#: ccvpn/templates/status.mako:12
+msgid "and a total bandwidth of ${bw}"
+msgstr ""
+
+#: ccvpn/templates/status.mako:16
+msgid "Network bandwidth graph"
+msgstr ""
+
+#: ccvpn/templates/status.mako:20
+msgid "Gateways"
+msgstr ""
+
+#: ccvpn/templates/status.mako:21
+msgid "points to a random server."
+msgstr ""
+
+#: ccvpn/templates/status.mako:22
+msgid "to a random server in a given country."
+msgstr ""
+
+#: ccvpn/templates/status.mako:23
+msgid "(e.g. ${e})"
+msgstr ""
+
+#: ccvpn/templates/status.mako:27
+msgid "Host"
+msgstr ""
+
+#: ccvpn/templates/status.mako:28
+msgid "ISP"
+msgstr ""
+
+#: ccvpn/templates/status.mako:28
+msgid "Bandwidth"
+msgstr ""
+
+#: ccvpn/templates/status.mako:29
+msgid "Location"
+msgstr ""
+
+#: ccvpn/templates/status.mako:30
+msgid "Uptime"
+msgstr ""
+
+#: ccvpn/templates/status.mako:30
+msgid "on 31 days"
+msgstr ""
+
+#: ccvpn/views/account.py:49
+msgid "Invalid username or password."
+msgstr ""
+
+#: ccvpn/views/account.py:55
+msgid "Logged in."
+msgstr ""
+
+#: ccvpn/views/account.py:64
+msgid "Logged out."
+msgstr ""
+
+#: ccvpn/views/account.py:82
+msgid "Invalid username."
+msgstr ""
+
+#: ccvpn/views/account.py:84 ccvpn/views/account.py:171
+#: ccvpn/views/account.py:241
+msgid "Invalid password."
+msgstr ""
+
+#: ccvpn/views/account.py:86 ccvpn/views/account.py:246
+msgid "Invalid email address."
+msgstr ""
+
+#: ccvpn/views/account.py:88 ccvpn/views/account.py:243
+msgid "Both passwords do not match."
+msgstr ""
+
+#: ccvpn/views/account.py:94
+msgid "Username already registered."
+msgstr ""
+
+#: ccvpn/views/account.py:96 ccvpn/views/account.py:254
+msgid "E-mail address already registered."
+msgstr ""
+
+#: ccvpn/views/account.py:126
+msgid "Unknown username."
+msgstr ""
+
+#: ccvpn/views/account.py:130
+msgid "No e-mail address associated with username."
+msgstr ""
+
+#: ccvpn/views/account.py:144
+msgid "CCVPN: Password reset request"
+msgstr ""
+
+#: ccvpn/views/account.py:148
+msgid "We sent a reset link. Check your emails."
+msgstr ""
+
+#: ccvpn/views/account.py:160
+msgid "Unknown password reset token."
+msgstr ""
+
+#: ccvpn/views/account.py:182
+msgid "CCVPN: Password changed"
+msgstr ""
+
+#: ccvpn/views/account.py:187
+msgid "You have changed the password for ${user}."
+msgstr ""
+
+#: ccvpn/views/account.py:189
+msgid "You can now log in."
+msgstr ""
+
+#: ccvpn/views/account.py:206
+msgid "Invalid name."
+msgstr ""
+
+#: ccvpn/views/account.py:213
+msgid "Name already used."
+msgstr ""
+
+#: ccvpn/views/account.py:217
+msgid "You have too many profiles."
+msgstr ""
+
+#: ccvpn/views/account.py:233
+msgid "Unknown profile."
+msgstr ""
+
+#: ccvpn/views/account.py:260
+msgid "Saved!"
+msgstr ""
+
+#: ccvpn/views/order.py:23
+msgid "OK! Added ${time} days to your account."
+msgstr ""
+
+#: ccvpn/views/order.py:27
+msgid "Unknown gift code."
+msgstr ""
+
+#: ccvpn/views/order.py:29
+msgid "Gift code already used."
+msgstr ""
+
