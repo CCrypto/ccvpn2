@@ -48,7 +48,7 @@ def page(request):
         elif os.path.isfile(fallback_file):
             template = fallback_file
 
-        with open(template) as template_f:
+        with open(template, encoding='utf8') as template_f:
             mdt = template_f.read()
             mdt = mdt.replace('${irc_username}', irc_username)
             md = markdown.Markdown(extensions=['toc', 'meta',
