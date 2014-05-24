@@ -9,7 +9,8 @@ client
 tls-client
 script-security 2
 remote-cert-tls server
-dev tun0
+dev tun
+tcp-nodelay
 
 auth-user-pass
 # you can use this and put username/password, one per line, in a file
