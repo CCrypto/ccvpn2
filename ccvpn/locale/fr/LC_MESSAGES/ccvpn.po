@@ -57,22 +57,22 @@ msgstr "carte"
 
 #: ccvpn/templates/account.mako:44
 msgid "Use gift code"
-msgstr "Utiliser le code"
+msgstr "Utiliser le code cadeau"
 
 #: ccvpn/templates/account.mako:51
 msgid "help_connection_limit"
-msgstr "Vous pouvez avoir une connexion par profile, mais jusqu'à 10 profiles."
+msgstr "Vous pouvez avoir une connexion par profil, mais jusqu'à 10 profils."
 
 #: ccvpn/templates/account.mako:52
 msgid "help_profile_usage"
 msgstr ""
-"Pour utiliser un profile, téléchargez la config associée et utilisez "
-"\"[nom]/[profile]\" pour vous connecter au VPN."
+"Pour utiliser un profil, téléchargez la config associée et utilisez "
+"\"[nom]/[profil]\" pour vous connecter au VPN."
 
 #: ccvpn/templates/account.mako:53
 msgid "help_tcp_usage"
 msgstr ""
-"TCP est plus lent qu'UDP. Ne l'utilisez que si vous avec une connexion "
+"TCP est plus lent qu'UDP. Ne l'utilisez que si vous avez une connexion "
 "instable ou filtrée."
 
 #: ccvpn/templates/account.mako:56
@@ -81,7 +81,7 @@ msgstr "Télécharger la config"
 
 #: ccvpn/templates/account.mako:58
 msgid "Profile"
-msgstr "Profile"
+msgstr "Profil"
 
 #: ccvpn/templates/account.mako:60
 msgid "default"
@@ -121,11 +121,11 @@ msgstr "Télécharger la config"
 
 #: ccvpn/templates/account.mako:94
 msgid "Manage Profiles"
-msgstr "Gérer les profiles"
+msgstr "Gérer les profils"
 
 #: ccvpn/templates/account.mako:97
 msgid "Profile name"
-msgstr "Nom du profile"
+msgstr "Nom du profil"
 
 #: ccvpn/templates/account.mako:109
 msgid "Delete"
@@ -186,11 +186,11 @@ msgstr "Non-censuré"
 
 #: ccvpn/templates/home.mako:16
 msgid "We have porn and pirates."
-msgstr "Avec du porn et des pirates."
+msgstr "Nous avons du porn et des pirates."
 
 #: ccvpn/templates/home.mako:21
 msgid "Cheap"
-msgstr "Économique"
+msgstr "Pas cher"
 
 #: ccvpn/templates/home.mako:22
 msgid "per month!"
@@ -198,7 +198,7 @@ msgstr "par mois !"
 
 #: ccvpn/templates/home.mako:23
 msgid "We accept Paypal, Bitcoins and Stripe."
-msgstr "Paypal, Bitcoins et Stripe."
+msgstr "Nous acceptons Paypal, Bitcoins et Stripe."
 
 #: ccvpn/templates/home.mako:28
 msgid "Secure"
@@ -334,7 +334,7 @@ msgstr "Autres Liens"
 
 #: ccvpn/templates/login.mako:20 ccvpn/templates/reset_password.mako:20
 msgid "Don't have an account? Create one"
-msgstr "Pas de compte ? Créez-un en"
+msgstr "Pas de compte ? Créez-en un"
 
 #: ccvpn/templates/login.mako:21 ccvpn/templates/signup.mako:30
 msgid "Forgot your password?"
@@ -471,7 +471,7 @@ msgstr "Localisation"
 
 #: ccvpn/templates/status.mako:30
 msgid "Uptime"
-msgstr ""
+msgstr "Uptime"
 
 #: ccvpn/templates/status.mako:30
 msgid "on 31 days"
@@ -556,11 +556,11 @@ msgstr "Nom déjà utilisé."
 
 #: ccvpn/views/account.py:217
 msgid "You have too many profiles."
-msgstr "Vous avez trop de profiles."
+msgstr "Vous avez trop de profils."
 
 #: ccvpn/views/account.py:233
 msgid "Unknown profile."
-msgstr "Profile inconnu."
+msgstr "Profil inconnu."
 
 #: ccvpn/views/account.py:260
 msgid "Saved!"
@@ -568,13 +568,13 @@ msgstr "Enregistré !"
 
 #: ccvpn/views/order.py:23
 msgid "OK! Added ${time} days to your account."
-msgstr "OK ! ${time} jours ont été ajoutés à voter compte."
+msgstr "OK ! ${time} jours ont été ajoutés à votre compte."
 
 #: ccvpn/views/order.py:27
 msgid "Unknown gift code."
-msgstr "Code inconnu."
+msgstr "Code cadeau inconnu."
 
 #: ccvpn/views/order.py:29
 msgid "Gift code already used."
-msgstr "Code déjà utilisé."
+msgstr "Code cadeau déjà utilisé."
 
