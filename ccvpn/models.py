@@ -548,6 +548,10 @@ class VPNSession(Base):
     bytes_up = Column(BigInteger, nullable=True)
     bytes_down = Column(BigInteger, nullable=True)
 
+    @hybrid_property
+    def is_online(self):
+        return self.disconnect_date == None
+
     def __repr__(self):
         return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (
             self.id, self.gateway_id, self.gateway_version, self.user_id,
