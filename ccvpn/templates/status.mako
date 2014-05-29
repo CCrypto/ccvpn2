@@ -6,7 +6,8 @@
 
     <h2>${_('Stats')}</h2>
     <ul>
-        <li>${_('We have ${n} active users.', mapping={'n': n_users})}</li>
+        <li>${_('We have ${n} active users.', mapping={'n': n_users})}
+            ${_('${n} are using the VPN right now.', mapping={'n': n_connected})}</li>
         <li>${_('We provide ${ns} servers in ${nc} countries,',
                 mapping={'ns': len(gateways), 'nc': n_countries})}
             ${_('and a total bandwidth of ${bw}', mapping={'bw': total_bw})}</li>

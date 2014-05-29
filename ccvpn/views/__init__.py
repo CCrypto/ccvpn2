@@ -9,7 +9,7 @@ from mako.lookup import TemplateLookup
 import mako.exceptions
 logger = logging.getLogger(__name__)
 
-from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway
+from ccvpn.models import DBSession, User, IcingaError, IcingaQuery, Gateway, VPNSession
 from ccvpn.views import account, admin, api, order  # noqa
 
 
@@ -122,6 +122,8 @@ def status(request):
         'bw_graph': bw_graph if all(bw_graph) else None,
         'n_users': DBSession.query(func.count(User.id))
                             .filter_by(is_paid=True).scalar(),
+        'n_connected': DBSession.query(func.count(VPNSession.id)) \
+                                .filter(VPNSession.is_online==True).scalar(),
         'n_countries': len(set(i.country for i in l)),
         'total_bw': format_bps(sum(i.bps for i in l)),
     }

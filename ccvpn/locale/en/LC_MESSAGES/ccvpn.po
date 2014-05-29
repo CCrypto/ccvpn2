@@ -126,12 +126,8 @@ msgid "Manage Profiles"
 msgstr ""
 
 #: ccvpn/templates/account.mako:97
-#, fuzzy
-#| msgid "help_profile_usage"
 msgid "Profile name"
 msgstr ""
-"To use a profile, download the right config and use \"username/profile\" "
-"as your VPN username."
 
 #: ccvpn/templates/account.mako:109
 msgid "Delete"
@@ -288,10 +284,8 @@ msgid "Home"
 msgstr ""
 
 #: ccvpn/templates/layout.mako:7
-#, fuzzy
-#| msgid "help_ref"
 msgid "Help"
-msgstr "Get two weeks for free for every referral that takes at least one month!"
+msgstr ""
 
 #: ccvpn/templates/layout.mako:8 ccvpn/templates/status.mako:5
 msgid "Status"

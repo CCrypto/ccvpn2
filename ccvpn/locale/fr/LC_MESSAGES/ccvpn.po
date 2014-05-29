@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-17 17:29+0200\n"
+"POT-Creation-Date: 2014-05-29 22:15+0200\n"
 "PO-Revision-Date: 2014-04-20 14:21+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -425,55 +425,59 @@ msgstr "Statistiques"
 msgid "We have ${n} active users."
 msgstr "Nous avons ${n} comptes actifs."
 
-#: ccvpn/templates/status.mako:11
+#: ccvpn/templates/status.mako:10
+msgid "${n} are using the VPN right now."
+msgstr "${n} utilisent le VPN en ce moment."
+
+#: ccvpn/templates/status.mako:12
 msgid "We provide ${ns} servers in ${nc} countries,"
 msgstr "Nous avons ${ns} serveurs dans ${nc} pays,"
 
-#: ccvpn/templates/status.mako:12
+#: ccvpn/templates/status.mako:13
 msgid "and a total bandwidth of ${bw}"
 msgstr "et une bande passante totale de ${bw}"
 
-#: ccvpn/templates/status.mako:16
+#: ccvpn/templates/status.mako:17
 msgid "Network bandwidth graph"
 msgstr "Graphique de la bande passante utilisée"
 
-#: ccvpn/templates/status.mako:20
+#: ccvpn/templates/status.mako:21
 msgid "Gateways"
 msgstr "Serveurs"
 
-#: ccvpn/templates/status.mako:21
+#: ccvpn/templates/status.mako:22
 msgid "points to a random server."
 msgstr "pointe vers un serveur aléatoire."
 
-#: ccvpn/templates/status.mako:22
+#: ccvpn/templates/status.mako:23
 msgid "to a random server in a given country."
 msgstr "vers un serveur aléatoire dans un certain pays."
 
-#: ccvpn/templates/status.mako:23
+#: ccvpn/templates/status.mako:24
 msgid "(e.g. ${e})"
 msgstr "(par exemple ${e})"
 
-#: ccvpn/templates/status.mako:27
+#: ccvpn/templates/status.mako:28
 msgid "Host"
 msgstr "Hôte"
 
-#: ccvpn/templates/status.mako:28
+#: ccvpn/templates/status.mako:29
 msgid "ISP"
 msgstr "FAI"
 
-#: ccvpn/templates/status.mako:28
+#: ccvpn/templates/status.mako:29
 msgid "Bandwidth"
 msgstr "Bande passante"
 
-#: ccvpn/templates/status.mako:29
+#: ccvpn/templates/status.mako:30
 msgid "Location"
 msgstr "Localisation"
 
-#: ccvpn/templates/status.mako:30
+#: ccvpn/templates/status.mako:31
 msgid "Uptime"
 msgstr "Uptime"
 
-#: ccvpn/templates/status.mako:30
+#: ccvpn/templates/status.mako:31
 msgid "on 31 days"
 msgstr "sur 31 jours"
 
