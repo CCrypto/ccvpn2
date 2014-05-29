@@ -16,10 +16,8 @@
     <figure><embed src="/admin/graph/users.svg?period=y" /></figure>
 
 <h3>Income<h3>
-    <figure><embed src="/admin/graph/income.svg?period=m&amp;method=0" /></figure>
-    <figure><embed src="/admin/graph/income.svg?period=y&amp;method=0" /></figure>
-    <figure><embed src="/admin/graph/income.svg?period=m&amp;method=1" /></figure>
-    <figure><embed src="/admin/graph/income.svg?period=y&amp;method=1" /></figure>
-    <figure><embed src="/admin/graph/income.svg?period=m&amp;method=2" /></figure>
-    <figure><embed src="/admin/graph/income.svg?period=y&amp;method=2" /></figure>
+    <figure><embed src="/admin/graph/income.svg?period=m&amp;currency=eur" /></figure>
+    <figure><embed src="/admin/graph/income.svg?period=y&amp;currency=eur" /></figure>
+    <figure><embed src="/admin/graph/income.svg?period=m&amp;currency=btc" /></figure>
+    <figure><embed src="/admin/graph/income.svg?period=y&amp;currency=btc" /></figure>
 % endif
