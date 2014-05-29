@@ -10,7 +10,7 @@ from pyramid.httpexceptions import (
 )
 from pyramid.renderers import render_to_response
 from dateutil import parser
-from sqlalchemy.sql import func
+from sqlalchemy.sql import func, or_
 from math import ceil
 
 from ccvpn.models import (
@@ -111,24 +111,29 @@ def admin_graph(request):
         return Response(chart.render(), content_type='image/svg+xml')
 
     elif graph_name == 'income':
-        method = get('method', 0, int)
-        if not method in request.payment_methods:
+        currency = get('currency', str)
+
+        if currency == 'eur':
+            graph_methods = (methods.PaypalMethod, methods.StripeMethod)
+        elif currency == 'btc':
+            graph_methods = (methods.BitcoinMethod, )
+        else:
             raise HTTPNotFound()
-        method_name = request.payment_methods[method].name
 
         chart = pygal.StackedBar(x_label_rotation=75, show_legend=True,
                                  **pygalopts)
-        chart.title = 'Income (%s, %s)' % (method_name, period)
+
+        chart.title = 'Income (%s, %s)' % (currency, period)
         orders = DBSession.query(Order) \
             .filter(Order.start_date > datetime.now() - period_time) \
-            .filter(Order.method == method) \
             .filter(Order.paid == True) \
+            .filter(or_(*(Order.method == m.id for m in graph_methods))) \
             .all()
 
         # Prepare value dict
         values = {}
         for order in orders:
-            t = order.time
+            t = order.method
             if t not in values:
                 values[t] = []
 
@@ -138,17 +143,16 @@ def admin_graph(request):
             filter_ = time_filter(period, m, lambda o: o.start_date)
             orders_date = list(filter(filter_, orders))
 
-            for duration in values.keys():
-                filter_ = lambda o: o.time == duration
+            for method in values.keys():
+                filter_ = lambda o: o.method == method
                 orders_dd = list(filter(filter_, orders_date))
-
                 sum_ = sum(o.paid_amount for o in orders_dd)
-                values[duration].append(round(sum_, 4) or None)
+                values[method].append(round(sum_, 4) or None)
 
             chart.x_labels.append('%s' % m)
 
-        for time, v in values.items():
-            label = '%sd' % time.days
+        for method, v in values.items():
+            label = request.payment_methods[method].name
             chart.add(label, v)
         return Response(chart.render(), content_type='image/svg+xml')
     else:
