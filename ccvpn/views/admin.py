@@ -77,6 +77,14 @@ def admin_graph(request):
         except ValueError:
             raise HTTPBadRequest()
 
+    def graphround(f):
+        """ round(), then int() if f is integer """
+        f = round(f, 4)
+        if f % 1 == 0:
+            f = int(f)
+        return f
+
+
     pygalopts = {
         'js': [
             request.static_url('ccvpn:static/pygal/svg.jquery.js'),
@@ -147,7 +155,7 @@ def admin_graph(request):
                 filter_ = lambda o: o.method == method
                 orders_dd = list(filter(filter_, orders_date))
                 sum_ = sum(o.paid_amount for o in orders_dd)
-                values[method].append(round(sum_, 4) or None)
+                values[method].append(graphround(sum_) or None)
 
             chart.x_labels.append('%s' % m)
 
