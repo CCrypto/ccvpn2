@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-29 22:15+0200\n"
+"POT-Creation-Date: 2014-05-30 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,108 +172,112 @@ msgstr ""
 msgid "Send a reset link"
 msgstr ""
 
-#: ccvpn/templates/home.mako:13
+#: ccvpn/templates/home.mako:4
+msgid "CCrypto VPN is a cheap, fast, anonymous and secure VPN service"
+msgstr ""
+
+#: ccvpn/templates/home.mako:17
 msgid "Unlimited"
 msgstr ""
 
-#: ccvpn/templates/home.mako:14
+#: ccvpn/templates/home.mako:18
 msgid "Unlimited bandwidth"
 msgstr ""
 
-#: ccvpn/templates/home.mako:15
+#: ccvpn/templates/home.mako:19
 msgid "Uncensored"
 msgstr ""
 
-#: ccvpn/templates/home.mako:16
+#: ccvpn/templates/home.mako:20
 msgid "We have porn and pirates."
 msgstr ""
 
-#: ccvpn/templates/home.mako:21
+#: ccvpn/templates/home.mako:25
 msgid "Cheap"
 msgstr ""
 
-#: ccvpn/templates/home.mako:22
+#: ccvpn/templates/home.mako:26
 msgid "per month!"
 msgstr ""
 
-#: ccvpn/templates/home.mako:23
+#: ccvpn/templates/home.mako:27
 msgid "We accept Paypal, Bitcoins and Stripe."
 msgstr ""
 
-#: ccvpn/templates/home.mako:28
+#: ccvpn/templates/home.mako:32
 msgid "Secure"
 msgstr ""
 
-#: ccvpn/templates/home.mako:29
+#: ccvpn/templates/home.mako:33
 msgid "Encrypted tunnel"
 msgstr ""
 
-#: ccvpn/templates/home.mako:30
+#: ccvpn/templates/home.mako:34
 msgid "with an <b>anonymous address</b>."
 msgstr ""
 
-#: ccvpn/templates/home.mako:31
+#: ccvpn/templates/home.mako:35
 msgid "Supports DNSSEC and PFS."
 msgstr ""
 
-#: ccvpn/templates/home.mako:36
+#: ccvpn/templates/home.mako:40
 msgid "OpenVPN"
 msgstr ""
 
-#: ccvpn/templates/home.mako:37
+#: ccvpn/templates/home.mako:41
 msgid "Secure, Free, easy to use. On:"
 msgstr ""
 
-#: ccvpn/templates/home.mako:48
+#: ccvpn/templates/home.mako:52
 msgid "Fast"
 msgstr ""
 
-#: ccvpn/templates/home.mako:50
+#: ccvpn/templates/home.mako:54
 msgid "Compressed tunnel."
 msgstr ""
 
-#: ccvpn/templates/home.mako:51
+#: ccvpn/templates/home.mako:55
 msgid "Even on Youtube."
 msgstr ""
 
-#: ccvpn/templates/home.mako:60 ccvpn/templates/layout.mako:64
+#: ccvpn/templates/home.mako:64 ccvpn/templates/layout.mako:65
 #: ccvpn/templates/signup.mako:6 ccvpn/templates/signup.mako:23
 msgid "Sign up"
 msgstr ""
 
-#: ccvpn/templates/home.mako:65
+#: ccvpn/templates/home.mako:69
 msgid "Why?"
 msgstr ""
 
-#: ccvpn/templates/home.mako:67
+#: ccvpn/templates/home.mako:71
 msgid "Hide any personal data found from your IP address"
 msgstr ""
 
-#: ccvpn/templates/home.mako:68
+#: ccvpn/templates/home.mako:72
 msgid "Protect your privacy on open networks"
 msgstr ""
 
-#: ccvpn/templates/home.mako:69
+#: ccvpn/templates/home.mako:73
 msgid "Compress traffic on slow connections"
 msgstr ""
 
-#: ccvpn/templates/home.mako:70
+#: ccvpn/templates/home.mako:74
 msgid "Bypass restrictive firewalls"
 msgstr ""
 
-#: ccvpn/templates/home.mako:71
+#: ccvpn/templates/home.mako:75
 msgid "Enable IPv6 on IPv4-only networks"
 msgstr ""
 
-#: ccvpn/templates/home.mako:75
+#: ccvpn/templates/home.mako:79
 msgid "Free Trial!"
 msgstr ""
 
-#: ccvpn/templates/home.mako:76
+#: ccvpn/templates/home.mako:80
 msgid "Try the VPN for 7 days for free!"
 msgstr ""
 
-#: ccvpn/templates/home.mako:77
+#: ccvpn/templates/home.mako:81
 msgid "Sign up and ask for a free account"
 msgstr ""
 
@@ -293,32 +297,32 @@ msgstr ""
 msgid "Admin"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:48
+#: ccvpn/templates/layout.mako:49
 msgid "Secure version"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:60
+#: ccvpn/templates/layout.mako:61
 msgid "Your account"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:61
+#: ccvpn/templates/layout.mako:62
 msgid "Logout"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:65 ccvpn/templates/login.mako:6
+#: ccvpn/templates/layout.mako:66 ccvpn/templates/login.mako:6
 #: ccvpn/templates/login.mako:14
 msgid "Log in"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:100
+#: ccvpn/templates/layout.mako:101
 msgid "ToS"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:101
+#: ccvpn/templates/layout.mako:102
 msgid "Abuse report"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:102
+#: ccvpn/templates/layout.mako:103
 msgid "It's open-source!"
 msgstr ""
 
