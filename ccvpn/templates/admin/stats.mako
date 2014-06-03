@@ -5,7 +5,7 @@
         <li>Blocks: ${btcd.blocks}</li>
         <li>Difficulty: ${btcd.difficulty}</li>
         <li>Connections: ${btcd.connections}</li>
-    </li>
+    </ul>
 % else:
     <p><b>Failed to connect to the bitcoin daemon.</b></p>
 %endif
@@ -20,4 +20,8 @@
     <figure><embed src="/admin/graph/income.svg?period=y&amp;currency=eur" /></figure>
     <figure><embed src="/admin/graph/income.svg?period=m&amp;currency=btc" /></figure>
     <figure><embed src="/admin/graph/income.svg?period=y&amp;currency=btc" /></figure>
+
+<h3>Sessions</h3>
+    <figure><embed src="/admin/graph/sessions.svg?period=m" /></figure>
+    <figure><embed src="/admin/graph/sessions.svg?period=y" /></figure>
 % endif

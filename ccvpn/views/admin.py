@@ -163,6 +163,47 @@ def admin_graph(request):
             label = request.payment_methods[method].name
             chart.add(label, v)
         return Response(chart.render(), content_type='image/svg+xml')
+    elif graph_name == 'sessions':
+        chart = pygal.StackedBar(x_label_rotation=75, show_legend=True,
+                                 **pygalopts)
+        chart.title = 'Sessions (%s)' % (period)
+
+        cdate = func.date_trunc('day' if period == 'm' else 'month',
+                                VPNSession.connect_date).label('cdate')
+        counts = DBSession.query(VPNSession.gateway_id,
+                                 VPNSession.gateway_version,
+                                 func.count(VPNSession.id).label('count'),
+                                 cdate) \
+                          .group_by(VPNSession.gateway_id) \
+                          .group_by(VPNSession.gateway_version) \
+                          .group_by(cdate) \
+                          .all()
+
+        values = {}  # gw_key / date / count
+        for item in counts:
+            gw_key = str(item.gateway_id) + '/' + str(item.gateway_version)
+            if not gw_key in values:
+                values[gw_key] = {}
+            values[gw_key][item.cdate.date()] = item.count
+
+        chart.x_labels = []
+
+        values2 = {}
+        gen = last_days(30) if period == 'm' else last_months(12)
+        for m in gen:
+            for gw_key, dates in values.items():
+                if gw_key not in values2:
+                    values2[gw_key] = {}
+                values2[gw_key][m] = dates.get(m)
+
+            chart.x_labels.append('%s' % m)
+
+        for gw_key, dates in values2.items():
+            label = gw_key
+            sorted_dates = sorted(dates.items())
+            sorted_counts = map(lambda x: x[1], sorted_dates)
+            chart.add(label, sorted_counts)
+        return Response(chart.render(), content_type='image/svg+xml')
     else:
         raise HTTPNotFound()
 
