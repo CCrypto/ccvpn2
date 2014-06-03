@@ -1,5 +1,9 @@
 <%inherit file="layout.mako" />
 
+<%block name="headers">
+    <meta name="description" content="${_('CCrypto VPN is a cheap, fast, anonymous and secure VPN service')}" />
+</%block>
+
 <section>
 % if motd:
 <article class="home-motd">

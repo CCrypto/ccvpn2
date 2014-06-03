@@ -32,10 +32,11 @@
     available_languages = request.registry.settings.get('available_languages')
 %>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${request.locale_name}">
 <head>
     <title>${title_pre}CCrypto VPN</title>
     <meta charset="UTF-8" />
+    <%block name="headers"></%block>
     <link rel="stylesheet" href="/static/reset.css" media="screen" />
     <link rel="stylesheet" href="/static/style.css" media="screen" />
 </head>
