@@ -133,7 +133,7 @@
             <input type="password" id="ins_password2" autocomplete="off" name="password2" />
 
             <label for="ins_email">${_('E-mail')}</label>
-            <input type="email" id="ins_email" name="email" autocomplete="off" value="${email or ''}" />
+            <input type="email" id="ins_email" name="email" autocomplete="off" value="${user.email or ''}" />
             
             <input type="submit" value="${_('Save')}" />
         </form>
