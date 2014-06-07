@@ -16,6 +16,7 @@ auth-user-pass
 # auth-user-pass cred.txt
 
 remote-random-hostname
+server-poll-timeout 4
 
 % if force_udp:
 remote ${gateway} 1194 udp
@@ -24,6 +25,8 @@ remote ${gateway} 443 tcp
 % else:
 <connection>
 remote ${gateway} 1194 udp
+</connection>
+<connection>
 remote ${gateway} 443 tcp
 </connection>
 % endif
