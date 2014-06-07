@@ -310,11 +310,16 @@ def config(request):
     os = request.GET.get('os')
 
     # These clients do not fully support OpenVPN config
-    not_real_ovpn = os == 'android' or os == 'ios'
+    # => force TCP, because we cannot try UDP first.
+    force_tcp = os == 'android' or os == 'ios'
+
+    # Freebox OpenVPN client also does not support <connection>
+    # Should not need to fallback on TCP anyway
+    force_udp = os == 'freebox'
 
     params = {
-        'force_udp': os == 'freebox',
-        'force_tcp': not_real_ovpn or 'forcetcp' in request.GET,
+        'force_udp': force_udp,
+        'force_tcp': force_tcp,
         'windows_dns': os == 'windows',
         'resolvconf': os == 'ubuntu',
         'ipv6': os != 'freebox' and 'enable_ipv6' in request.GET,
