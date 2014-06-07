@@ -47,6 +47,8 @@ def page(request):
             template = translated_file
         elif os.path.isfile(fallback_file):
             template = fallback_file
+        else:
+            raise FileNotFoundError()
 
         with open(template, encoding='utf8') as template_f:
             mdt = template_f.read()

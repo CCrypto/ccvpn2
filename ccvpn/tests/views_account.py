@@ -256,6 +256,7 @@ class TestForgotView(unittest.TestCase):
         self.config = testing.setUp(settings=settings)
         setup_routes(self.config)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_mako')
         self.session = setup_database()
 
         with transaction.manager:
@@ -321,6 +322,7 @@ class TestResetView(unittest.TestCase):
         self.config = testing.setUp(settings=settings)
         setup_routes(self.config)
         self.config.include('pyramid_mailer.testing')
+        self.config.include('pyramid_mako')
         self.session = setup_database()
 
         testuser = User(username='test', password='testpw',
@@ -405,6 +407,7 @@ class TestConfigView(unittest.TestCase):
             'mako.directories': 'ccvpn:templates/'
         }
         self.config = testing.setUp(settings=settings)
+        self.config.include('pyramid_mako')
         setup_routes(self.config)
         self.session = setup_database()
 

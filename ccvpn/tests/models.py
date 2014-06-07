@@ -182,12 +182,12 @@ class TestGiftCodeModel(unittest.TestCase):
         time = datetime.timedelta(days=30, hours=11)
         gc = GiftCode(time=time)
         gc.use(self.u)
-        self.assertEqual(self.u.paid_time_left().days, time.days)
+        self.assertEqual(self.u.paid_time_left.days, time.days)
         self.assertRaises(models.AlreadyUsedGiftCode, gc.use, self.u)
-        self.assertEqual(self.u.paid_time_left().days, time.days)
+        self.assertEqual(self.u.paid_time_left.days, time.days)
         gc.use(self.u, reuse=True)
         self.assertTrue(self.u.is_paid)
-        self.assertEqual(self.u.paid_time_left().days, time.days*2)
+        self.assertEqual(self.u.paid_time_left.days, time.days*2)
 
 
 class TestUserModelWithDB(unittest.TestCase):
