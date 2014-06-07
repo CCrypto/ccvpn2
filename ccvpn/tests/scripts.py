@@ -7,21 +7,20 @@ from webtest import TestApp
 from pyramid import testing
 from sqlalchemy import create_engine
 
-from ccvpn.models import DBSession, Base, User, Gateway, Profile
+from ccvpn.models import Base, User, Gateway, Profile
 from ccvpn import views, main, models, filters
-from ccvpn.scripts import initializedb, checkbtcorders, apiacl
+from ccvpn.scripts import initializedb, checkbtcorders, apiacl, expire_mail
 from ccvpn.tests import setup_database
 
 
 class TestScriptInitDB(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
-        engine = create_engine('sqlite://')
-        DBSession.configure(bind=engine)
+        self.session = setup_database()
 
     def tearDown(self):
         testing.tearDown()
-        DBSession.remove()
+        self.session.remove()
 
     def test_usage(self):
         with self.assertRaises(SystemExit):
@@ -30,7 +29,7 @@ class TestScriptInitDB(unittest.TestCase):
     def test_do(self):
         initializedb.initialize_db()
 
-        u = DBSession.query(User).first()
+        u = self.session.query(User).first()
         self.assertIsNotNone(u)
 
 
