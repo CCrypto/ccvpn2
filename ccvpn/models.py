@@ -275,6 +275,7 @@ class User(Base):
     signup_date = Column(DateTime, nullable=False, default=datetime.now)
     last_login = Column(DateTime, nullable=True, default=None)
     paid_until = Column(DateTime, nullable=True, default=None)
+    last_expiry_notice = Column(DateTime, nullable=True, default=None)
     referrer_id = Column(ForeignKey('users.id'), nullable=True)
 
     giftcodes_used = relationship('GiftCode', backref='user')
@@ -308,16 +309,22 @@ class User(Base):
             return
         self.paid_until = new_date
 
+    @hybrid_property
     def paid_time_left(self):
         if self.is_paid:
             return self.paid_until - datetime.now()
         else:
             return timedelta()
 
+    @paid_time_left.expression
+    def paid_time_left(cls):
+        return cls.paid_until - func.now()
+
     def paid_days_left(self):
         if self.is_paid:
-            days = (self.paid_until - datetime.now()).days
-            return days if days > 0 else 1
+            time = self.paid_until - datetime.now()
+            days = time.days + (time.seconds / 60 / 60 / 24)
+            return max(1, round(days))
         else:
             return 0
 
@@ -350,6 +357,9 @@ class User(Base):
 
     def __str__(self):
         return self.username
+
+    def __repr__(self):
+        return '<User #%s \'%s\'>' % (self.id, self.username)
 
     @classmethod
     def is_used(cls, username, email):
@@ -545,6 +555,8 @@ class VPNSession(Base):
     connect_date = Column(DateTime, default=datetime.now, nullable=False)
     disconnect_date = Column(DateTime, nullable=True)
     remote_addr = Column(String, nullable=False)
+    internal_ip4 = Column(String, nullable=True)
+    internal_ip6 = Column(String, nullable=True)
     bytes_up = Column(BigInteger, nullable=True)
     bytes_down = Column(BigInteger, nullable=True)
 

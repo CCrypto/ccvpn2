@@ -1,19 +1,16 @@
 import datetime
 import unittest
 
-import transaction
 from pyramid import testing, httpexceptions
 
 from ccvpn.models import User, Gateway, Profile, VPNSession
 from ccvpn import views, setup_routes
-from ccvpn.tests import setup_database, DummyRequest
+from ccvpn.tests import BaseTest, DummyRequest
 
 
-class TestAPIViews(unittest.TestCase):
+class TestAPIViews(BaseTest):
     def setUp(self):
-        self.config = testing.setUp()
-        setup_routes(self.config)
-        self.session = setup_database()
+        super().setUp()
 
         self.paiduser = User(username='paiduser', password='testpw')
         self.paiduser.add_paid_time(datetime.timedelta(days=30))
@@ -55,10 +52,6 @@ class TestAPIViews(unittest.TestCase):
             'X-Gateway-Token': 'simple_gateway',
             'X-Gateway-Version': 'alpha',
         }
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def assertSessionExists(self, **kwargs):
         sess = self.session.query(VPNSession)

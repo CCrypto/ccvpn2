@@ -545,6 +545,7 @@ class AdminUser(AdminBaseModel):
             EditField('Signup date', 'signup_date', writable=False),
             EditField('Last login', 'last_login', writable=False),
             EditField('Paid until', 'paid_until'),
+            EditField('Last notice', 'last_expiry_notice'),
             EditFieldBool('Active?', 'is_active', default=True),
             EditFieldBool('Admin?', 'is_admin', default=False),
         )
@@ -605,6 +606,8 @@ class AdminSession(AdminBaseModel):
             EditField('Connect date', 'connect_date', writable=False),
             EditField('Disconnect date', 'disconnect_date', writable=False),
             EditField('Remote address', 'remote_addr', writable=False),
+            EditField('Internal IPv4', 'internal_ip4', writable=False),
+            EditField('Internal IPv6', 'internal_ip6', writable=False),
         )
 
 
