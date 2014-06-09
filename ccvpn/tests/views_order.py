@@ -6,17 +6,12 @@ from pyramid import httpexceptions
 
 from ccvpn.models import User, Order, GiftCode
 from ccvpn import views, setup_routes
-from ccvpn.tests import setup_database, DummyRequest
+from ccvpn.tests import BaseTest, DummyRequest
 
 
-class TestOrderView(unittest.TestCase):
+class TestOrderView(BaseTest):
     def setUp(self):
-        settings = {
-            'mako.directories': 'ccvpn:templates/'
-        }
-        self.config = testing.setUp(settings=settings)
-        setup_routes(self.config)
-        self.session = setup_database()
+        super().setUp()
 
         self.testuser = User(username='test', password='testpw')
         self.session.add(self.testuser)
@@ -27,10 +22,6 @@ class TestOrderView(unittest.TestCase):
         self.testcode = GiftCode(datetime.timedelta(days=7))
         self.session.add(self.testcode)
         self.session.flush()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def test_post_code(self):
         req = DummyRequest(post={'code': self.testcode.code})

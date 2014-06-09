@@ -1,24 +1,16 @@
 import datetime
 import unittest
 
-import transaction
 from pyramid import testing
 from pyramid_mailer import get_mailer
 from pyramid import httpexceptions
 
 from ccvpn.models import User, Order, Profile, PasswordResetToken
 from ccvpn import views, setup_routes
-from ccvpn.tests import setup_database, DummyRequest
+from ccvpn.tests import BaseTest, DummyRequest
 
 
-class TestPublicViews(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        setup_routes(self.config)
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestPublicViews(BaseTest):
     def test_page(self):
         req = DummyRequest()
         req.matchdict['page'] = 'help'
@@ -44,18 +36,13 @@ class TestPublicViews(unittest.TestCase):
         self.assertTrue(resp.location.endswith('/account/'))
 
 
-class TestLoginView(unittest.TestCase):
+class TestLoginView(BaseTest):
     def setUp(self):
-        self.config = testing.setUp()
-        setup_routes(self.config)
-        self.session = setup_database()
+        super().setUp()
+
         self.testuser = User(username='test', password='testpw')
         self.session.add(self.testuser)
         self.session.flush()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def test_login_form(self):
         req = DummyRequest()
@@ -102,16 +89,7 @@ class TestLoginView(unittest.TestCase):
         self.assertEqual(req.response.status_code, 200)
 
 
-class TestSignupView(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-        setup_routes(self.config)
-        self.session = setup_database()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
-
+class TestSignupView(BaseTest):
     def user_exists(self, name):
         u = self.session.query(User.id).filter_by(username=name).first()
         return u is not None
@@ -133,9 +111,8 @@ class TestSignupView(unittest.TestCase):
         self.assertTrue(resp.location.endswith('/account/'))
 
     def test_valid_referral(self):
-        with transaction.manager:
-            _referrer = User(username='test', password='testpw')
-            self.session.add(_referrer)
+        _referrer = User(username='test', password='testpw')
+        self.session.add(_referrer)
 
         referrer = self.session.query(User).filter_by(username='test').first()
         self.assertFalse(referrer.is_paid)
@@ -219,9 +196,8 @@ class TestSignupView(unittest.TestCase):
         self.assertFalse(self.user_exists('newtest'))
 
     def test_existing_username(self):
-        with transaction.manager:
-            u = User(username='newtest', email='user@host', password='newpw')
-            self.session.add(u)
+        u = User(username='newtest', email='user@host', password='newpw')
+        self.session.add(u)
         req = DummyRequest(post={
             'username': 'newtest',
             'password': 'newpw',
@@ -233,9 +209,8 @@ class TestSignupView(unittest.TestCase):
         self.assertEqual(req.response.status_code, 400)
 
     def test_existing_email(self):
-        with transaction.manager:
-            u = User(username='newtest', email='user@host', password='newpw')
-            self.session.add(u)
+        u = User(username='newtest', email='user@host', password='newpw')
+        self.session.add(u)
         req = DummyRequest(post={
             'username': 'newtest2',
             'password': 'newpw',
@@ -247,28 +222,15 @@ class TestSignupView(unittest.TestCase):
         self.assertEqual(req.response.status_code, 400)
 
 
-class TestForgotView(unittest.TestCase):
+class TestForgotView(BaseTest):
     def setUp(self):
-        settings = {
-            'mail.default_sender': 'root@lo',
-            'mako.directories': 'ccvpn:templates/'
-        }
-        self.config = testing.setUp(settings=settings)
-        setup_routes(self.config)
-        self.config.include('pyramid_mailer.testing')
-        self.config.include('pyramid_mako')
-        self.session = setup_database()
+        super().setUp()
 
-        with transaction.manager:
-            testuser = User(username='test', password='testpw',
-                            email='user@host')
-            self.session.add(testuser)
-            testuserw = User(username='testWOemail', password='testpw')
-            self.session.add(testuserw)
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
+        testuser = User(username='test', password='testpw',
+                        email='user@host')
+        self.session.add(testuser)
+        testuserw = User(username='testWOemail', password='testpw')
+        self.session.add(testuserw)
 
     def test_form(self):
         req = DummyRequest()
@@ -313,17 +275,9 @@ class TestForgotView(unittest.TestCase):
         self.assertIsInstance(resp, dict)
 
 
-class TestResetView(unittest.TestCase):
+class TestResetView(BaseTest):
     def setUp(self):
-        settings = {
-            'mail.default_sender': 'root@lo',
-            'mako.directories': 'ccvpn:templates/'
-        }
-        self.config = testing.setUp(settings=settings)
-        setup_routes(self.config)
-        self.config.include('pyramid_mailer.testing')
-        self.config.include('pyramid_mako')
-        self.session = setup_database()
+        super().setUp()
 
         testuser = User(username='test', password='testpw',
                         email='user@host')
@@ -332,10 +286,6 @@ class TestResetView(unittest.TestCase):
         self.token = PasswordResetToken(uid=testuser.id)
         self.session.add(self.token)
         self.session.flush()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def test_invalid_token(self):
         req = DummyRequest()
@@ -401,15 +351,9 @@ class TestResetView(unittest.TestCase):
         self.assertEqual(len(mailer.outbox), 1)
 
 
-class TestConfigView(unittest.TestCase):
+class TestConfigView(BaseTest):
     def setUp(self):
-        settings = {
-            'mako.directories': 'ccvpn:templates/'
-        }
-        self.config = testing.setUp(settings=settings)
-        self.config.include('pyramid_mako')
-        setup_routes(self.config)
-        self.session = setup_database()
+        super().setUp()
 
         self.testuser = User(username='test', password='testpw')
         self.session.add(self.testuser)
@@ -417,10 +361,6 @@ class TestConfigView(unittest.TestCase):
         profile = Profile(uid=self.testuser.id, name='testprofile')
         self.session.add(profile)
         self.session.flush()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def test_get(self):
         gw = bytes(views.account.openvpn_gateway, 'ascii')

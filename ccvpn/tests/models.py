@@ -1,21 +1,14 @@
 import datetime
 import unittest
 
-import transaction
 from pyramid import testing
 
 from ccvpn.models import DBSession, User, GiftCode
 from ccvpn import models
-from ccvpn.tests import setup_database
+from ccvpn.tests import BaseTest
 
 
-class TestModelsRandom(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestModelsRandom(BaseTest):
     def test_access_token(self):
         t1 = models.random_access_token()
         t2 = models.random_access_token()
@@ -39,13 +32,7 @@ class TestModelsRandom(unittest.TestCase):
         self.assertNotEqual(t1, t2)
 
 
-class TestJSONEncodedDict(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestJSONEncodedDict(BaseTest):
     def test_bind(self):
         import json
 
@@ -69,17 +56,13 @@ class TestJSONEncodedDict(unittest.TestCase):
         self.assertEqual(dic.process_result_value(data, d), expected)
 
 
-class TestGetUser(unittest.TestCase):
+class TestGetUser(BaseTest):
     def setUp(self):
-        self.config = testing.setUp()
-        self.session = setup_database()
+        super().setUp()
+
         self.testuser = User(username='test', password='testpw')
         self.session.add(self.testuser)
         self.session.flush()
-
-    def tearDown(self):
-        self.session.remove()
-        testing.tearDown()
 
     def test(self):
         req = testing.DummyRequest()
@@ -92,13 +75,7 @@ class TestGetUser(unittest.TestCase):
         self.assertIsInstance(models.get_user(req), User)
 
 
-class TestUserModel(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestUserModel(BaseTest):
     def test_construct(self):
         user = User(username='test', password='pw')
         self.assertEqual(user.username, 'test')
@@ -147,10 +124,10 @@ class TestUserModel(unittest.TestCase):
         self.assertFalse(User.validate_password(None))
 
 
-class TestGiftCodeModel(unittest.TestCase):
+class TestGiftCodeModel(BaseTest):
     def setUp(self):
-        self.config = testing.setUp()
-        self.session = setup_database()
+        super().setUp()
+
         self.u = User(username='freeuser', password='a')
         DBSession.add(self.u)
         self.session.flush()
@@ -159,10 +136,6 @@ class TestGiftCodeModel(unittest.TestCase):
         self.pu.add_paid_time(datetime.timedelta(days=30))
         DBSession.add(self.pu)
         self.session.flush()
-
-    def tearDown(self):
-        testing.tearDown()
-        self.session.remove()
 
     def test_username_if_used(self):
         gc = GiftCode()
@@ -190,17 +163,13 @@ class TestGiftCodeModel(unittest.TestCase):
         self.assertEqual(self.u.paid_time_left.days, time.days*2)
 
 
-class TestUserModelWithDB(unittest.TestCase):
+class TestUserModelWithDB(BaseTest):
     def setUp(self):
-        self.config = testing.setUp()
-        self.session = setup_database()
+        super().setUp()
+
         u = User(username='test', email='test@host', password='a')
         DBSession.add(u)
         self.session.flush()
-
-    def tearDown(self):
-        testing.tearDown()
-        self.session.remove()
 
     def test_is_used(self):
         r = User.is_used('test', 'test@host')
@@ -208,13 +177,7 @@ class TestUserModelWithDB(unittest.TestCase):
         self.assertGreater(r[1], 0)
 
 
-class TestPasswordResetTokenModel(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestPasswordResetTokenModel(BaseTest):
     def test_construct(self):
         prt = models.PasswordResetToken(42)
         self.assertEqual(prt.uid, 42)

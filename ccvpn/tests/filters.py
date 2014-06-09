@@ -1,15 +1,8 @@
-import unittest
-from pyramid import testing
 from ccvpn import filters
+from ccvpn.tests import BaseTest
 
 
-class TestFilters(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
-
+class TestFilters(BaseTest):
     def test(self):
         self.assertIsInstance(filters.check('True'), str)
         self.assertIsInstance(filters.check('False'), str)
