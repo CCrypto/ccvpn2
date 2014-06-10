@@ -9,13 +9,12 @@ from datetime import datetime, timedelta
 from sqlalchemy import engine_from_config
 from sqlalchemy.sql import or_
 from sqlalchemy.sql import func
-from sqlalchemy import Interval
 from pyramid.config import Configurator
 from pyramid.paster import get_appsettings, setup_logging
 from pyramid_mailer import mailer_factory_from_settings
 from pyramid_mailer.message import Message
 from pyramid.renderers import render
-from pyramid.i18n import TranslationString as _
+import transaction
 
 from ccvpn.models import DBSession, User
 
@@ -24,7 +23,6 @@ log = logging.getLogger(__name__)
 
 
 def send_notice(user, mailer):
-
     body = render('mail/expiry.mako', {
         'user': user,
     })
@@ -60,7 +58,7 @@ def get_future_expire(days=3):
         cond = a1 - a2 > days
     else:
         cond = User.paid_until - User.last_expiry_notice > timedelta(days=days)
-    
+
     q = q.filter(or_(User.last_expiry_notice == None, cond))
 
     users = list(q.all())
@@ -91,6 +89,7 @@ def get_expired():
 
     return users
 
+
 def main(argv=sys.argv):
     parser = ArgumentParser(description=__doc__,
                             formatter_class=RawTextHelpFormatter)
@@ -116,9 +115,9 @@ def main(argv=sys.argv):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
 
-    if not 'mako.directories' in settings:
+    if 'mako.directories' not in settings:
         settings['mako.directories'] = 'ccvpn:templates/'
-    if not 'mako.imports' in settings:
+    if 'mako.imports' not in settings:
         settings['mako.imports'] = 'from ccvpn.filters import check'
     config = Configurator(settings=settings)
     config.include('pyramid_mako')
@@ -129,11 +128,15 @@ def main(argv=sys.argv):
 
     users = get_future_expire(7) + get_expired()
 
-    for u in users:
-        print('sending notice to %s (%s)' % (u.username, u.email))
-        if args.send:
+    if args.send:
+        for u in users:
+            print('sending notice to %s (%s)' % (u.username, u.email))
             send_notice(u, mailer)
-    if not args.send:
+        transaction.commit()
+    else:
+        for u in users:
+            print('not sending notice to %s (%s)' % (u.username, u.email))
         print('Use -s to send messages')
-    
+
+
 
