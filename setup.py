@@ -55,6 +55,7 @@ setup(name='ccvpn',
       ccvpn_checkbtcorders = ccvpn.scripts.checkbtcorders:main
       ccvpn_apiacl = ccvpn.scripts.apiacl:main
       ccvpn_mail = ccvpn.scripts.mail:main
+      ccvpn_expire_mail = ccvpn.scripts.expire_mail:main
       """,
       message_extractors = { '.': [
           ('**.py', 'python', None ),
