@@ -142,6 +142,16 @@ def my_locale_negotiator(request):
         return locale
 
 
+    settings = request.registry.settings
+    default_l = settings.get('pyramid.default_locale_name', 'en')
+    available_l = settings.get('available_languages', default_l).split()
+
+    accept = request.accept_language
+    if not accept:
+        return None
+    return accept.best_match(available_l, default_l)
+
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
