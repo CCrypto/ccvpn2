@@ -79,8 +79,8 @@ et ajouter une ligne à la fin:
 
 Pour que seul root puisse lire ce fichier :
 
-    chown root:root /etc/openvpn/openvpn_creds.txt
-    chmod 600 /etc/openvpn/openvpn_creds.txt
+    chown root:root /etc/openvpn/ccrypto_creds.txt
+    chmod 600 /etc/openvpn/ccrypto_creds.txt
 
 Autres distributions
 --------------------
