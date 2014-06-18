@@ -364,7 +364,7 @@ class User(Base):
     @classmethod
     def is_used(cls, username, email):
         nc = DBSession.query(func.count(User.id).label('nc')) \
-            .filter_by(username=username) \
+            .filter(func.lower(User.username) == username.lower()) \
             .subquery()
         ec = DBSession.query(func.count(User.id).label('ec')) \
             .filter_by(email=email) \
