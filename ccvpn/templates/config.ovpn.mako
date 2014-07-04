@@ -25,9 +25,12 @@ remote ${gateway} 443 tcp
 % else:
 <connection>
 remote ${gateway} 1194 udp
+mssfix 1300
+fragment 1300
 </connection>
 <connection>
 remote ${gateway} 443 tcp
+mssfix 1300
 </connection>
 % endif
 
@@ -60,8 +63,6 @@ up /etc/openvpn/update-resolv-conf
 down /etc/openvpn/update-resolv-conf
 % endif
 
-mssfix 1300
-fragment 1300
 
 <ca>
 ${openvpn_ca}</ca>
