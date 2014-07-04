@@ -60,6 +60,9 @@ up /etc/openvpn/update-resolv-conf
 down /etc/openvpn/update-resolv-conf
 % endif
 
+mssfix 1300
+fragment 1300
+
 <ca>
 ${openvpn_ca}</ca>
 
