@@ -12,6 +12,7 @@ from pyramid.httpexceptions import (
 gw_versions = {
     'alpha': 1,
     'beta': 2,
+    'socks': 3,
 }
 
 def require_api_token(function=None):
