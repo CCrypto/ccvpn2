@@ -313,12 +313,7 @@ def config(request):
     # => force TCP, because we cannot try UDP first.
     force_tcp = os == 'android' or os == 'ios'
 
-    # Freebox OpenVPN client also does not support <connection>
-    # Should not need to fallback on TCP anyway
-    force_udp = os == 'freebox'
-
     params = {
-        'force_udp': force_udp,
         'force_tcp': force_tcp,
         'windows_dns': os == 'windows',
         'resolvconf': os == 'ubuntu',
