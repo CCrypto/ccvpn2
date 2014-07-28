@@ -17,21 +17,13 @@ auth-user-pass
 
 remote-random-hostname
 server-poll-timeout 4
+mssfix 1300
 
-% if force_udp:
-remote ${gateway} 1194 udp
-% elif force_tcp:
+% if force_tcp:
 remote ${gateway} 443 tcp
 % else:
-<connection>
 remote ${gateway} 1194 udp
-mssfix 1300
 fragment 1300
-</connection>
-<connection>
-remote ${gateway} 443 tcp
-mssfix 1300
-</connection>
 % endif
 
 resolv-retry infinite
