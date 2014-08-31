@@ -299,7 +299,7 @@ section.centeredpage article.links a:hover{
 }
 
 section#loginpage{
-    max-width: 300px;
+    max-width: 40em;
 }
 section#pwresetpage {
     max-width: 400px;
