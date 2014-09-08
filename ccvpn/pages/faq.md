@@ -17,7 +17,7 @@ filter anything.
 Although tor may be free (and extremely good for some usage), tor is also very
 slow.  
 This means that tor is good if you want full anonymity, but not for
-everyday web browsing, or to play an online game. For that, a VPN perfect.
+everyday web browsing, or to play an online game. For that, a VPN is perfect.
 
 ### Do you propose an affiliate program?
 Yes! Share your affiliate link and earn 2 weeks for each referral.  
