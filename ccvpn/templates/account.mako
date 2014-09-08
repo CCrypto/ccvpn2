@@ -83,7 +83,7 @@
             </select>
 
             <label for="gc_ftcp">${_('Force TCP')}</label>
-            <input type="checkbox" name="forcetcp" id="gc_ftcp" />
+            <input type="checkbox" name="force_tcp" id="gc_ftcp" />
 
             <label for="gc_ipv6">${_('Enable IPv6')}</label>
             <input type="checkbox" name="enable_ipv6" id="gc_ipv6" checked="checked" />
