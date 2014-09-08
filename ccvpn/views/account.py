@@ -311,7 +311,8 @@ def config(request):
 
     # These clients do not fully support OpenVPN config
     # => force TCP, because we cannot try UDP first.
-    force_tcp = os == 'android' or os == 'ios'
+    os_require_tcp = os == 'android' or os == 'ios'
+    force_tcp = request.GET.get('force_tcp') == 'on' or os_require_tcp
 
     params = {
         'force_tcp': force_tcp,
