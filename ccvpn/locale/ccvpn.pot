@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-30 18:08+0200\n"
+"POT-Creation-Date: 2014-10-19 23:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,141 +21,141 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
-#: ccvpn/templates/account.mako:13
-msgid "Your account is paid for ${time} day(s)."
+#: ccvpn/templates/account.mako:14
+msgid "Your account is paid until ${until}. (${time} day(s) left)"
 msgstr ""
 
-#: ccvpn/templates/account.mako:15
+#: ccvpn/templates/account.mako:16
 msgid "Your account is not paid."
 msgstr ""
 
-#: ccvpn/templates/account.mako:17
+#: ccvpn/templates/account.mako:18
 msgid "You can request a free 7 days trial here"
 msgstr ""
 
-#: ccvpn/templates/account.mako:18
+#: ccvpn/templates/account.mako:19
 msgid "Support"
 msgstr ""
 
-#: ccvpn/templates/account.mako:23 ccvpn/templates/account.mako:39
-#: ccvpn/templates/account.mako:98
+#: ccvpn/templates/account.mako:24 ccvpn/templates/account.mako:40
+#: ccvpn/templates/account.mako:99
 msgid "Add"
 msgstr ""
 
-#: ccvpn/templates/account.mako:25
+#: ccvpn/templates/account.mako:26
 msgid "month"
 msgstr ""
 
-#: ccvpn/templates/account.mako:26 ccvpn/templates/account.mako:27
-#: ccvpn/templates/account.mako:28
+#: ccvpn/templates/account.mako:27 ccvpn/templates/account.mako:28
+#: ccvpn/templates/account.mako:29
 msgid "months"
 msgstr ""
 
-#: ccvpn/templates/account.mako:30
+#: ccvpn/templates/account.mako:31
 msgid "with"
 msgstr ""
 
-#: ccvpn/templates/account.mako:32
+#: ccvpn/templates/account.mako:33
 msgid "credit card"
 msgstr ""
 
-#: ccvpn/templates/account.mako:44
+#: ccvpn/templates/account.mako:45
 msgid "Use gift code"
 msgstr ""
 
-#: ccvpn/templates/account.mako:51
+#: ccvpn/templates/account.mako:52
 msgid "help_connection_limit"
 msgstr ""
 
-#: ccvpn/templates/account.mako:52
+#: ccvpn/templates/account.mako:53
 msgid "help_profile_usage"
 msgstr ""
 
-#: ccvpn/templates/account.mako:53
+#: ccvpn/templates/account.mako:54
 msgid "help_tcp_usage"
 msgstr ""
 
-#: ccvpn/templates/account.mako:56
+#: ccvpn/templates/account.mako:57
 msgid "Download config"
 msgstr ""
 
-#: ccvpn/templates/account.mako:58
+#: ccvpn/templates/account.mako:59
 msgid "Profile"
 msgstr ""
 
-#: ccvpn/templates/account.mako:60
+#: ccvpn/templates/account.mako:61
 msgid "default"
 msgstr ""
 
-#: ccvpn/templates/account.mako:66
+#: ccvpn/templates/account.mako:67
 msgid "OS"
 msgstr ""
 
-#: ccvpn/templates/account.mako:73
+#: ccvpn/templates/account.mako:74
 msgid "Other"
 msgstr ""
 
-#: ccvpn/templates/account.mako:76
+#: ccvpn/templates/account.mako:77
 msgid "Gateway"
 msgstr ""
 
-#: ccvpn/templates/account.mako:78
+#: ccvpn/templates/account.mako:79
 msgid "Random"
 msgstr ""
 
-#: ccvpn/templates/account.mako:80
+#: ccvpn/templates/account.mako:81
 msgid "Country"
 msgstr ""
 
-#: ccvpn/templates/account.mako:85
+#: ccvpn/templates/account.mako:86
 msgid "Force TCP"
 msgstr ""
 
-#: ccvpn/templates/account.mako:88
+#: ccvpn/templates/account.mako:89
 msgid "Enable IPv6"
 msgstr ""
 
-#: ccvpn/templates/account.mako:91
+#: ccvpn/templates/account.mako:92
 msgid "Get config"
 msgstr ""
 
-#: ccvpn/templates/account.mako:94
+#: ccvpn/templates/account.mako:95
 msgid "Manage Profiles"
 msgstr ""
 
-#: ccvpn/templates/account.mako:97
+#: ccvpn/templates/account.mako:98
 msgid "Profile name"
 msgstr ""
 
-#: ccvpn/templates/account.mako:109
+#: ccvpn/templates/account.mako:110
 msgid "Delete"
 msgstr ""
 
-#: ccvpn/templates/account.mako:118
+#: ccvpn/templates/account.mako:119
 msgid "help_ref"
 msgstr ""
 
-#: ccvpn/templates/account.mako:119
+#: ccvpn/templates/account.mako:120
 msgid "Share this link"
 msgstr ""
 
-#: ccvpn/templates/account.mako:127
+#: ccvpn/templates/account.mako:128
 msgid "Settings"
 msgstr ""
 
-#: ccvpn/templates/account.mako:129 ccvpn/templates/account.mako:132
+#: ccvpn/templates/account.mako:130 ccvpn/templates/account.mako:133
 msgid "Change password"
 msgstr ""
 
-#: ccvpn/templates/account.mako:132 ccvpn/templates/reset_password.mako:10
+#: ccvpn/templates/account.mako:133 ccvpn/templates/reset_password.mako:10
 msgid "repeat"
 msgstr ""
 
-#: ccvpn/templates/account.mako:135 ccvpn/templates/signup.mako:19
+#: ccvpn/templates/account.mako:136 ccvpn/templates/signup.mako:19
 msgid "E-mail"
 msgstr ""
 
-#: ccvpn/templates/account.mako:138
+#: ccvpn/templates/account.mako:139
 msgid "Save"
 msgstr ""
 

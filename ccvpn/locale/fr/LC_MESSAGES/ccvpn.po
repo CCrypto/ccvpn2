@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-05-30 18:08+0200\n"
+"POT-Creation-Date: 2014-10-19 23:50+0200\n"
 "PO-Revision-Date: 2014-04-20 14:21+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -11,151 +11,151 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 1.3\n"
+"Generated-By: Babel 0.9.6\n"
 
 #: ccvpn/templates/account.mako:8
 msgid "Account"
 msgstr "Compte"
 
-#: ccvpn/templates/account.mako:13
-msgid "Your account is paid for ${time} day(s)."
-msgstr "Votre compte est payé pour ${time} jour(s)."
+#: ccvpn/templates/account.mako:14
+msgid "Your account is paid until ${until}. (${time} day(s) left)"
+msgstr "Votre compte est payé jusqu'au ${until}. (${time} jour(s))"
 
-#: ccvpn/templates/account.mako:15
+#: ccvpn/templates/account.mako:16
 msgid "Your account is not paid."
 msgstr "Votre compte n'est pas payé."
 
-#: ccvpn/templates/account.mako:17
+#: ccvpn/templates/account.mako:18
 msgid "You can request a free 7 days trial here"
 msgstr "Vous pouvez demander un compte d'essai de 7 jours ici"
 
-#: ccvpn/templates/account.mako:18
+#: ccvpn/templates/account.mako:19
 msgid "Support"
 msgstr "Support"
 
-#: ccvpn/templates/account.mako:23 ccvpn/templates/account.mako:39
-#: ccvpn/templates/account.mako:98
+#: ccvpn/templates/account.mako:24 ccvpn/templates/account.mako:40
+#: ccvpn/templates/account.mako:99
 msgid "Add"
 msgstr "Ajouter"
 
-#: ccvpn/templates/account.mako:25
+#: ccvpn/templates/account.mako:26
 msgid "month"
 msgstr "mois"
 
-#: ccvpn/templates/account.mako:26 ccvpn/templates/account.mako:27
-#: ccvpn/templates/account.mako:28
+#: ccvpn/templates/account.mako:27 ccvpn/templates/account.mako:28
+#: ccvpn/templates/account.mako:29
 msgid "months"
 msgstr "mois"
 
-#: ccvpn/templates/account.mako:30
+#: ccvpn/templates/account.mako:31
 msgid "with"
 msgstr "avec"
 
-#: ccvpn/templates/account.mako:32
+#: ccvpn/templates/account.mako:33
 msgid "credit card"
 msgstr "carte"
 
-#: ccvpn/templates/account.mako:44
+#: ccvpn/templates/account.mako:45
 msgid "Use gift code"
 msgstr "Utiliser le code cadeau"
 
-#: ccvpn/templates/account.mako:51
+#: ccvpn/templates/account.mako:52
 msgid "help_connection_limit"
 msgstr "Vous pouvez avoir une connexion par profil, mais jusqu'à 10 profils."
 
-#: ccvpn/templates/account.mako:52
+#: ccvpn/templates/account.mako:53
 msgid "help_profile_usage"
 msgstr ""
 "Pour utiliser un profil, téléchargez la config associée et utilisez "
 "\"[nom]/[profil]\" pour vous connecter au VPN."
 
-#: ccvpn/templates/account.mako:53
+#: ccvpn/templates/account.mako:54
 msgid "help_tcp_usage"
 msgstr ""
 "TCP est plus lent qu'UDP. Ne l'utilisez que si vous avez une connexion "
 "instable ou filtrée."
 
-#: ccvpn/templates/account.mako:56
+#: ccvpn/templates/account.mako:57
 msgid "Download config"
 msgstr "Télécharger la config"
 
-#: ccvpn/templates/account.mako:58
+#: ccvpn/templates/account.mako:59
 msgid "Profile"
 msgstr "Profil"
 
-#: ccvpn/templates/account.mako:60
+#: ccvpn/templates/account.mako:61
 msgid "default"
 msgstr "par défaut"
 
-#: ccvpn/templates/account.mako:66
+#: ccvpn/templates/account.mako:67
 msgid "OS"
 msgstr "OS"
 
-#: ccvpn/templates/account.mako:73
+#: ccvpn/templates/account.mako:74
 msgid "Other"
 msgstr "Autre"
 
-#: ccvpn/templates/account.mako:76
+#: ccvpn/templates/account.mako:77
 msgid "Gateway"
 msgstr "Serveur"
 
-#: ccvpn/templates/account.mako:78
+#: ccvpn/templates/account.mako:79
 msgid "Random"
 msgstr "Aléatoire"
 
-#: ccvpn/templates/account.mako:80
+#: ccvpn/templates/account.mako:81
 msgid "Country"
 msgstr "Pays"
 
-#: ccvpn/templates/account.mako:85
+#: ccvpn/templates/account.mako:86
 msgid "Force TCP"
 msgstr "Forcer TCP"
 
-#: ccvpn/templates/account.mako:88
+#: ccvpn/templates/account.mako:89
 msgid "Enable IPv6"
 msgstr "Activer l'IPv6"
 
-#: ccvpn/templates/account.mako:91
+#: ccvpn/templates/account.mako:92
 msgid "Get config"
 msgstr "Télécharger la config"
 
-#: ccvpn/templates/account.mako:94
+#: ccvpn/templates/account.mako:95
 msgid "Manage Profiles"
 msgstr "Gérer les profils"
 
-#: ccvpn/templates/account.mako:97
+#: ccvpn/templates/account.mako:98
 msgid "Profile name"
 msgstr "Nom du profil"
 
-#: ccvpn/templates/account.mako:109
+#: ccvpn/templates/account.mako:110
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ccvpn/templates/account.mako:118
+#: ccvpn/templates/account.mako:119
 msgid "help_ref"
 msgstr "Gagnez deux semaines gratuites pour chaque client qui a utilisé ce lien !"
 
-#: ccvpn/templates/account.mako:119
+#: ccvpn/templates/account.mako:120
 msgid "Share this link"
 msgstr "Partagez ce lien"
 
-#: ccvpn/templates/account.mako:127
+#: ccvpn/templates/account.mako:128
 msgid "Settings"
 msgstr "Options"
 
-#: ccvpn/templates/account.mako:129 ccvpn/templates/account.mako:132
+#: ccvpn/templates/account.mako:130 ccvpn/templates/account.mako:133
 msgid "Change password"
 msgstr "Changer le mot de passe"
 
-#: ccvpn/templates/account.mako:132 ccvpn/templates/reset_password.mako:10
+#: ccvpn/templates/account.mako:133 ccvpn/templates/reset_password.mako:10
 msgid "repeat"
 msgstr "répétez"
 
-#: ccvpn/templates/account.mako:135 ccvpn/templates/signup.mako:19
+#: ccvpn/templates/account.mako:136 ccvpn/templates/signup.mako:19
 msgid "E-mail"
 msgstr "E-mail"
 
-#: ccvpn/templates/account.mako:138
+#: ccvpn/templates/account.mako:139
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -174,8 +174,7 @@ msgstr "Réinitialiser"
 
 #: ccvpn/templates/home.mako:4
 msgid "CCrypto VPN is a cheap, fast, anonymous and secure VPN service"
-msgstr ""
-"CCrypto VPN est un service de VPN peu cher, rapide, anonyme et sécurisé."
+msgstr "CCrypto VPN est un service de VPN peu cher, rapide, anonyme et sécurisé."
 
 #: ccvpn/templates/home.mako:17
 msgid "Unlimited"
