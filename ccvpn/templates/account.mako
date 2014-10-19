@@ -9,8 +9,9 @@
 
     <article class="account-box">
         % if user.is_paid:
-            <p>${_('Your account is paid for ${time} day(s).',
-                   mapping={'time': user.paid_days_left()})}</p>
+            <p>${_('Your account is paid until ${until}. (${time} day(s) left)',
+                   mapping={'until': user.paid_until.strftime('%Y-%m-%d'),
+                            'time': user.paid_days_left()})}</p>
         % else:
             <p>${_('Your account is not paid.')}</p>
             % if len(user.paid_orders) == 0:
