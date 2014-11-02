@@ -31,6 +31,23 @@
 
     available_languages = request.registry.settings.get('available_languages')
 %>
+
+<%def name="pager(page, pages)">
+    % if pages > 1:
+        <p class="pages">
+            % if page > 0:
+                <a href="?page=0">&lt;&lt;</a>
+                <a href="?page=${page - 1}">&lt;</a>
+            % endif
+            <a href="?page=${page}">${page}</a>
+            % if page < pages - 1:
+                <a href="?page=${page + 1}">&gt;</a>
+                <a href="?page=${pages - 1}">&gt;&gt;</a>
+            % endif
+        </p>
+    % endif
+</%def>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="${request.locale_name}">
 <head>
@@ -93,7 +110,7 @@
         </div>
         % endfor
     
-        ${self.body()}
+        ${next.body()}
     </div>
 
     <footer>

@@ -55,6 +55,10 @@ up /etc/openvpn/update-resolv-conf
 down /etc/openvpn/update-resolv-conf
 % endif
 
+% if force_tcp and http_proxy:
+http-proxy ${http_proxy}
+%endif
+
 
 <ca>
 ${openvpn_ca}</ca>

@@ -127,7 +127,7 @@ section {
     position: relative;
 }
 article {
-    padding: 20px;
+    padding: 10px 20px;
 }
 
 #homepage{
@@ -212,8 +212,8 @@ section article {
 }
 
 section h1{
-    font-size: 2.5em;
-    margin-bottom: 0.5em;
+    font-size: 2em;
+    margin-bottom: 0.7em;
     color: #1c619a;
 }
 section h2 {
@@ -379,13 +379,25 @@ section form.inline input[type=submit] {
     margin-right: 5px;
 }
 
-.profileform {
-    display: inline;
+.profile {
+    margin-top: 1em;
 }
-.profileform input[type=submit], .profileform input[type=text] {
-    display: block;
-    margin: 0;
+
+.profile h2 {
+    font-size: 1.1em;
+    margin-bottom: 0;
+}
+
+.profile form {
+    display: inline-block;
+}
+.profile form input[type=submit], .profile form input[type=text] {
+    display: inline-block;
+    margin: 0 4px 0 4px;
     padding: 4px 8px;
+}
+.profile a {
+    margin: 0 4px 0 4px;
 }
 
 form.largeform {
@@ -709,6 +721,10 @@ table.admin-list tbody tr:nth-child(even) {
     border-radius: 3px;
 }
 
+p.inputinfo {
+    font-size: 0.8em;
+    display: inline;
+}
 
 
 

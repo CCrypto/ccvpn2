@@ -10,6 +10,28 @@ from .models import DBSession, Base, get_user, User
 logger = logging.getLogger(__name__)
 
 
+def date_fmt(d):
+    """ Format datetime """
+    return d.strftime('%Y-%m-%d&nbsp;%H:%M:%S')
+
+def timedelta_fmt(td):
+    std = str(td)
+    # we dont really care about microseconds
+    if '.' in std:
+        return std.split('.')[0]
+
+def bytes_fmt(bps):
+    """ Format bytes """
+    multiples = [('T', 12), ('G', 9), ('M', 6), ('K', 3)]
+    unit = 'B'
+    for m, p in multiples:
+        if bps > 10**p:
+            bps = bps / 10**p
+            unit = m + unit
+            break
+    return '{:.02f}'.format(bps) + unit
+
+
 class AuthenticationPolicy(object):
     def authenticated_userid(self, request):
         return request.user
@@ -69,10 +91,14 @@ def setup_routes(config):
     a('account_forgot', '/account/forgot')
     a('account_reset', '/account/reset/{token:[a-zA-Z0-9]+}')
     a('account_signup', '/account/signup')
+    a('account_logs', '/account/logs')
+    a('account_orders', '/account/orders')
+    a('account_settings', '/account/settings')
+    a('account_profiles_edit', '/account/profiles/{id:[0-9]+}')
     a('order_post', '/order/', request_method='POST')
     a('order_view', '/order/view/{hexid:[a-f0-9]+}')
     a('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
-    a('config', '/config/ccrypto.ovpn')
+    a('config', '/config/ccrypto-{username}-{pname}.ovpn')
 
     # Admin related
     #a('admin_home', '/admin/')
@@ -165,7 +191,10 @@ def main(global_config, **settings):
     if not 'mako.directories' in settings:
         settings['mako.directories'] = 'ccvpn:templates/'
     if not 'mako.imports' in settings:
-        settings['mako.imports'] = 'from ccvpn.filters import check'
+        settings['mako.imports'] = '''
+            from ccvpn import date_fmt, timedelta_fmt, bytes_fmt
+            from ccvpn.filters import check
+        '''
 
     session_factory = session_factory_from_settings(settings)
     authentication = AuthenticationPolicy()
