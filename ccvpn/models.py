@@ -284,7 +284,7 @@ class User(Base):
                                primaryjoin='and_(Order.uid == User.id, Order.paid == True)')
     profiles = relationship('Profile', backref='user')
     pw_reset_tokens = relationship('PasswordResetToken', backref='user')
-    sessions = relationship('VPNSession', backref='user')
+    sessions = relationship('VPNSession', backref='user', lazy='dynamic')
 
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re = re.compile('^.+@.+$')
@@ -392,11 +392,26 @@ class PasswordResetToken(Base):
 
 
 class Profile(Base):
+    """ Profile.
+
+    - name: used to display profile and for VPN auth.
+    - gateway_country/gateway_id: used to filter gateways.
+      both None: random.
+    """
     __tablename__ = 'profiles'
-    id = Column(Integer, primary_key=True, doc='ID')
+    id = Column(Integer, primary_key=True)
     uid = Column(ForeignKey('users.id'))
-    name = Column(String(16), nullable=False, doc='Name')
-    password = Column(Text, nullable=True, doc='Key')
+    name = Column(String(16), nullable=False)
+    password = Column(Text, nullable=True)
+
+    gateway_country = Column(String, nullable=True)
+    gateway_id = Column(ForeignKey('gateways.id'), nullable=True)
+
+    # OpenVPN config settings
+    client_os = Column(String, nullable=True)
+    force_tcp = Column(Boolean, nullable=False, default=False)
+    use_http_proxy = Column(String, nullable=True)
+    disable_ipv6 = Column(Boolean, nullable=False, default=False)
 
     sessions = relationship('VPNSession', backref='profile')
 
@@ -477,6 +492,16 @@ class Order(Base):
     paid = Column(Boolean, nullable=False, default=False)
     payment = Column(MutableDict.as_mutable(JSONEncodedDict), nullable=True)
 
+    @property
+    def currency(self):
+        # TODO: use method instead
+        if self.method == self.METHOD.BITCOIN:
+            return 'BTC'
+        if self.method == self.METHOD.PAYPAL:
+            return '€'
+        if self.method == self.METHOD.STRIPE:
+            return '€'
+
     def is_paid(self):
         return self.paid_amount >= self.amount
 
@@ -537,6 +562,12 @@ class Gateway(Base):
                      server_default=true())
 
     sessions = relationship('VPNSession', backref='gateway')
+    profiles = relationship('Profile', backref='gateway')
+
+    @property
+    def main_ip4(self):
+        return self.ipv4
+
 
     def __repr__(self):
         return '<Gateway %s-%s>' % (self.country, self.name)
@@ -563,6 +594,12 @@ class VPNSession(Base):
     @hybrid_property
     def is_online(self):
         return self.disconnect_date == None
+
+    @property
+    def duration(self):
+        if self.connect_date and self.disconnect_date:
+            return self.disconnect_date - self.connect_date
+        return None
 
     def __repr__(self):
         return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (

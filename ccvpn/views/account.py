@@ -1,7 +1,9 @@
 import datetime
+from urllib.parse import urlencode
 
 import transaction
 from sqlalchemy import func
+from sqlalchemy.orm.exc import NoResultFound
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.renderers import render, render_to_response
 from pyramid.httpexceptions import (
@@ -13,7 +15,7 @@ from pyramid_mailer.message import Message
 
 from ccvpn.models import (
     DBSession,
-    User, Profile, PasswordResetToken, Gateway,
+    User, Profile, PasswordResetToken, Gateway, VPNSession, Order,
     random_access_token
 )
 
@@ -193,89 +195,6 @@ def reset(request):
     return HTTPMovedPermanently(location=url)
 
 
-@view_config(route_name='account', request_method='POST', permission='logged',
-             renderer='account.mako')
-def account_post(request):
-    _ = request.translate
-    # TODO: Fix that. split in two functions or something.
-    errors = []
-    try:
-        if 'profilename' in request.POST:
-            p = Profile()
-            p.validate_name(request.POST['profilename']) or \
-                errors.append(_('Invalid name.'))
-            assert not errors
-            name_used = DBSession.query(Profile) \
-                .filter_by(uid=request.user.id,
-                           name=request.POST['profilename']) \
-                .first()
-            if name_used:
-                errors.append(_('Name already used.'))
-            profiles_count = DBSession.query(func.count(Profile.id)) \
-                .filter_by(uid=request.user.id).scalar()
-            if profiles_count > 10:
-                errors.append(_('You have too many profiles.'))
-            assert not errors
-            p.name = request.POST['profilename']
-            p.askpw = 'askpw' in request.POST and request.POST['askpw'] == '1'
-            p.uid = request.user.id
-            if not p.askpw:
-                p.password = random_access_token()
-            DBSession.add(p)
-            DBSession.flush()
-            return account(request)
-
-        if 'profiledelete' in request.POST:
-            p = DBSession.query(Profile) \
-                .filter_by(id=int(request.POST['profiledelete'])) \
-                .filter_by(uid=request.user.id) \
-                .first()
-            assert p or errors.append(_('Unknown profile.'))
-            DBSession.delete(p)
-            DBSession.flush()
-            return account(request)
-
-        u = request.user
-        if request.POST['password'] != '':
-            u.validate_password(request.POST['password']) or \
-                errors.append(_('Invalid password.'))
-            if request.POST['password'] != request.POST['password2']:
-                errors.append(_('Both passwords do not match.'))
-        if request.POST['email'] != '':
-            u.validate_email(request.POST['email']) or \
-                errors.append(_('Invalid email address.'))
-        assert not errors
-
-        new_email = request.POST.get('email')
-        if new_email and new_email != request.user.email:
-            c = DBSession.query(func.count(User.id).label('ec')) \
-                .filter_by(email=new_email).first()
-            if c.ec > 0:
-                errors.append(_('E-mail address already registered.'))
-        assert not errors
-        if request.POST['password'] != '':
-            u.set_password(request.POST['password'])
-        if request.POST['email'] != '':
-            u.email = request.POST['email']
-        request.messages.info(_('Saved!'))
-        DBSession.flush()
-
-    except KeyError:
-        return HTTPBadRequest()
-    except AssertionError:
-        for error in errors:
-            request.session.flash(('error', error))
-    return account(request)
-
-
-@view_config(route_name='account', permission='logged',
-             renderer='account.mako')
-def account(request):
-    _ = request.translate
-    return {
-        'gw_countries': set(i[0] for i in DBSession.query(Gateway.country).all()),
-    }
-
 
 @view_config(route_name='account_redirect')
 def account_redirect(request):
@@ -288,38 +207,50 @@ def config(request):
     _ = request.translate
     settings = request.registry.settings
     domain = settings.get('net_domain', '')
-
     gw_countries = [i[0] for i in DBSession.query(Gateway.country).all()]
 
-    pname = request.GET.get('profile')
-    if pname:
+    try:
+        username = request.matchdict['username']
+        pname = request.matchdict['pname']
+
+        if request.user.username != username:
+            # Only allow corrently logged user for now
+            raise ValueError()
+        user = request.user
+
         profile = DBSession.query(Profile) \
-            .filter_by(uid=request.user.id, name=pname) \
-            .first()
-        if not profile:
-            return HTTPNotFound()
-    else:
-        profile = None
+                           .filter_by(uid=user.id) \
+                           .filter_by(name=pname) \
+                           .one()
+    except (KeyError, NoResultFound):
+        return HTTPNotFound()
 
-    gw = request.GET.get('gw')
-    if gw and gw[0:3] == 'rr_' and gw[3:] in gw_countries:
-        gateway = 'gw.' + gw[3:] + '.' + domain
+    if profile.gateway_id:
+        gateway = 'gw.%s-%s' % (profile.gateway.country, profile.gateway.name)
+    elif profile.gateway_country:
+        gateway = 'gw.%s' % (profile.gateway_country)
     else:
-        gateway = 'gw.random.' + domain
+        gateway = 'gw.random'
 
-    os = request.GET.get('os')
+    if not domain.startswith('.'):
+        gateway += '.'
+    gateway += domain
+
+
+    os = profile.client_os
 
     # These clients do not fully support OpenVPN config
     # => force TCP, because we cannot try UDP first.
     os_require_tcp = os == 'android' or os == 'ios'
-    force_tcp = request.GET.get('force_tcp') == 'on' or os_require_tcp
+    force_tcp = profile.force_tcp or os_require_tcp
 
     params = {
         'force_tcp': force_tcp,
         'windows_dns': os == 'windows',
         'resolvconf': os == 'ubuntu',
-        'ipv6': os != 'freebox' and 'enable_ipv6' in request.GET,
+        'ipv6': not profile.disable_ipv6,
         'dhcp': os != 'freebox',
+        'http_proxy': profile.use_http_proxy,
         'username': request.user.username,
         'profile': profile,
         'gateway': gateway,
@@ -329,4 +260,256 @@ def config(request):
     r = render_to_response('config.ovpn.mako', params, request=request)
     r.content_type = 'application/x-openvpn-profile'
     return r
+
+
+@view_config(route_name='account', permission='logged',
+             renderer='account/index.mako')
+def account(request):
+    _ = request.translate
+
+    ref_url = 'https://vpn.ccrypto.org/?ref=' + str(request.user.id)
+
+
+    twitter_url = 'https://twitter.com/intent/tweet?'
+    twitter_args = {
+        'text': _('Awesome VPN! 2€/0.005BTC per month, with a free 7 days trial!'),
+        'via': 'CCrypto_VPN',
+        'url': ref_url,
+        'related': 'CCrypto_VPN,CCrypto_org'
+    }
+
+    profiles_limit = 10
+    return {
+        'ref_url': ref_url,
+        'twitter_link': twitter_url + urlencode(twitter_args),
+        'profiles': request.user.profiles,
+        'limit': profiles_limit,
+    }
+    return {}
+
+
+@view_config(route_name='account', permission='logged',
+             request_method='POST')
+def account_post(request):
+    _ = request.translate
+    redirect = HTTPSeeOther(location=request.route_url('account'))
+    profiles_limit = 10
+
+    profile_name = request.POST.get('profilename')
+    profile_delete = request.POST.get('delete')
+
+    if profile_name:
+        p = Profile()
+        if not p.validate_name(profile_name):
+            request.messages.error(_('Invalid name.'))
+            return redirect
+
+        # Check if the name is already used
+        used = DBSession.query(Profile).filter_by(uid=request.user.id) \
+                        .filter_by(name=profile_name).first()
+        if used:
+            request.messages.error(_('Name already used.'))
+            return redirect
+
+        # Check if this user's under the profile number limit
+        profiles_count = DBSession.query(func.count(Profile.id)) \
+                                  .filter_by(uid=request.user.id).scalar()
+        if profiles_count > profiles_limit:
+            request.messages.error(_('You have too many profiles.'))
+            return redirect
+
+        p.name = profile_name
+        p.uid = request.user.id
+        DBSession.add(p)
+        DBSession.flush()
+        return HTTPSeeOther(location=request.route_url('account_profiles_edit', id=p.id))
+
+    if profile_delete:
+        try:
+            profile_delete = int(profile_delete)
+        except ValueError:
+            return redirect
+
+        p = DBSession.query(Profile) \
+            .filter_by(id=int(profile_delete)) \
+            .filter_by(uid=request.user.id) \
+            .first()
+
+        if not p:
+            request.messages.error(_('Unknown profile.'))
+            return redirect
+
+        DBSession.delete(p)
+
+    return redirect
+
+
+@view_config(route_name='account_profiles_edit', permission='logged',
+             renderer='account/profiles_edit.mako')
+def profiles_edit(request):
+    _ = request.translate
+    try:
+        profile_id = int(request.matchdict['id'])
+        profile = DBSession.query(Profile).filter_by(id=profile_id) \
+                           .filter_by(uid=request.user.id).one()
+    except (KeyError, ValueError, NoResultFound):
+        return HTTPSeeOther(location=request.route_url('account'))
+
+    return {
+        'profile': profile,
+        'edit_post_url': request.route_url('account_profiles_edit', id=profile.id),
+        'gw_countries': set(i[0] for i in DBSession.query(Gateway.country).all()),
+        'oses': {
+            'windows': 'Windows',
+            'android': 'Android',
+            'ubuntu': 'Ubuntu',
+            'osx': 'OS X',
+            'freebox': 'Freebox',
+            'other': _('Other / GNU/Linux'),
+        },
+    }
+
+@view_config(route_name='account_profiles_edit', permission='logged',
+             request_method='POST')
+def profiles_edit_post(request):
+    _ = request.translate
+    try:
+        profile_id = int(request.matchdict['id'])
+        profile = DBSession.query(Profile).filter_by(id=profile_id) \
+                           .filter_by(uid=request.user.id).one()
+    except (KeyError, ValueError, NoResultFound):
+        return HTTPSeeOther(location=request.route_url('account'))
+
+    redirect = HTTPSeeOther(location=request.route_url('account_profiles_edit',
+                                                       id=profile.id))
+
+    try:
+        name = request.POST['name']
+        client_os = request.POST['client_os']
+        gateway = request.POST['gateway']
+        force_tcp = 'force_tcp' in request.POST
+        disable_ipv6 = 'enable_ipv6' not in request.POST
+        http_proxy = request.POST.get('use_http_proxy', '')
+    except (KeyError, ValueError):
+        return redirect
+
+
+    if name != profile.name:
+        if not p.validate_name(profile_name):
+            request.messages.error(_('Invalid name.'))
+            return redirect
+
+        # Check if the name is already used
+        used = DBSession.query(Profile).filter_by(uid=request.user.id) \
+                        .filter_by(name=profile_name).first()
+        if used:
+            request.messages.error(_('Name already used.'))
+            return redirect
+
+    profile.name = name
+    profile.client_os = client_os
+    profile.force_tcp = force_tcp
+    profile.disable_ipv6 = disable_ipv6
+    profile.use_http_proxy = http_proxy
+
+    if gateway.startswith('rr_') and len(gateway) == 5:
+        # rr_<cc>  # random in country
+        cc = gateway[3:]
+        profile.gateway_country = cc
+        profile.gateway_id = None
+    else:
+        # random
+        profile.gateway_country = None
+        profile.gateway_id = None
+
+    request.messages.info(_('Saved!'))
+    return HTTPSeeOther(location=request.route_url('account'))
+
+@view_config(route_name='account_settings', permission='logged',
+             renderer='account/settings.mako')
+def settings(request):
+    return {}
+
+
+@view_config(route_name='account_settings', permission='logged',
+             request_method='POST')
+def settings_post(request):
+    _ = request.translate
+
+    try:
+        password = request.POST['password']
+        password2 = request.POST['password2']
+        email = request.POST['email']
+    except:
+        return HTTPSeeOther(location=request.route_url('account_settings'))
+
+    if password and not request.user.validate_password(password):
+        request.messages.error(_('Invalid password.'))
+        password = ''
+    if password and password != password2:
+        request.messages.error(_('Both passwords do not match.'))
+        password = ''
+
+    if email and not request.user.validate_email(request.POST['email']):
+        request.messages.error(_('Invalid email address.'))
+        email = ''
+
+    if email:
+        # we do not count the current user (because of pre-filled forms)
+        c = DBSession.query(func.count(User.id)).filter_by(email=email) \
+                     .filter(User.id != request.user.id).scalar()
+        if c > 0:
+            request.messages.error(_('E-mail address already registered.'))
+            email = ''
+
+    if password:
+        request.user.set_password(password)
+    if email:
+        request.user.email = email
+    if password or email:
+        request.messages.info(_('Saved!'))
+
+    return HTTPSeeOther(location=request.route_url('account_settings'))
+
+
+@view_config(route_name='account_orders', permission='logged',
+             renderer='account/orders.mako')
+def orders(request):
+    items_count = DBSession.query(func.count(Order.id)) \
+                           .filter_by(uid=request.user.id) \
+                           .filter(Order.close_date != None) \
+                           .scalar()
+    page_items = 100
+    pages = int((items_count / page_items) + 0.5)
+    try:
+        page = int(request.GET['page'])
+    except (KeyError, ValueError):
+        page = 0
+    offset = page * page_items
+    orders = DBSession.query(Order).filter_by(uid=request.user.id) \
+                    .filter(Order.close_date != None) \
+                    .order_by(Order.start_date.desc()) \
+                    .limit(page_items).offset(offset)
+    return {'orders': orders, 'page': page, 'pages': pages}
+
+
+
+@view_config(route_name='account_logs', permission='logged',
+             renderer='account/logs.mako')
+def logs(request):
+    items_count = DBSession.query(func.count(VPNSession.id)) \
+                           .filter_by(user_id=request.user.id) \
+                           .scalar()
+    page_items = 100
+    pages = int((items_count / page_items) + 0.5)
+    try:
+        page = int(request.GET['page'])
+    except (KeyError, ValueError):
+        page = 0
+    offset = page * page_items
+    logs = DBSession.query(VPNSession).filter_by(user_id=request.user.id) \
+                    .order_by(VPNSession.connect_date.desc()) \
+                    .limit(page_items).offset(offset)
+    return {'logs': logs, 'page': page, 'pages': pages}
+
 
