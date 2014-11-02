@@ -40,7 +40,7 @@
         <input type="checkbox" name="enable_ipv6" id="p_ipv6"
                ${'checked="checked"' if not profile.disable_ipv6 else ''}/>
         
-        <label for="p_proxy">${_('Use HTTP Proxy?')}</label>
+        <label for="p_proxy">${_('Use HTTP Prox?')}?</label>
         <input type="text" name="use_http_proxy" id="p_proxy" value="${profile.use_http_proxy or ''}" />
 
         <input type="submit" value="${_('Save profile')}" />
