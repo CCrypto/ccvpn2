@@ -95,7 +95,6 @@ def main(argv=sys.argv):
                             formatter_class=RawTextHelpFormatter)
     parser.add_argument('-v', '--verbose', action='count')
     parser.add_argument('-s', '--send', action='store_true', default=False)
-    parser.add_argument('--active', action='store_true', default=True)
     parser.add_argument('config')
 
     args = parser.parse_args()
@@ -126,7 +125,13 @@ def main(argv=sys.argv):
 
     mailer = mailer_factory_from_settings(settings)
 
-    users = get_future_expire(7) + get_expired()
+    try:
+        days = int(settings.get('expire_mail_days', 3))
+    except ValueError:
+        log.warning('Invalid integer value for expire_mail_days. Using default')
+        days = 3
+
+    users = get_future_expire(days) + get_expired()
 
     if args.send:
         for u in users:
