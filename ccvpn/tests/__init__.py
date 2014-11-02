@@ -7,27 +7,28 @@ from ccvpn import Messages, referral_handler, methods
 import unittest
 import os
 
-here = os.path.dirname(__file__)
-
-localtest = os.path.join(here, '../../', 'test.local.ini')
-if os.path.isfile(localtest):
-    settings = appconfig('config:' + localtest)
-else:
-    test = os.path.join(here, '../../', 'test.ini')
-    settings = appconfig('config:' + test)
 
 class BaseTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.engine = engine_from_config(settings, 'sqlalchemy.')
+        here = os.path.dirname(__file__)
+
+        localtest = os.path.join(here, '../../', 'test.local.ini')
+        if os.path.isfile(localtest):
+            cls.settings = appconfig('config:' + localtest)
+        else:
+            test = os.path.join(here, '../../', 'test.ini')
+            cls.settings = appconfig('config:' + test)
+
+        cls.engine = engine_from_config(cls.settings, 'sqlalchemy.')
 
     def setUp(self):
-        if not 'mako.directories' in settings:
-            settings['mako.directories'] = 'ccvpn:templates/'
-        if not 'mako.imports' in settings:
-            settings['mako.imports'] = 'from ccvpn.filters import check'
+        if not 'mako.directories' in self.settings:
+            self.settings['mako.directories'] = 'ccvpn:templates/'
+        if not 'mako.imports' in self.settings:
+            self.settings['mako.imports'] = 'from ccvpn.filters import check'
 
-        self.config = testing.setUp(settings=settings)
+        self.config = testing.setUp(settings=self.settings)
         self.config.include('pyramid_mailer.testing')
         self.config.include('pyramid_mako')
         self.config.include('pyramid_beaker')
