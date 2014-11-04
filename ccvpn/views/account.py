@@ -69,6 +69,8 @@ def logout(request):
 
 @view_config(route_name='account_signup', renderer='signup.mako')
 def signup(request):
+    ## TODO: seriously needs refactoring
+
     _ = request.translate
     if request.method != 'POST':
         return {}
@@ -105,6 +107,8 @@ def signup(request):
                 u.referrer_id = request.referrer.id
             DBSession.add(u)
             DBSession.flush()
+            dp = Profile(uid=u.id, name='')
+            DBSession.add(dp)
             request.session['uid'] = u.id
         return HTTPSeeOther(location=request.route_url('account'))
     except AssertionError:
@@ -203,6 +207,7 @@ def account_redirect(request):
 
 
 @view_config(route_name='config', permission='logged')
+@view_config(route_name='config_profile', permission='logged')
 def config(request):
     _ = request.translate
     settings = request.registry.settings
@@ -211,8 +216,7 @@ def config(request):
 
     try:
         username = request.matchdict['username']
-        pname = request.matchdict['pname']
-
+        pname = request.matchdict.get('pname', '')
         if request.user.username != username:
             # Only allow corrently logged user for now
             raise ValueError()
@@ -237,7 +241,8 @@ def config(request):
     gateway += domain
 
 
-    os = profile.client_os
+    # Use 'Other / GNU/Linux' as the default OS if no other is set
+    os = profile.client_os or 'other'
 
     # These clients do not fully support OpenVPN config
     # => force TCP, because we cannot try UDP first.
@@ -332,6 +337,7 @@ def account_post(request):
 
         p = DBSession.query(Profile) \
             .filter_by(id=int(profile_delete)) \
+            .filter(Profile.name != '') \
             .filter_by(uid=request.user.id) \
             .first()
 
@@ -384,7 +390,7 @@ def profiles_edit_post(request):
                                                        id=profile.id))
 
     try:
-        name = request.POST['name']
+        name = request.GET.get('name', '')
         client_os = request.POST['client_os']
         gateway = request.POST['gateway']
         force_tcp = 'force_tcp' in request.POST

@@ -4,8 +4,11 @@
     <h1>Profile: ${profile.name}</h1>
 
     <form action="${edit_post_url}" method="post" class="largeform">
-        <label for="p_name">${_('Profile Name')}</label>
-        <input type="text" name="name" value="${profile.name}" />
+        % if profile.name:
+            ## Only show name if it's not the default profile
+            <label for="p_name">${_('Profile Name')}</label>
+            <input type="text" name="name" value="${profile.name}" />
+        % endif
 
         <label for="p_os">${_('OS')}</label>
         <select name="client_os" id="p_os">
@@ -40,7 +43,7 @@
         <input type="checkbox" name="enable_ipv6" id="p_ipv6"
                ${'checked="checked"' if not profile.disable_ipv6 else ''}/>
         
-        <label for="p_proxy">${_('Use HTTP Prox?')}?</label>
+        <label for="p_proxy">${_('Use HTTP Proxy?')}</label>
         <input type="text" name="use_http_proxy" id="p_proxy" value="${profile.use_http_proxy or ''}" />
 
         <input type="submit" value="${_('Save profile')}" />

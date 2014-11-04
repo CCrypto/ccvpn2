@@ -2,7 +2,7 @@
 # |Cognitive Cryptography  VPN|
 # |  http://vpn.ccrypto.org/  |
 # +---------------------------+
-# ${username}${'/'+profile.name if profile else ' (default profile)'}
+# ${username}${'/'+profile.name if profile.name else ' (default profile)'}
 
 verb 4
 client

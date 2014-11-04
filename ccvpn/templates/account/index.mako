@@ -61,7 +61,13 @@
     % if profiles:
         % for profile in profiles:
             <article class="profile">
-                <h2>${_('VPN username')}: ${request.user.username}/${profile.name}</h2>
+                <h2>${_('VPN username')}:
+                    % if profile.name:
+                        <b>${request.user.username}/${profile.name}</b>
+                    % else:
+                        <b>${request.user.username}</b> (${_('default profile')})
+                    % endif
+                </h2>
                 <ul>
                     <li>${_('Gateway')}:
                         % if profile.gateway_country:
@@ -89,15 +95,22 @@
                     rurl = request.route_url
                     edit_url = rurl('account_profiles_edit', id=profile.id)
                     del_url = rurl('account')
-                    dl_url = rurl('config', username=profile.user.username,
-                                                     pname=profile.name)
+                    if profile.name:
+                        dl_url = rurl('config_profile',
+                                      username=profile.user.username,
+                                      pname=profile.name)
+                    else:
+                        dl_url = rurl('config',
+                                      username=profile.user.username)
                 %>
 
-                <!-- delete button -->
-                <form action="${del_url}" method="POST">
-                    <input type="hidden" name="delete" value="${profile.id}" />
-                    <input type="submit" value="${_('Delete')}" />
-                </form>
+                % if profile.name != '':
+                    <!-- delete button -->
+                    <form action="${del_url}" method="POST">
+                        <input type="hidden" name="delete" value="${profile.id}" />
+                        <input type="submit" value="${_('Delete')}" />
+                    </form>
+                % endif
 
                 <!-- edit button -->
                 <form action="${edit_url}" method="GET">
