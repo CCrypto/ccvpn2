@@ -98,7 +98,8 @@ def setup_routes(config):
     a('order_post', '/order/', request_method='POST')
     a('order_view', '/order/view/{hexid:[a-f0-9]+}')
     a('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
-    a('config', '/config/ccrypto-{username}-{pname}.ovpn')
+    a('config_profile', '/config/ccrypto-{username}-{pname}.ovpn')
+    a('config', '/config/ccrypto-{username}.ovpn')
 
     # Admin related
     #a('admin_home', '/admin/')

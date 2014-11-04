@@ -381,14 +381,17 @@ section form.inline input[type=submit] {
 
 .profile {
     margin-top: 1em;
+    background: #f0f0f0;
 }
 
 .profile h2 {
     font-size: 1.1em;
-    margin-bottom: 0;
+    margin-bottom: 0.4em;
+    font-weight: normal;
 }
 
 .profile form {
+    margin-top: 0.5em;
     display: inline-block;
 }
 .profile form input[type=submit], .profile form input[type=text] {

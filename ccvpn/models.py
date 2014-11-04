@@ -282,7 +282,7 @@ class User(Base):
     orders = relationship('Order', backref='user')
     paid_orders = relationship('Order', viewonly=True,
                                primaryjoin='and_(Order.uid == User.id, Order.paid == True)')
-    profiles = relationship('Profile', backref='user')
+    profiles = relationship('Profile', backref='user', order_by='Profile.name')
     pw_reset_tokens = relationship('PasswordResetToken', backref='user')
     sessions = relationship('VPNSession', backref='user', lazy='dynamic')
 
@@ -395,6 +395,7 @@ class Profile(Base):
     """ Profile.
 
     - name: used to display profile and for VPN auth.
+      The "default" profile (created for every user) has name="".
     - gateway_country/gateway_id: used to filter gateways.
       both None: random.
     """
@@ -417,6 +418,13 @@ class Profile(Base):
 
     def validate_name(self, name):
         return re.match('^[a-zA-Z0-9]{1,16}$', name)
+
+    @property
+    def vpn_username(self):
+        if self.name:
+            return self.user.username + '/' + self.name
+        else:
+            return self.user.username
 
 
 class AlreadyUsedGiftCode(Exception):
