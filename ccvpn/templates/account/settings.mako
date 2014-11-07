@@ -2,7 +2,7 @@
 <%inherit file="layout.mako" />
 <% user = request.user %>
 <section id="account">
-    <h1>Settings</h1>
+    <h1>${_('Settings')}</h1>
 
     <form action="/account/settings" method="post" class="vert">
         <label for="ins_password">${_('Change password')}</label>
@@ -16,5 +16,4 @@
         
         <input type="submit" value="${_('Save')}" />
     </form>
-
 </section>
