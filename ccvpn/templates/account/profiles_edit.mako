@@ -12,7 +12,7 @@
 
         <label for="p_os">${_('OS')}</label>
         <select name="client_os" id="p_os">
-            % for k, v in oses.items():
+            % for k, v in profile.CLIENT_OS.items():
                 <option value="${k}"
                 % if profile.client_os == k:
                     selected="selected"
@@ -34,9 +34,16 @@
             % endfor
         </select>
 
-        <label for="p_ftcp">${_('Force TCP?')}</label>
-        <input type="checkbox" name="force_tcp" id="p_ftcp"
-               ${'checked="checked"' if profile.force_tcp else ''}/>
+        <label for="p_proto">${_('Protocol')}</label>
+        <select name="protocol" id="p_proto">
+            % for key, value in profile.PROTOCOLS.items():
+                <option value="${key}"
+                % if profile.protocol == key:
+                    selected="selected"
+                % endif
+                >${value}</option>
+            % endfor
+        </select>
         <p class="inputinfo">${_('help_tcp_usage')}</p>
 
         <label for="p_ipv6">${_('Enable IPv6?')}</label>

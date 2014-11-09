@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    TypeDecorator, Column, ForeignKey,
+    TypeDecorator, Column, ForeignKey, Enum,
     Integer, Float, DateTime, Boolean, BigInteger,
     String, UnicodeText, Text, LargeBinary, Interval,
     func
@@ -399,18 +399,37 @@ class Profile(Base):
     - gateway_country/gateway_id: used to filter gateways.
       both None: random.
     """
+
+    PROTOCOLS = {
+        'udp': 'UDP (default)',
+        'tcp': 'TCP',
+        'udpl': 'UDP (low MTU)',
+    }
+
+    CLIENT_OS = {
+        'windows': 'Windows',
+        'android': 'Android',
+        'ubuntu': 'Ubuntu',
+        'osx': 'OS X',
+        'freebox': 'Freebox',
+        'other': 'Other / GNU/Linux',
+    }
+
     __tablename__ = 'profiles'
     id = Column(Integer, primary_key=True)
     uid = Column(ForeignKey('users.id'))
     name = Column(String(16), nullable=False)
     password = Column(Text, nullable=True)
 
+    # Gateway selection
     gateway_country = Column(String, nullable=True)
     gateway_id = Column(ForeignKey('gateways.id'), nullable=True)
 
     # OpenVPN config settings
-    client_os = Column(String, nullable=True)
-    force_tcp = Column(Boolean, nullable=False, default=False)
+    protocol = Column(Enum(*PROTOCOLS.keys(), name='protocols_enum'),
+                      nullable=False, default='u')
+    client_os = Column(Enum(*CLIENT_OS.keys(), name='client_os_enum'),
+                       nullable=True)
     use_http_proxy = Column(String, nullable=True)
     disable_ipv6 = Column(Boolean, nullable=False, default=False)
 
@@ -425,6 +444,25 @@ class Profile(Base):
             return self.user.username + '/' + self.name
         else:
             return self.user.username
+
+    def get_vpn_remote_host(self, domain):
+        if self.gateway_id:
+            name = self.gateway.country + '-' + self.gateway.name
+        elif self.gateway_country:
+            name = self.gateway_country
+        else:
+            name = 'random'
+        return 'gw.' + name + domain
+
+    def get_vpn_remote(self, domain):
+        openvpn_proto = {'udp': 'udp', 'udpl': 'udp', 'tcp': 'tcp'}
+        openvpn_ports = {'udp': 1196,  'udpl': 1194,  'tcp': 443}
+
+        # remote <host> <port> <proto>
+        remote = self.get_vpn_remote_host(domain)
+        remote += ' ' + str(openvpn_ports[self.protocol])
+        remote += ' ' + openvpn_proto[self.protocol]
+        return remote
 
 
 class AlreadyUsedGiftCode(Exception):
