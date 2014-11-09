@@ -77,11 +77,14 @@
                         % else:
                             ${_('Random')}
                         % endif
-                        % if profile.force_tcp:
-                            [${_('TCP only')}]
-                        % endif
+                            (${profile.PROTOCOLS[profile.protocol]})
                         </li>
-                    <li>${_('OS')}: ${profile.client_os or _('Not set')}
+                    <li>${_('OS')}:
+                        % if profile.client_os:
+                            ${profile.CLIENT_OS[profile.client_os]}
+                        % else:
+                            ${_('Not set')}
+                        % endif
                         % if profile.disable_ipv6:
                             [${_('IPv6 disabled')}]
                         % endif

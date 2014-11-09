@@ -15,9 +15,13 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('profiles', sa.Column('client_os', sa.String(), nullable=True, server_default=None))
+    client_os_enum = sa.Enum('windows', 'android', 'ubuntu', 'osx', 'freebox', 'other', name='client_os_enum')
+    client_os_enum.create(op.get_bind(), checkfirst=False)
+    protocols_enum = sa.Enum('udp', 'tcp', 'udpl', name='protocols_enum')
+    protocols_enum.create(op.get_bind(), checkfirst=False)
+    op.add_column('profiles', sa.Column('client_os', client_os_enum, nullable=True))
+    op.add_column('profiles', sa.Column('protocol', protocols_enum, nullable=False, server_default='udp'))
     op.add_column('profiles', sa.Column('disable_ipv6', sa.Boolean(), nullable=False, server_default='false'))
-    op.add_column('profiles', sa.Column('force_tcp', sa.Boolean(), nullable=False, server_default='false'))
     op.add_column('profiles', sa.Column('gateway_country', sa.String(), nullable=True, server_default=None))
     op.add_column('profiles', sa.Column('gateway_id', sa.Integer(), nullable=True, server_default=None))
     op.add_column('profiles', sa.Column('use_http_proxy', sa.String(), nullable=True, server_default=None))
@@ -27,6 +31,9 @@ def downgrade():
     op.drop_column('profiles', 'use_http_proxy')
     op.drop_column('profiles', 'gateway_id')
     op.drop_column('profiles', 'gateway_country')
-    op.drop_column('profiles', 'force_tcp')
+    op.drop_column('profiles', 'protocol')
     op.drop_column('profiles', 'disable_ipv6')
     op.drop_column('profiles', 'client_os')
+    sa.Enum(name='client_os_enum').drop(op.get_bind(), checkfirst=False)
+    sa.Enum(name='protocols_enum').drop(op.get_bind(), checkfirst=False)
+

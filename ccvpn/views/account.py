@@ -212,6 +212,9 @@ def config(request):
     _ = request.translate
     settings = request.registry.settings
     domain = settings.get('net_domain', '')
+    if not domain.startswith('.'):
+        domain = '.' + domain
+
     gw_countries = [i[0] for i in DBSession.query(Gateway.country).all()]
 
     try:
@@ -226,44 +229,29 @@ def config(request):
                            .filter_by(uid=user.id) \
                            .filter_by(name=pname) \
                            .one()
-    except (KeyError, NoResultFound):
+    except (ValueError, KeyError, NoResultFound):
         return HTTPNotFound()
 
-    if profile.gateway_id:
-        gateway = 'gw.%s-%s' % (profile.gateway.country, profile.gateway.name)
-    elif profile.gateway_country:
-        gateway = 'gw.%s' % (profile.gateway_country)
-    else:
-        gateway = 'gw.random'
-
-    if not domain.startswith('.'):
-        gateway += '.'
-    gateway += domain
-
-
     # Use 'Other / GNU/Linux' as the default OS if no other is set
-    os = profile.client_os or 'other'
-
-    # These clients do not fully support OpenVPN config
-    # => force TCP, because we cannot try UDP first.
-    os_require_tcp = os == 'android' or os == 'ios'
-    force_tcp = profile.force_tcp or os_require_tcp
+    client_os = profile.client_os or 'other'
 
     params = {
-        'force_tcp': force_tcp,
-        'windows_dns': os == 'windows',
-        'resolvconf': os == 'ubuntu',
-        'ipv6': not profile.disable_ipv6,
-        'dhcp': os != 'freebox',
-        'http_proxy': profile.use_http_proxy,
-        'username': request.user.username,
         'profile': profile,
-        'gateway': gateway,
+        'remote': profile.get_vpn_remote(domain),
+        'use_fragment': (profile.protocol == 'udpl'),
+        'use_ipv6': (profile.client_os != 'freebox') and not profile.disable_ipv6,
+        'use_http_proxy': (profile.protocol == 'tcp'),
+        'use_resolvconf': (profile.client_os == 'ubuntu'),
         'openvpn_ca': openvpn_ca,
     }
 
     r = render_to_response('config.ovpn.mako', params, request=request)
-    r.content_type = 'application/x-openvpn-profile'
+
+    if 'plain' in request.GET:
+        r.content_type = 'text/plain'
+    else:
+        r.content_type = 'application/x-openvpn-profile'
+
     return r
 
 
@@ -365,14 +353,6 @@ def profiles_edit(request):
         'profile': profile,
         'edit_post_url': request.route_url('account_profiles_edit', id=profile.id),
         'gw_countries': set(i[0] for i in DBSession.query(Gateway.country).all()),
-        'oses': {
-            'windows': 'Windows',
-            'android': 'Android',
-            'ubuntu': 'Ubuntu',
-            'osx': 'OS X',
-            'freebox': 'Freebox',
-            'other': _('Other / GNU/Linux'),
-        },
     }
 
 @view_config(route_name='account_profiles_edit', permission='logged',
@@ -393,12 +373,14 @@ def profiles_edit_post(request):
         name = request.GET.get('name', '')
         client_os = request.POST['client_os']
         gateway = request.POST['gateway']
-        force_tcp = 'force_tcp' in request.POST
+        protocol = request.POST['protocol']
         disable_ipv6 = 'enable_ipv6' not in request.POST
         http_proxy = request.POST.get('use_http_proxy', '')
     except (KeyError, ValueError):
         return redirect
 
+    if protocol not in Profile.PROTOCOLS:
+        return redirect
 
     if name != profile.name:
         if not p.validate_name(profile_name):
@@ -414,7 +396,7 @@ def profiles_edit_post(request):
 
     profile.name = name
     profile.client_os = client_os
-    profile.force_tcp = force_tcp
+    profile.protocol = protocol
     profile.disable_ipv6 = disable_ipv6
     profile.use_http_proxy = http_proxy
 
