@@ -370,7 +370,7 @@ def profiles_edit_post(request):
                                                        id=profile.id))
 
     try:
-        name = request.GET.get('name', '')
+        name = request.POST.get('name', '')
         client_os = request.POST['client_os']
         gateway = request.POST['gateway']
         protocol = request.POST['protocol']
@@ -382,19 +382,20 @@ def profiles_edit_post(request):
     if protocol not in Profile.PROTOCOLS:
         return redirect
 
-    if name != profile.name:
-        if not p.validate_name(profile_name):
+    if profile.name and name and name != profile.name:
+        if not profile.validate_name(name):
             request.messages.error(_('Invalid name.'))
             return redirect
 
         # Check if the name is already used
         used = DBSession.query(Profile).filter_by(uid=request.user.id) \
-                        .filter_by(name=profile_name).first()
+                        .filter_by(name=name).first()
         if used:
             request.messages.error(_('Name already used.'))
             return redirect
 
-    profile.name = name
+        profile.name = name
+
     profile.client_os = client_os
     profile.protocol = protocol
     profile.disable_ipv6 = disable_ipv6

@@ -427,7 +427,7 @@ class Profile(Base):
 
     # OpenVPN config settings
     protocol = Column(Enum(*PROTOCOLS.keys(), name='protocols_enum'),
-                      nullable=False, default='u')
+                      nullable=False, default='udp')
     client_os = Column(Enum(*CLIENT_OS.keys(), name='client_os_enum'),
                        nullable=True)
     use_http_proxy = Column(String, nullable=True)
