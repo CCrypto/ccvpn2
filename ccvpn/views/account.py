@@ -476,11 +476,18 @@ def orders(request):
         page = 0
     offset = page * page_items
     orders = DBSession.query(Order).filter_by(uid=request.user.id) \
-                    .filter(Order.close_date != None) \
-                    .order_by(Order.start_date.desc()) \
-                    .limit(page_items).offset(offset)
-    return {'orders': orders, 'page': page, 'pages': pages}
 
+    now = datetime.datetime.now()
+
+    orders = orders.filter(
+        (Order.paid == True) |  # Order is paid
+        ((Order.paid == False) & (Order.close_date > now)) |  # Or not expired
+        ((Order.paid == False) & (Order.paid_amount > 0))  # Or not fully paid
+    )
+
+    orders = orders.order_by(Order.start_date.desc())
+    orders = orders.limit(page_items).offset(offset).all()
+    return {'orders': orders, 'page': page, 'pages': pages}
 
 
 @view_config(route_name='account_logs', permission='logged',
