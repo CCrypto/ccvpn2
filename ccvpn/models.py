@@ -520,6 +520,13 @@ class OrderNotPaid(Exception):
 
 
 class Order(Base):
+    """ Order
+
+    close_date: Expiration date of the order, mainly used to not display old
+        started orders.
+        NOT the date when the order is closed. (FIXME)
+    """
+
     __tablename__ = 'orders'
 
     class METHOD:
@@ -549,6 +556,14 @@ class Order(Base):
             return '€'
 
     def is_paid(self):
+        """ Check if the order has been paid, but should not be used instead
+        of the paid column, that stores the status of the order.
+        If an order has paid=False and is_paid() == True, it should not be
+        displayed as paid, and is still waiting to be processed.
+
+        TODO: Remove the paid column if it's not really useful and can lead to
+              database inconsistency (paid / is_paid())
+        """
         return self.paid_amount >= self.amount
 
     def close(self, force=False):
