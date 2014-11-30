@@ -41,7 +41,6 @@
                         (${order.amount} ${order.currency})
                     </td>
                     <td>${status_text(order) | n}</td>
-                    <td>${order.close_date}</td>
                 </tr>
             % endfor
         </tbody>
