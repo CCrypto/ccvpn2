@@ -75,7 +75,7 @@ def get_uptime_factory(settings):
     base = settings.get('nagios.url')
     user = settings.get('nagios.user')
     password = settings.get('nagios.password')
-    services = settings.get('nagios.service').split(',')
+    services = settings.get('nagios.service', '').split(',')
     services = [s.strip() for s in services]
     if base:
         try:
