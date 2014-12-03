@@ -100,6 +100,9 @@ def setup_routes(config):
     a('order_callback', '/order/callback/{hexid:[a-f0-9]+}')
     a('config_profile', '/config/ccrypto-{username}-{pname}.ovpn')
     a('config', '/config/ccrypto-{username}.ovpn')
+    a('tickets_list', '/tickets/')
+    a('tickets_new', '/tickets/new')
+    a('tickets_view', '/tickets/view/{id:[0-9]+}')
 
     # Admin related
     #a('admin_home', '/admin/')
