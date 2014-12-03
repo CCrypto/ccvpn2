@@ -286,6 +286,9 @@ class User(Base):
     pw_reset_tokens = relationship('PasswordResetToken', backref='user')
     sessions = relationship('VPNSession', backref='user', lazy='dynamic')
 
+    tickets = relationship('Ticket', backref='user')
+    ticketmessages = relationship('TicketMessage', backref='user')
+
     username_re = re.compile('^[a-zA-Z0-9_-]{2,32}$')
     email_re = re.compile('^.+@.+$')
 
@@ -666,6 +669,33 @@ class VPNSession(Base):
         return '<VPNSession %d gw %d %s user %d, %s -> %s>' % (
             self.id, self.gateway_id, self.gateway_version, self.user_id,
             self.connect_date, self.disconnect_date)
+
+
+class Ticket(Base):
+    __tablename__ = 'tickets'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    create_date = Column(DateTime, default=datetime.now, nullable=False)
+    closed = Column(Boolean, default=False, nullable=False)
+    close_date = Column(DateTime, nullable=True)
+    subject = Column(String, nullable=False)
+
+    messages = relationship('TicketMessage', backref='ticket', order_by='TicketMessage.create_date')
+
+    def close(self):
+        """ Close ticket and update close date """
+        self.closed = True
+        self.close_date = datetime.now()
+
+
+class TicketMessage(Base):
+    __tablename__ = 'ticket_messages'
+    id = Column(Integer, primary_key=True)
+    ticket_id = Column(ForeignKey('tickets.id'), nullable=False)
+    user_id = Column(ForeignKey('users.id'), nullable=False)
+    create_date = Column(DateTime, default=datetime.now, nullable=False)
+    content = Column(Text, nullable=False)
+
 
 
 def get_user(request):

@@ -266,7 +266,8 @@ section.centeredpage article form{
     text-align: center;
     padding: 0px 20px 20px;
 }
-section.centeredpage article form input{
+section.centeredpage article form input,
+section.centeredpage article form textarea{
     margin: auto;
     width: 80%;
 }
@@ -321,7 +322,8 @@ section form label {
     font-weight: bold;
     color: #1c619a;
 }
-section form input {
+section form input,
+section form textarea {
     border: 1px solid rgb(218, 223, 225);
     border-radius: 3px;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
@@ -348,9 +350,13 @@ section form.vert label {
     margin-top: 24px;
     margin-bottom: 6px;
 }
-section form.vert input {
+section form.vert input,
+section form.vert textarea {
     display: block;
     padding: 8px 5px;
+}
+section form.vert textarea {
+    height: 10em;
 }
 section form.vert .inputhelp {
     display: inline-block;
@@ -361,6 +367,15 @@ section form.vert .inputhelp {
 section form.vert input[type=submit]{
     margin-top: 20px;
     padding: 9px 30px;
+}
+section form.vert input[type=checkbox] {
+    box-sizing: content-box;
+    display: inline;
+    height: 15px;
+    margin: 13px 0 0 180px;
+}
+section form.vert input[type=checkbox] + label {
+    display: inline;
 }
 
 section form.inline {
@@ -727,6 +742,25 @@ table.admin-list tbody tr:nth-child(even) {
 p.inputinfo {
     font-size: 0.8em;
     display: inline;
+}
+
+
+.ticket-message-owned {
+    background: #eee;
+}
+
+.ticket-message-header {
+    font-style: italic;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+.ticket-message-reply textarea {
+    width: 80%;
+    margin: auto;
+}
+.ticket-message-reply input[type=submit] {
+    margin: auto;
 }
 
 
