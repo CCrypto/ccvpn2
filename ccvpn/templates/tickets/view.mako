@@ -12,7 +12,13 @@
         <% owned = 'ticket-message-owned' if message.user_id == ticket.user_id else '' %>
         <article class="ticket-message ${owned}">
             <p class="ticket-message-header">
-                Posted by ${message.user.username}
+                Posted by
+                % if request.user.is_support:
+                    <a href="${admin_url(request, message.user)}">${message.user.username}</a>
+                % else:
+                    ${message.user.username}
+                % endif
+                
                 on ${date_fmt(message.create_date)|n}.
             </p>
             <p class="ticket-message-content">
