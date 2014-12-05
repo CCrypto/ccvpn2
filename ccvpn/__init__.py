@@ -14,11 +14,13 @@ def date_fmt(d):
     """ Format datetime """
     return d.strftime('%Y-%m-%d&nbsp;%H:%M:%S')
 
+
 def timedelta_fmt(td):
     std = str(td)
     # we dont really care about microseconds
     if '.' in std:
         return std.split('.')[0]
+
 
 def bytes_fmt(bps):
     """ Format bytes """
@@ -30,6 +32,14 @@ def bytes_fmt(bps):
             unit = m + unit
             break
     return '{:.02f}'.format(bps) + unit
+
+
+def admin_url(request, obj):
+    if isinstance(obj, User):
+        traverse = ('users', obj.id)
+    else:
+        return None
+    return request.route_url('admin_traversal', traverse=traverse)
 
 
 class AuthenticationPolicy(object):
@@ -196,7 +206,7 @@ def main(global_config, **settings):
         settings['mako.directories'] = 'ccvpn:templates/'
     if not 'mako.imports' in settings:
         settings['mako.imports'] = '''
-            from ccvpn import date_fmt, timedelta_fmt, bytes_fmt
+            from ccvpn import date_fmt, timedelta_fmt, bytes_fmt, admin_url
             from ccvpn.filters import check
         '''
 

@@ -35,6 +35,9 @@
                     <td>#${_('ID')}</td>
                     <td>${_('Subject')}</td>
                     <td>${_('Status')}</td>
+                    % if request.user.is_support:
+                        <td>${_('User')}</td>
+                    % endif
                 </tr>
             </thead>
             <tbody>
@@ -44,6 +47,9 @@
                         <td>#${ticket.id}</td>
                         <td><a href="${url}">${ticket.subject}</a></td>
                         <td>${status(ticket)}</td>
+                        % if request.user.is_support:
+                            <td><a href="${admin_url(request, ticket.user)}">${ticket.user.username}</a><a/td>
+                        % endif
                     </tr>
                 % endfor
             </tbody>

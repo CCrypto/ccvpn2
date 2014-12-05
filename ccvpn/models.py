@@ -299,6 +299,10 @@ class User(Base):
         super().__init__(*args, **kwargs)
 
     @hybrid_property
+    def is_support(self):
+        return self.is_admin
+
+    @hybrid_property
     def is_paid(self):
         return self.paid_until is not None and self.paid_until > datetime.now()
 
