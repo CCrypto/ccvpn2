@@ -4,11 +4,15 @@
 <%
     menuItems = [
         [_('Home'), '/'],
-        [_('Help'), '/page/help'],
-        [_('Status'), '/status'],
+        [_('Docs'), '/page/help'],
     ]
+
+    if request.user:
+        menuItems.append([_('Support'), '/tickets/'])
+
     if request.user and request.user.is_admin:
         menuItems.append([_('Admin'), '/admin/'])
+
     path = request.path
     for k in menuItems:
         if path == k[1] or (k[1] != '/' and k[1][-1] == '/' and path.startswith(k[1])):
@@ -63,8 +67,9 @@
             <p>
                 <a href="http://ccrypto.org">Cognitive Cryptography</a>
                 % if use_https and request.host_port != str(ssl_port):
-                    // <a href="${ssl_url}"><b>${_('Secure version')}</b></a>
+                    // <a href="${ssl_url}"><b>${_('Use HTTPS')}</b></a>
                 % endif
+                // <a href="/status">${_('Status')}</a>
                 % if available_languages:
                     |
                     % for l in available_languages.split():

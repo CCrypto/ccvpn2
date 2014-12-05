@@ -14,7 +14,7 @@
 
         # Staff replied
         date = last_message.create_date
-        return _('Last reply: ${date}', mappings={'date': date})
+        return _('Last reply: ${date}', mapping={'date': date})
 %>
 
 <section class="centeredpage">
