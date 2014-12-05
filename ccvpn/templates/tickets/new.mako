@@ -12,6 +12,9 @@
         <label for="in_message">${_('Message')}</label>
         <textarea id="in_message" name="message" required="required">${message or ''}</textarea>
 
+        <input type="checkbox" name="subscribe" id="in_subscribe" />
+        <label for="in_sub">${_('Subscribe')}</label>
+
         <input type="submit" value="${_('Open Ticket')}" />
     </form>
 </article>

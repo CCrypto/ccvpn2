@@ -28,11 +28,17 @@
             % else:
                 <label for="in_message">Reply to ticket:</label>
             % endif
-            <textarea id="in_message" name="message" required="required"></textarea>
+            <textarea id="in_message" name="message"></textarea>
 
             % if not ticket.closed:
                 <input type="checkbox" name="close" id="in_close" />
                 <label for="in_close">${_('Close ticket')}</label>
+            % endif
+
+            % if request.user.id == ticket.user_id:
+                <input type="checkbox" name="subscribe" id="in_subscribe"
+                       ${'checked' if ticket.notify_owner else ''} />
+                <label for="in_sub">${_('Subscribe')}</label>
             % endif
 
             <input type="submit" value="${_('Update')}" />
