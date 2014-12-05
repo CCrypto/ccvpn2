@@ -679,6 +679,7 @@ class Ticket(Base):
     closed = Column(Boolean, default=False, nullable=False)
     close_date = Column(DateTime, nullable=True)
     subject = Column(String, nullable=False)
+    notify_owner = Column(Boolean, default=False, nullable=False)
 
     messages = relationship('TicketMessage', backref='ticket', order_by='TicketMessage.create_date')
 
@@ -695,7 +696,6 @@ class TicketMessage(Base):
     user_id = Column(ForeignKey('users.id'), nullable=False)
     create_date = Column(DateTime, default=datetime.now, nullable=False)
     content = Column(Text, nullable=False)
-
 
 
 def get_user(request):

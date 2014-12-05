@@ -372,10 +372,12 @@ section form.vert input[type=checkbox] {
     box-sizing: content-box;
     display: inline;
     height: 15px;
-    margin: 13px 0 0 180px;
+    width: 15px;
+    margin: 13px 0 0 0;
 }
 section form.vert input[type=checkbox] + label {
     display: inline;
+    margin-top: 0;
 }
 
 section form.inline {

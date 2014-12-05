@@ -51,6 +51,7 @@ def tickets_view(request):
     try:
         body = request.POST['message']
         close = 'close' in request.POST
+        subscribe = 'subscribe' in request.POST
     except KeyError:
         return redirect
 
@@ -77,6 +78,21 @@ def tickets_view(request):
             # We re-open it
             ticket.closed = False
 
+        if ticket.notify_owner and ticket.user_id != message.user_id:
+            mailer = get_mailer(request)
+            body = render('mail/tickets_updated.mako', {
+                'user': ticket.user,
+                'ticket': ticket,
+                'url': request.route_url('tickets_view', id=ticket.id),
+            }, request=request)
+            message = Message(subject=_('CCVPN: Ticket update'),
+                              recipients=[ticket.user.email],
+                              body=body)
+            mailer.send(message)
+
+    if request.user.id == ticket.user_id:
+        ticket.notify_owner = subscribe
+
     if not ticket.closed and close:
         ticket.close()
 
@@ -94,6 +110,7 @@ def tickets_new(request):
     try:
         subject = request.POST['subject']
         body = request.POST['message']
+        subscribe = 'subscribe' in request.POST
     except KeyError:
         return {}
 
@@ -117,6 +134,7 @@ def tickets_new(request):
     ticket = Ticket()
     ticket.user_id = request.user.id
     ticket.subject = subject
+    ticket.notify_owner = subscribe
 
     DBSession.add(ticket)
     DBSession.flush()
