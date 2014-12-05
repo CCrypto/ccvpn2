@@ -1,30 +1,25 @@
-"""Pylons bootstrap environment.
-
-Place 'pylons_config_file' into alembic.ini, and the application will
-be loaded from there.
-
-"""
+from __future__ import with_statement
 from alembic import context
-from paste.deploy import loadapp
+from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
-from sqlalchemy.engine.base import Engine
 
-from ccvpn import models
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
 
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
 
-try:
-    # if pylons app already in, don't create a new app
-    from pylons import config as pylons_config
-    pylons_config['__file__']
-except:
-    config = context.config
-    # can use config['__file__'] here, i.e. the Pylons
-    # ini file, instead of alembic.ini
-    config_file = config.get_main_option('pylons_config_file')
-    fileConfig(config_file)
-    wsgi_app = loadapp('config:%s' % config_file, relative_to='.')
+# Load models
+from ccvpn.models import Base
+target_metadata = Base.metadata
 
-target_metadata = models.Base.metadata
+# We get database settings from the same section as pyramid, instead of the
+# default 'alembic' section. Will not be used for other settings.
+# db_ini_section = config.config_ini_section
+db_ini_section = 'app:main'
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -38,8 +33,9 @@ def run_migrations_offline():
     script output.
 
     """
-    context.configure(
-                url=meta.engine.url)
+    url = config.get_main_option('sqlalchemy.url', db_ini_section)
+    context.configure(url=url, target_metadata=target_metadata)
+
     with context.begin_transaction():
         context.run_migrations()
 
@@ -51,19 +47,12 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    engine = models.Base.metadata.bind
+    engine = engine_from_config(config.get_section(db_ini_section),
+                                prefix='sqlalchemy.',
+                                poolclass=pool.NullPool)
 
-    if isinstance(engine, Engine):
-        connection = engine.connect()
-    else:
-        raise Exception(
-            'Expected engine instance got %s instead' % type(engine)
-        )
-
-    context.configure(
-                connection=connection,
-                target_metadata=target_metadata
-                )
+    connection = engine.connect()
+    context.configure(connection=connection, target_metadata=target_metadata)
 
     try:
         with context.begin_transaction():
@@ -71,7 +60,9 @@ def run_migrations_online():
     finally:
         connection.close()
 
+
 if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
