@@ -119,9 +119,8 @@
     </div>
 
     <footer>
-        <p>Copyleft 2013 <a href="//ccrypto.org/">Cognitive Cryptography</a>
+        <p><a href="//ccrypto.org/">Cognitive Cryptography</a>
         - <a href="/page/tos">${_('ToS')}</a>
-        - <a href="/page/support">${_('Abuse report')}</a>
         - <a href="https://github.com/CCrypto/ccvpn">${_('It\'s open-source!')}</a>
         </p>
     </footer>
