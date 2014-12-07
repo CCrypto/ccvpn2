@@ -7,7 +7,7 @@ la config. Vous pouvez le renommer en ccrypto.conf.
 N-M ne supporte pas certaines options récentes d'OpenVPN, et ne peut simplement
 pas se connecter à notre VPN.
 
-Si vous avez une question, n'hésitez pas à [nous contacter](/page/support).
+Si vous avez une question, n'hésitez pas à [nous contacter](/page/help).
 
 
 Fedora 16 ou plus récent

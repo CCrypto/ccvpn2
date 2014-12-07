@@ -82,7 +82,7 @@ Remplacez [nom] par le nom de votre interface TAP.
 ### Ça ne fonctionne toujours pas ?
 
 Si vous ne pouvez toujours pas utiliser le VPN, n'hésitez pas à
-[nous contacter](/page/support).
+[nous contacter](/page/help).
 Joignez les logs d'OpenVPN à votre message, pour nous aider à trouver
 le problème au plus vite.
 

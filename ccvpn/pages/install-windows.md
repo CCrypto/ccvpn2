@@ -84,7 +84,7 @@ Replace [name] by your TAP adapter name.
 
 ### Still doesn't work
 
-If you still cannot use the VPN, please go to the [Support page](/page/support)
+If you still cannot use the VPN, please go to the [Support page](/page/help)
 and we'll do our best to help you.  
 Please also send us your OpenVPN logs.
 

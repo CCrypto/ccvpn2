@@ -13,7 +13,7 @@ nom de compte et votre mot de passe, pour qu'ils ne vous soient pas demandé
 
 Vous pouvez maintenant vous connecter au VPN.
 
-Si vous avez une question, n'hésitez pas à [nous contacter](/page/support).
+Si vous avez une question, n'hésitez pas à [nous contacter](/page/help).
 
 [openvpn_android]: https://play.google.com/store/apps/details?id=de.blinkt.openvpn
 

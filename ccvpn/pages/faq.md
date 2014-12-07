@@ -45,7 +45,7 @@ We only support OpenVPN for now.
 
 ### Which payment methods are supported?
 We support Paypal and Bitcoin.  
-Feel free to ask [the support](/page/support) if you need any other method.
+Feel free to ask [the support](/page/help) if you need any other method.
 
 ### Is it open-source?
 Yes! Our VPN is made with OpenVPN.  
@@ -77,7 +77,7 @@ Account
 
 ### Can I have a trial account?
 Yes, we provide 7 days trial accounts.  
-You just have to [sign up](/account/signup) and [contact us](/page/support).
+You just have to [sign up](/account/signup) and [contact us](/page/help).
 
 ### Can I use my account on multiple machines?
 Yes, you can! Up to 10 times!  
@@ -85,7 +85,7 @@ You have to create a profile for each machine to be able to use
 them at the same time.
 
 ### How can I delete my account?
-Contact [the support](/page/support).
+Contact [the support](/page/help).
 
 
 Legal
