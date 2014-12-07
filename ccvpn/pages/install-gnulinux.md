@@ -8,7 +8,7 @@ N-M ignores some of OpenVPN's config options, and simply cannot connect to
 our VPN.  
 We are still waiting for this issue to be fixed.
 
-If you have any questions, go to the [Support page](/page/support).
+If you have any questions, go to the [Support page](/page/help).
 
 
 Fedora 16 or later

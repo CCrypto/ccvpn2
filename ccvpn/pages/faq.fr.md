@@ -47,7 +47,7 @@ Notre VPN est fait avec OpenVPN.
 
 ### Quelles méthodes de payement sont disponibles ?
 Vous pouvez payer par Paypal ou Stripe (carte), ou encore avec des Bitcoins.  
-Vous pouvez [nous contacter](/page/support) si vous avez besoin d'un autre moyen
+Vous pouvez [nous contacter](/page/help) si vous avez besoin d'un autre moyen
 de payement.
 
 ### Est-ce Libre ?
@@ -77,7 +77,7 @@ Comptes
 
 ### Puis-je avoir un compte de test gratuit ?
 Oui, pendant 7 jours.
-Vous n'avez qu'à [créer un compte](/account/signup) et [nous contacter](/page/support).
+Vous n'avez qu'à [créer un compte](/account/signup) et [nous contacter](/page/help).
 
 ### Puis-je utiliser mon compte sur plusieurs machines ?
 Oui, vous pouvez utiliser votre compte avec un maximum de 10 connexions
@@ -86,7 +86,7 @@ Vous devrez cependant créer un profile pour chacune des
 connexions.
 
 ### Comment supprimer mon compte ?
-[Contactez nous](/page/support).
+[Contactez nous](/page/help).
 
 
 Légal

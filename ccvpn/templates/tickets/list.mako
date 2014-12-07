@@ -21,12 +21,13 @@
 <article>
     <h1>${_('Tickets')}</h1>
 
-    <p><a href="/tickets/new">${_('New Ticket')}</a></p>
+    <p><a href="/tickets/new">${_('New Ticket')}</a>
     % if hide_closed:
-        <p><a href="/tickets/">${_('Show closed tickets')}</a></p>
+        - <a href="/tickets/">${_('Show closed tickets')}</a>
     % else:
-        <p><a href="/tickets/?hide_closed">${_('Hide closed tickets')}</a></p>
+        - <a href="/tickets/?hide_closed">${_('Hide closed tickets')}</a>
     % endif
+    </p>
 
     % if tickets:
         <table class="admin-list">

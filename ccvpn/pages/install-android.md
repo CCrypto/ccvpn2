@@ -12,7 +12,7 @@ want to be asked every time.
 
 You can now connect to that profile.
 
-If you have any questions, go to the [Support page](/page/support).
+If you have any questions, go to the [Support page](/page/help).
 
 [openvpn_android]: https://play.google.com/store/apps/details?id=de.blinkt.openvpn
 
