@@ -78,7 +78,7 @@ def tickets_view(request):
             # We re-open it
             ticket.closed = False
 
-        if ticket.notify_owner and ticket.user_id != message.user_id:
+        if ticket.notify_owner and ticket.user_id != message.user_id and ticket.user.email:
             mailer = get_mailer(request)
             body = render('mail/tickets_updated.mako', {
                 'user': ticket.user,
