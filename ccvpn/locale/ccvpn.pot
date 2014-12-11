@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the ccvpn project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: ccvpn 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2014-11-02 21:47+0100\n"
+"POT-Creation-Date: 2014-12-11 10:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,7 +97,7 @@ msgstr ""
 msgid "Even on Youtube."
 msgstr ""
 
-#: ccvpn/templates/home.mako:64 ccvpn/templates/layout.mako:82
+#: ccvpn/templates/home.mako:64 ccvpn/templates/layout.mako:87
 #: ccvpn/templates/signup.mako:6 ccvpn/templates/signup.mako:23
 msgid "Sign up"
 msgstr ""
@@ -144,43 +143,44 @@ msgid "Home"
 msgstr ""
 
 #: ccvpn/templates/layout.mako:7
-msgid "Help"
+msgid "Docs"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:8 ccvpn/templates/status.mako:5
-msgid "Status"
+#: ccvpn/templates/layout.mako:11 ccvpn/templates/account/index.mako:18
+msgid "Support"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:11
+#: ccvpn/templates/layout.mako:14
 msgid "Admin"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:66
-msgid "Secure version"
+#: ccvpn/templates/layout.mako:70
+msgid "Use HTTPS"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:78
+#: ccvpn/templates/layout.mako:72 ccvpn/templates/status.mako:5
+#: ccvpn/templates/account/orders.mako:33 ccvpn/templates/tickets/list.mako:38
+msgid "Status"
+msgstr ""
+
+#: ccvpn/templates/layout.mako:83
 msgid "Your account"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:79
+#: ccvpn/templates/layout.mako:84
 msgid "Logout"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:83 ccvpn/templates/login.mako:6
+#: ccvpn/templates/layout.mako:88 ccvpn/templates/login.mako:6
 #: ccvpn/templates/login.mako:14
 msgid "Log in"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:118
+#: ccvpn/templates/layout.mako:123
 msgid "ToS"
 msgstr ""
 
-#: ccvpn/templates/layout.mako:119
-msgid "Abuse report"
-msgstr ""
-
-#: ccvpn/templates/layout.mako:120
+#: ccvpn/templates/layout.mako:124
 msgid "It's open-source!"
 msgstr ""
 
@@ -335,7 +335,7 @@ msgstr ""
 msgid "ISP"
 msgstr ""
 
-#: ccvpn/templates/status.mako:29
+#: ccvpn/templates/status.mako:29 ccvpn/templates/account/logs.mako:15
 msgid "Bandwidth"
 msgstr ""
 
@@ -351,7 +351,8 @@ msgstr ""
 msgid "on 31 days"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:8
+#: ccvpn/templates/account/index.mako:8 ccvpn/templates/account/layout.mako:4
+#: ccvpn/templates/account/layout.mako:14
 msgid "Account"
 msgstr ""
 
@@ -367,12 +368,8 @@ msgstr ""
 msgid "You can request a free 7 days trial here"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:18
-msgid "Support"
-msgstr ""
-
 #: ccvpn/templates/account/index.mako:23 ccvpn/templates/account/index.mako:39
-#: ccvpn/templates/account/index.mako:118 ccvpn/templates/account/index.mako:128
+#: ccvpn/templates/account/index.mako:134 ccvpn/templates/account/index.mako:144
 msgid "Add"
 msgstr ""
 
@@ -421,90 +418,159 @@ msgstr ""
 msgid "VPN username"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:66
-#: ccvpn/templates/account/profiles_edit.mako:21
-msgid "Gateway"
-msgstr ""
-
 #: ccvpn/templates/account/index.mako:68
-msgid "Only in country"
-msgstr ""
-
-#: ccvpn/templates/account/index.mako:70
-msgid "Only"
+msgid "default profile"
 msgstr ""
 
 #: ccvpn/templates/account/index.mako:72
-#: ccvpn/templates/account/profiles_edit.mako:23
+#: ccvpn/templates/account/profiles_edit.mako:24
+msgid "Gateway"
+msgstr ""
+
+#: ccvpn/templates/account/index.mako:74
+msgid "Only in country"
+msgstr ""
+
+#: ccvpn/templates/account/index.mako:76
+msgid "Only"
+msgstr ""
+
+#: ccvpn/templates/account/index.mako:78
+#: ccvpn/templates/account/profiles_edit.mako:26
 msgid "Random"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:75
-msgid "TCP only"
-msgstr ""
-
-#: ccvpn/templates/account/index.mako:78
-#: ccvpn/templates/account/profiles_edit.mako:10
+#: ccvpn/templates/account/index.mako:82
+#: ccvpn/templates/account/profiles_edit.mako:13
 msgid "OS"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:78
+#: ccvpn/templates/account/index.mako:86
 msgid "Not set"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:80
+#: ccvpn/templates/account/index.mako:89
 msgid "IPv6 disabled"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:84
+#: ccvpn/templates/account/index.mako:93
 msgid "Use HTTP proxy"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:99
+#: ccvpn/templates/account/index.mako:114
 msgid "Delete"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:104
+#: ccvpn/templates/account/index.mako:120
 msgid "Edit"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:108
+#: ccvpn/templates/account/index.mako:124
 msgid "Download config file"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:113
+#: ccvpn/templates/account/index.mako:129
 msgid "Add Profile"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:117 ccvpn/templates/account/index.mako:127
+#: ccvpn/templates/account/index.mako:133 ccvpn/templates/account/index.mako:143
 msgid "Profile name"
 msgstr ""
 
-#: ccvpn/templates/account/index.mako:123
+#: ccvpn/templates/account/index.mako:139
 msgid "You have no profiles for now. Create one to start using the VPN"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:7
+#: ccvpn/templates/account/layout.mako:5 ccvpn/templates/account/settings.mako:5
+msgid "Settings"
+msgstr ""
+
+#: ccvpn/templates/account/layout.mako:8 ccvpn/templates/account/orders.mako:26
+msgid "Subscription"
+msgstr ""
+
+#: ccvpn/templates/account/layout.mako:9
+msgid "VPN Logs"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:4
+msgid "Logs"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:6
+msgid "Literally everything we need to keep about you."
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:11 ccvpn/templates/account/orders.mako:31
+msgid "Date"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:12
+msgid "Duration"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:13
+msgid "Client IP"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:14
+msgid "Shared IP"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:22
+msgid "Active"
+msgstr ""
+
+#: ccvpn/templates/account/logs.mako:23 ccvpn/templates/account/logs.mako:24
+#: ccvpn/templates/account/logs.mako:28
+msgid "unknown"
+msgstr ""
+
+#: ccvpn/templates/account/orders.mako:7
+msgid "Paid"
+msgstr ""
+
+#: ccvpn/templates/account/orders.mako:9
+msgid "Waiting"
+msgstr ""
+
+#: ccvpn/templates/account/orders.mako:19
+msgid "paid ${amount}"
+msgstr ""
+
+#: ccvpn/templates/account/orders.mako:32
+msgid "Value"
+msgstr ""
+
+#: ccvpn/templates/account/orders.mako:40
+msgid "days"
+msgstr ""
+
+#: ccvpn/templates/account/profiles_edit.mako:9
 msgid "Profile Name"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:29
+#: ccvpn/templates/account/profiles_edit.mako:32
 msgid "Country"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:34
-msgid "Force TCP?"
+#: ccvpn/templates/account/profiles_edit.mako:37
+msgid "Protocol"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:37
+#: ccvpn/templates/account/profiles_edit.mako:47
 msgid "help_tcp_usage"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:39
+#: ccvpn/templates/account/profiles_edit.mako:49
 msgid "Enable IPv6?"
 msgstr ""
 
-#: ccvpn/templates/account/profiles_edit.mako:46
+#: ccvpn/templates/account/profiles_edit.mako:53
+msgid "Use HTTP Proxy?"
+msgstr ""
+
+#: ccvpn/templates/account/profiles_edit.mako:56
 msgid "Save profile"
 msgstr ""
 
@@ -514,6 +580,66 @@ msgstr ""
 
 #: ccvpn/templates/account/settings.mako:17
 msgid "Save"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:7 ccvpn/templates/tickets/view.mako:7
+msgid "Closed"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:13
+msgid "Open"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:17
+msgid "Last reply: ${date}"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:22
+msgid "Tickets"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:24 ccvpn/templates/tickets/new.mako:6
+msgid "New Ticket"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:26
+msgid "Show closed tickets"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:28
+msgid "Hide closed tickets"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:36
+msgid "ID"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:37 ccvpn/templates/tickets/new.mako:9
+msgid "Subject"
+msgstr ""
+
+#: ccvpn/templates/tickets/list.mako:40
+msgid "User"
+msgstr ""
+
+#: ccvpn/templates/tickets/new.mako:12
+msgid "Message"
+msgstr ""
+
+#: ccvpn/templates/tickets/new.mako:16 ccvpn/templates/tickets/view.mako:47
+msgid "Subscribe"
+msgstr ""
+
+#: ccvpn/templates/tickets/new.mako:18
+msgid "Open Ticket"
+msgstr ""
+
+#: ccvpn/templates/tickets/view.mako:41
+msgid "Close ticket"
+msgstr ""
+
+#: ccvpn/templates/tickets/view.mako:50
+msgid "Update"
 msgstr ""
 
 #: ccvpn/views/account.py:51
@@ -528,87 +654,83 @@ msgstr ""
 msgid "Logged out."
 msgstr ""
 
-#: ccvpn/views/account.py:84
+#: ccvpn/views/account.py:86
 msgid "Invalid username."
 msgstr ""
 
-#: ccvpn/views/account.py:86 ccvpn/views/account.py:173 ccvpn/views/account.py:447
+#: ccvpn/views/account.py:88 ccvpn/views/account.py:177 ccvpn/views/account.py:436
 msgid "Invalid password."
 msgstr ""
 
-#: ccvpn/views/account.py:88 ccvpn/views/account.py:454
+#: ccvpn/views/account.py:90 ccvpn/views/account.py:443
 msgid "Invalid email address."
 msgstr ""
 
-#: ccvpn/views/account.py:90 ccvpn/views/account.py:450
+#: ccvpn/views/account.py:92 ccvpn/views/account.py:439
 msgid "Both passwords do not match."
 msgstr ""
 
-#: ccvpn/views/account.py:96
+#: ccvpn/views/account.py:98
 msgid "Username already registered."
 msgstr ""
 
-#: ccvpn/views/account.py:98 ccvpn/views/account.py:462
+#: ccvpn/views/account.py:100 ccvpn/views/account.py:451
 msgid "E-mail address already registered."
 msgstr ""
 
-#: ccvpn/views/account.py:128
+#: ccvpn/views/account.py:132
 msgid "Unknown username."
 msgstr ""
 
-#: ccvpn/views/account.py:132
+#: ccvpn/views/account.py:136
 msgid "No e-mail address associated with username."
 msgstr ""
 
-#: ccvpn/views/account.py:146
+#: ccvpn/views/account.py:150
 msgid "CCVPN: Password reset request"
 msgstr ""
 
-#: ccvpn/views/account.py:150
+#: ccvpn/views/account.py:154
 msgid "We sent a reset link. Check your emails."
 msgstr ""
 
-#: ccvpn/views/account.py:162
+#: ccvpn/views/account.py:166
 msgid "Unknown password reset token."
 msgstr ""
 
-#: ccvpn/views/account.py:184
+#: ccvpn/views/account.py:188
 msgid "CCVPN: Password changed"
 msgstr ""
 
-#: ccvpn/views/account.py:189
+#: ccvpn/views/account.py:193
 msgid "You have changed the password for ${user}."
 msgstr ""
 
-#: ccvpn/views/account.py:191
+#: ccvpn/views/account.py:195
 msgid "You can now log in."
 msgstr ""
 
-#: ccvpn/views/account.py:275
-msgid "Awesome VPN! 2€/0.005BTC per month, with a free 7 days trial!"
+#: ccvpn/views/account.py:268
+msgid "Awesome VPN! 2â¬/0.005BTC per month, with a free 7 days trial!"
 msgstr ""
 
-#: ccvpn/views/account.py:304 ccvpn/views/account.py:399
+#: ccvpn/views/account.py:297 ccvpn/views/account.py:387
 msgid "Invalid name."
 msgstr ""
 
-#: ccvpn/views/account.py:311 ccvpn/views/account.py:406
+#: ccvpn/views/account.py:304 ccvpn/views/account.py:394
 msgid "Name already used."
 msgstr ""
 
-#: ccvpn/views/account.py:318
+#: ccvpn/views/account.py:311
 msgid "You have too many profiles."
 msgstr ""
 
-#: ccvpn/views/account.py:339
+#: ccvpn/views/account.py:333
 msgid "Unknown profile."
 msgstr ""
 
-#: ccvpn/views/account.py:368
-msgid "Other / GNU/Linux"
-msgstr ""
-
-#: ccvpn/views/account.py:425 ccvpn/views/account.py:470
+#: ccvpn/views/account.py:414 ccvpn/views/account.py:459
 msgid "Saved!"
 msgstr ""
 
@@ -622,5 +744,25 @@ msgstr ""
 
 #: ccvpn/views/order.py:29
 msgid "Gift code already used."
+msgstr ""
+
+#: ccvpn/views/tickets.py:62 ccvpn/views/tickets.py:125
+msgid "Message empty"
+msgstr ""
+
+#: ccvpn/views/tickets.py:64 ccvpn/views/tickets.py:127
+msgid "Message too long"
+msgstr ""
+
+#: ccvpn/views/tickets.py:88
+msgid "CCVPN: Ticket update"
+msgstr ""
+
+#: ccvpn/views/tickets.py:120
+msgid "Subject empty"
+msgstr ""
+
+#: ccvpn/views/tickets.py:122
+msgid "Subject too long"
 msgstr ""
 
