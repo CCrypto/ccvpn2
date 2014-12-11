@@ -1,46 +1,23 @@
 from sqlalchemy import (
-    TypeDecorator, Column, ForeignKey, Enum,
+    Column, ForeignKey, Enum,
     Integer, Float, DateTime, Boolean, BigInteger,
-    String, UnicodeText, Text, LargeBinary, Interval,
+    String, Text, LargeBinary, Interval,
     func
 )
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.mutable import Mutable
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.dialects import postgresql  # INET
 from sqlalchemy.sql.expression import true, false
-from zope.sqlalchemy import ZopeTransactionExtension
 from datetime import datetime, timedelta
-import json
 import random
-import logging
 import re
 import hashlib
-import requests
-import socket
-from beaker import cache
-from urllib.parse import urlencode
-from urllib.request import urlopen
 
-log = logging.getLogger(__name__)
+from .base import Base, DBSession
+from .types import MutableDict, JSONEncodedDict
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension(keep_session=False)))
+
 prng = random.SystemRandom()
-
-
-class Base(object):
-    @classmethod
-    def one(cls, **kwargs):
-        return DBSession.query(cls).filter_by(**kwargs).one()
-
-    @classmethod
-    def all(cls, **kwargs):
-        return DBSession.query(cls).filter_by(**kwargs).all()
-
-
-Base = declarative_base(cls=Base)
 
 
 def random_access_token():
@@ -57,208 +34,6 @@ def random_gift_code():
 
 def random_bytes(length):
     return bytearray([prng.randint(0, 0xff) for n in range(length)])
-
-
-class JSONEncodedDict(TypeDecorator):
-    impl = UnicodeText
-
-    def process_bind_param(self, value, dialect):
-        if value:
-            return json.dumps(value)
-        else:
-            return None
-
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            return json.loads(value)
-        else:
-            return dict()
-
-
-class MutableDict(Mutable, dict):
-    @classmethod
-    def coerce(cls, key, value):
-        "Convert plain dictionaries to MutableDict."
-
-        if not isinstance(value, MutableDict):
-            if isinstance(value, dict):
-                return MutableDict(value)
-
-            # this call will raise ValueError
-            return Mutable.coerce(key, value)
-        else:
-            return value
-
-    def __setitem__(self, key, value):
-        "Detect dictionary set events and emit change events."
-
-        dict.__setitem__(self, key, value)
-        self.changed()
-
-    def __delitem__(self, key):
-        "Detect dictionary del events and emit change events."
-
-        dict.__delitem__(self, key)
-        self.changed()
-
-
-class INETWrapper(TypeDecorator):
-    impl = String
-
-    def load_dialect_impl(self, dialect):
-        if dialect.name == 'postgresql':
-            return dialect.type_descriptor(postgresql.INET())
-        else:
-            return dialect.type_descriptor(String())
-
-
-class PaypalAPI(object):
-    api_base = ''
-    test = False
-    header_image = False
-    title = 'CCrypto VPN'
-    currency = 'EUR'
-    address = 'paypal@ccrypto.org'
-    receiver = 'paypal@ccrypto.org'
-
-    def __init__(self, test=False):
-        self.test = test
-        if test:
-            self.api_base = 'https://www.sandbox.paypal.com/'
-        else:
-            self.api_base = 'https://www.paypal.com/'
-
-    def make_link(self, order, request):
-        baseurl = self.api_base + '/cgi-bin/webscr?'
-        hexid = hex(order.id)[2:]
-        params = {
-            'cmd': '_xclick',
-            'notify_url': request.route_url('order_callback', hexid=hexid),
-            'item_name': self.title,
-            'amount': order.amount,
-            'currency_code': self.currency,
-            'business': self.address,
-            'no_shipping': '1',
-            'return': request.route_url('order_view', hexid=hexid),
-            'cancel_return': request.route_url('order_view', hexid=hexid),
-        }
-        if self.header_image:
-            params['cpp_header_image'] = self.header_image
-        url = baseurl + urlencode(params)
-        return url
-
-    def handle_notify(self, order, request):
-        # validate notify
-        v_url = self.api_base + '/cgi-bin/webscr?cmd=_notify-validate'
-        v_req = urlopen(v_url, data=bytes(request.body))
-        v_res = v_req.read()
-        if v_res != b'VERIFIED':
-            return False
-
-        try:
-            params = request.POST
-
-            if 'test_ipn' in params:
-                assert self.test and params['test_ipn'] == '1', \
-                    'Test API notify'
-
-            if params['payment_status'] == 'Refunded':
-                # Refund
-                if type(order.payment) is not dict or len(order.payment) == 0:
-                    order.payment = {
-                        'payerid': params['payer_id'],
-                        'payeremail': params['payer_email'],
-                    }
-                order.payment['status'] = 'refunded'
-                order.paid = False
-                # FIXME: maybe remove some time
-                return True
-            elif params['payment_status'] == 'Completed':
-                assert self.receiver == params['receiver_email'], \
-                    'Wrong receiver: ' + params['receiver_email']
-                assert self.currency == params['mc_currency'], \
-                    'Wrong currency: ' + params['mc_currency']
-                assert params['txn_type'] == 'web_accept', \
-                    'Wrong transaction type: ' + params['txn_type']
-
-                order.paid_amount = float(params['mc_gross'])
-                assert order.paid_amount >= order.amount, \
-                    'HAX! Paid %f, ordered %f.' % (
-                        order.paid_amount, order.amount)
-
-                # Store some data about the order
-                order.payment = {
-                    'txnid': params['txn_id'],
-                    'payerid': params['payer_id'],
-                    'payeremail': params['payer_email'],
-                }
-                order.paid = True
-                order.user.add_paid_time(order.time)
-                return True
-            else:
-                # Not implemented, ignore it
-                print('received: ', params)
-                return True
-
-        except KeyError as ke:
-            # Invalid notification - do not reply to it.
-            print('invalid notification: ' + str(ke))
-            return False
-        except AssertionError as error:
-            # Well-formed notification with bad input.
-            # We dont want to receive it again
-            order.payment = dict(error=str(error))
-            print('Error: ' + str(error))
-            return True
-
-
-class IcingaError(Exception):
-    pass
-
-
-class IcingaQuery(object):
-    def __init__(self, urlbase, auth):
-        self.baseurl = urlbase
-        self.auth = auth
-
-        try:
-            content = self._get_availcgi()
-            data = json.loads(content)
-            self.report = data['avail']['service_availability']['services']
-        except (requests.RequestException, socket.timeout) as e:
-            raise IcingaError('failed to connect: ' + str(e))
-        except (ValueError, KeyError) as e:
-            raise IcingaError('failed to decode icinga response (%s)' % str(e))
-
-    @cache.cache_region('short_term')
-    def _get_availcgi(self):
-        hostservices = 'all^all'
-        timeperiod = 'last31days'
-        backtrack = 4
-        url = '/avail.cgi?hostservice=%s&timeperiod=%s&backtrack=%d&jsonoutput'
-        url = url % (hostservices, timeperiod, backtrack)
-        r = requests.get(self.baseurl + url,
-                         auth=self.auth, verify=False, timeout=2)
-        content = r.content.decode('utf-8')
-
-        # When querying services availability, icinga can break the JSON
-        content = re.sub(',\n*(\]|\})', '\\1', content)
-
-        return content
-
-    def get_uptime(self, host, service):
-        try:
-            def fn(h):
-                return h['host_name'] == host and \
-                       h['service_description'] == service
-            svcdata = next(filter(fn, self.report))
-            uptime = int(svcdata['percent_known_time_ok'])
-        except (KeyError, ValueError) as e:
-            raise IcingaError('failed to parse icinga report (%s)' % str(e),
-                              host, service)
-        except StopIteration:
-            raise IcingaError('host/service unknown to icinga', host, service)
-        return uptime
 
 
 class User(Base):
@@ -635,7 +410,6 @@ class Gateway(Base):
     @property
     def main_ip4(self):
         return self.ipv4
-
 
     def __repr__(self):
         return '<Gateway %s-%s>' % (self.country, self.name)
