@@ -1,6 +1,6 @@
 # flake8: noqa
 
-from .base import Base, VPNSession
+from .base import Base, DBSession
 
 from .sql import User, PasswordResetToken, Profile
 from .sql import GiftCode, AlreadyUsedGiftCode
