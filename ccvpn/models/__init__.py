@@ -2,7 +2,7 @@
 
 from .base import Base, DBSession
 
-from .sql import User, PasswordResetToken, Profile
+from .sql import User, get_user, PasswordResetToken, Profile
 from .sql import GiftCode, AlreadyUsedGiftCode
 from .sql import Order, OrderNotPaid, Gateway, VPNSession
 from .sql import Ticket, TicketMessage
