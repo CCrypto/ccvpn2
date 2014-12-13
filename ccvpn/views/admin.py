@@ -1,4 +1,5 @@
 import copy
+import re
 from datetime import datetime, timedelta, date
 
 from pyramid.response import Response
@@ -9,8 +10,8 @@ from pyramid.httpexceptions import (
     HTTPBadRequest, HTTPNotFound, HTTPMethodNotAllowed,
 )
 from pyramid.renderers import render_to_response
-from dateutil import parser
 from sqlalchemy.sql import func, or_
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from math import ceil
 
 from ccvpn.models import (
@@ -83,7 +84,6 @@ def admin_graph(request):
         if f % 1 == 0:
             f = int(f)
         return f
-
 
     pygalopts = {
         'js': [
@@ -182,7 +182,7 @@ def admin_graph(request):
         values = {}  # gw_key / date / count
         for item in counts:
             gw_key = str(item.gateway_id) + '/' + str(item.gateway_version)
-            if not gw_key in values:
+            if gw_key not in values:
                 values[gw_key] = {}
             values[gw_key][item.cdate.date()] = item.count
 
@@ -316,7 +316,6 @@ class AdminBaseModel(AdminBase):
     def title(self, value):
         self._title = value
 
-
     def _post_common(self, request):
         for field in self.edit_fields:
             if not field.writable:
@@ -332,7 +331,6 @@ class AdminBaseModel(AdminBase):
             else:
                 value = None
             field.setter(value, self.item)
-        
 
     def post_edit(self, request):
         if not self.can_edit:
@@ -375,17 +373,43 @@ class AdminBaseModel(AdminBase):
         for f in self.get_item_filters:
             query = f(query)
         return query.first()
-        
 
     def get(self, request):
         if self.id:
             return self.get_item(self.id)
         else:
+            if 'search' in request.GET:
+                result = self.search(request.GET['search'])
+                if result:
+                    self.id = result.id
+                    location = request.resource_url(self)
+                    return HTTPSeeOther(location=location)
+
             try:
                 page = int(request.GET.get('page', 0))
             except ValueError:
                 page = 0
+
             return self.get_list(page)
+
+    def search(self, query):
+        parts = re.split('([a-zA-Z0-9_]+)=', query)[1:]
+        parts = zip(parts[0::2], parts[1::2])
+        parts = [(k.strip().lower(), v.strip()) for (k, v) in parts]
+
+        query = DBSession.query(self.model)
+
+        for f in self.get_list_filters:
+            query = f(query)
+
+        for col_name, text in parts:
+            column = getattr(self.model, col_name)
+            query = query.filter(column == text)
+
+        try:
+            return query.one()
+        except (NoResultFound, MultipleResultsFound):
+            return
 
     def get_item(self, id):
         self.item = self.get_model_item(id)
@@ -405,7 +429,7 @@ class AdminBaseModel(AdminBase):
         for f in self.get_list_filters:
             count_q = f(count_q)
         count = count_q.scalar()
-        
+
         pages = ceil(count / self.list_page_items)
         query = query.limit(self.list_page_items)
         query = query.offset(self.list_page_items * page)
@@ -572,11 +596,6 @@ class AdminUser(AdminBaseModel):
             return
         super().post_edit(request)
 
-    def get_list(self, *args, **kwargs):
-        r = super().get_list(*args, **kwargs)
-        r['list_title'] = 'New users'
-        return r
-
     def get_item(self, id):
         r = super().get_item(id)
         self.templates.append('user_actions.mako')
@@ -628,7 +647,7 @@ class AdminOrder(AdminBaseModel):
             ListField('Time', 'time'),
             ListField('Amount', 'amount'),
             ListField('Paid', 'paid_amount'),
-            ListField('Open', 'start_date'),
+            ListField('Start', 'start_date'),
             ListField('Paid?', 'paid'),
         )
         self.edit_fields = (
@@ -636,7 +655,7 @@ class AdminOrder(AdminBaseModel):
             EditField('User', 'user', writable=False),
             EditField('Time', 'time', writable=False),
             EditField('Method', 'method', filter=method_f, writable=False),
-            EditField('Open date', 'start_date', writable=False),
+            EditField('Start date', 'start_date', writable=False),
             EditField('Close date', 'close_date', writable=False),
             EditField('Amount', 'amount', writable=False),
             EditField('Paid amount', 'paid_amount', writable=False),
