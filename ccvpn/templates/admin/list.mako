@@ -1,6 +1,7 @@
-% if list_title:
-    <h3>${list_title}</h3>
-% endif
+<form class="inline" method="get" action="">
+    <input type="text" name="search" />
+    <input type="submit" value="Search" />
+</form>
 
 <table class="admin-list">
 <thead>
