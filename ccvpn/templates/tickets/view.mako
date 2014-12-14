@@ -22,7 +22,9 @@
                 on ${date_fmt(message.create_date)|n}.
             </p>
             <p class="ticket-message-content">
-                ${message.content}
+                <%! import markupsafe %>
+                <% content = str(markupsafe.escape(message.content)) %>
+                ${content.replace('\n', '<br />') | n}
             </p>
         </article>
     % endfor
