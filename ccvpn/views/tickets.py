@@ -39,7 +39,10 @@ def tickets_view(request):
 
     id = request.matchdict.get('id')
     try:
-        ticket = DBSession.query(Ticket).filter_by(id=id).one()
+        ticket_q = DBSession.query(Ticket).filter_by(id=id)
+        if not request.user.is_admin:
+            ticket_q = ticket_q.filter_by(user_id=request.user.id)
+        ticket = ticket_q.one()
     except NoResultFound:
         return HTTPNotFound()
 
