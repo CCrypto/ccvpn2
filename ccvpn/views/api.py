@@ -128,6 +128,8 @@ def api_gateway_connect(request):
     try:
         fullname = request.POST['username']
         client_addr = request.POST['remote_addr']
+        internal_ip4 = request.POST['internal_ip4']
+        internal_ip6 = request.POST['internal_ip6']
     except KeyError:
         return HTTPBadRequest('Require username/remote_addr')
 
@@ -146,6 +148,8 @@ def api_gateway_connect(request):
     sess.gateway_version = request.gw_version
     sess.user_id = user.id
     sess.remote_addr = client_addr
+    sess.internal_ip4 = internal_ip4
+    sess.internal_ip6 = internal_ip6
 
     if profilename:
         profile = DBSession.query(Profile) \
