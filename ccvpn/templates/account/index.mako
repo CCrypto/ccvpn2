@@ -15,7 +15,7 @@
         <p>${_('Your account is not paid.')}</p>
         % if len(user.paid_orders) == 0:
         <p>${_('You can request a free 7 days trial here')}:
-            <a href="/page/support">${_('Support')}</a></p>
+            <a href="/tickets/">${_('Support')}</a></p>
         % endif
         <hr />
     % endif
