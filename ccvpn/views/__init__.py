@@ -71,34 +71,6 @@ def format_bps(bits):
         return '{:2g}{}bps'.format(n, m)
 
 
-def get_uptime_factory(settings):
-    base = settings.get('nagios.url')
-    user = settings.get('nagios.user')
-    password = settings.get('nagios.password')
-    services = settings.get('nagios.service', '').split(',')
-    services = [s.strip() for s in services]
-    if base:
-        try:
-            r = IcingaQuery(base, (user, password))
-        except IcingaError as e:
-            logger.error('Icinga: %s', e.args[0])
-            return lambda h: '[error]'
-
-        def _get_uptime(host):
-            try:
-                uptimes = []
-                for s in services:
-                    uptimes.append(r.get_uptime(host, s))
-                return sum(uptimes) / len(uptimes)
-            except IcingaError as e:
-                logger.error('Icinga: %s', e.args[0])
-                return '[error]'
-
-        return _get_uptime
-    else:
-        return lambda h: '[unknown]'
-
-
 @view_config(route_name='status', renderer='status.mako')
 def status(request):
     settings = request.registry.settings
@@ -109,19 +81,12 @@ def status(request):
                         .all()
     l = list(gateways)
 
-    get_uptime = get_uptime_factory(settings)
-
     for host in l:
         host.host_name = '%s-%s.%s'%(host.country, host.name, domain)
-        host.uptime = get_uptime(host.host_name)
         host.bps_formatted = format_bps(host.bps)
 
-    bw_graph_url = settings.get('munin.bw_graph_url', None)
-    bw_graph_img = settings.get('munin.bw_graph_img', None)
-    bw_graph = (bw_graph_url, bw_graph_img)
     return {
         'gateways': l,
-        'bw_graph': bw_graph if all(bw_graph) else None,
         'n_users': DBSession.query(func.count(User.id))
                             .filter_by(is_paid=True).scalar(),
         'n_connected': DBSession.query(func.count(VPNSession.id)) \

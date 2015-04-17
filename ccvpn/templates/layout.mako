@@ -5,6 +5,7 @@
     menuItems = [
         [_('Home'), '/'],
         [_('Docs'), '/page/help'],
+        [_('Gateways'), '/status'],
     ]
 
     if request.user:
@@ -67,9 +68,9 @@
             <p>
                 <a href="http://ccrypto.org">Cognitive Cryptography</a>
                 % if use_https and request.host_port != str(ssl_port):
-                    // <a href="${ssl_url}"><b>${_('Use HTTPS')}</b></a>
+                    // <a href="${ssl_url}"><b>${_('HTTPS')}</b></a>
                 % endif
-                // <a href="/status">${_('Status')}</a>
+                // <a href="//status.ccrypto.org/">${_('Service Status')}</a>
                 % if available_languages:
                     |
                     % for l in available_languages.split():
