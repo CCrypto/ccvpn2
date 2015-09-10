@@ -28,5 +28,5 @@ Si vous n'avez pas toutes ces lignes, relancez OpenVPN ou ajouter les routes à 
 
 J'ai tout essayé mais rien ne semble fonctionner ! T_T
 ---------
-Ok… Je pense que vous pouvez venir [nous demander sur IRC](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|?&theme=cli#ccrypto) (mais souvenez-vous que nous ne sommes pas des professionnels payés, nous ne sommes pas toujours présent mais nous finirons toujours pas répondre si vous ne partez pas trop vite).
+Ok… Je pense que vous pouvez venir [nous demander sur IRC](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|?&theme=cli#ccrypto) (mais souvenez-vous que nous ne sommes pas des professionnels payés, nous ne sommes pas toujours présent mais nous finirons toujours par répondre si vous ne partez pas trop vite).
 
