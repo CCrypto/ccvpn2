@@ -11,6 +11,7 @@ Installation guides:
 
 Support:
 
+  - **[Self-Diagnosis](/page/self-diagnosis)**: Before asking for help, check here if you find the solution to your problem.
   - **[Tickets](/tickets/)**: The recommended and most reliable way to get help.
   - **IRC**: Join #ccrypto on chat.freenode.net with your favorite client or
     [our webchat](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|${irc_username}&theme=cli#ccrypto).

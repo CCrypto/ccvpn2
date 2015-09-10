@@ -11,11 +11,12 @@ Guides d'installation:
 
 Support:
 
-  - **[Tickets](/tickets/)**: Le moyen le plus efficace de nous contacter.
-  - **IRC**: Allez sur #ccrypto sur chat.freenode.net avec votre client préféré
+  - **[Auto-Diagnostic](/page/self-diagnosis)** : Avant de demander de l'aide, vérifiez si vous trouvez la solution à votre problème ici.
+  - **[Tickets](/tickets/)** : Le moyen le plus efficace de nous contacter.
+  - **IRC** : Allez sur #ccrypto sur chat.freenode.net avec votre client préféré
     ou [ce client web](https://kiwiirc.com/client/chat.freenode.net/?nick=ccvpn|${irc_username}&theme=cli#ccrypto).
     Mentionnez les ops et nous essayerons de vous répondre aussi vite que possible.
-  - **E-Mail**: support at ccrypto.org
+  - **E-Mail** : support at ccrypto.org
 
 
 Autres pages:
