@@ -7,6 +7,7 @@ It is made of a Pyramid web app you can see live at
 http://vpn.ccrypto.org/ including an API, and OpenVPN config/scripts that
 checks user accounts and passwords with the API.
 
+CCrypto's commercial support *does not* include this product. However, feel free to contact us and ask if you are having troubles running ccvpn, but without any guarantee.
 
 Getting Started
 ---------------
