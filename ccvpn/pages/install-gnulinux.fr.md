@@ -56,7 +56,38 @@ expliqué dans la partie en dessous, et éditez `/etc/default/openvpn` pour
 décommenter et modifiez la ligne `AUTOSTART`:
 
     AUTOSTART="ccrypto"
+    
+Linux Mint Mate Edition 17 ou plus récent
+-------------
 
+Pré-requis: Mettez à jour votre système en utilisant la commande:
+
+```
+sudo aptitude update
+```
+
+Installez les différents programmes utilisés pour faire fonctionner votre VPN CCrypto:
+
+```
+sudo aptitude install openvpn resolvconf network-manager-openvpn-gnome
+```
+
+Redémarrez la machine pour finaliser l'installation.
+
+Il faut maintenant télécharger le fichier de configuration disponible [sur le site dans la partie account](https://vpn.ccrypto.org/account/).
+et le placer dans /etc/openvpn. Téléchargez le fichier ca.crt [disponible ici](https://vpn.ccrypto.org/ca.crt) et placez le dans /etc/openvpn.
+
+Il s'agit d'un fichier .ovpn (qui fonctionne tel que sous Windows). Un simple renommage de ce fichier en ccrypto-*.conf suffit a faire fonctionner le tout.
+
+- On clique gauche sur l'icône réseau du Tableau de bord > Connexions Réseaux > Ajouter
+- Sélectionnez "importez une configuration VPN enregistrée"
+- On va dans le répertoire /etc/openvpn/ et on sélectionne le fichier ccrypto-*.conf.
+La fenêtre suivante devrait s'afficher: ![screenshot](http://i.imgur.com/HcdRwgP.png)
+
+Choisissez Mot de passe comme type d'authentification. Rentrez votre nom d'utilisateur ainsi que votre mot de passe
+Et dans certificat du CA, sélectionnez  votre ca.crt téléchargé précedemment.
+
+Votre VPN est prêt à l'utilisation.
 
 Enregistrer les identifiants
 ----------------------------
