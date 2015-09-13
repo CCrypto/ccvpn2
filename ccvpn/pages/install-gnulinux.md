@@ -54,6 +54,37 @@ edit `/etc/default/openvpn` and uncomment/change the `AUTOSTART` line:
     AUTOSTART="ccrypto"
 
 
+Linux Mint 17 Mate Edition or later
+-------------
+
+First, you have to update your system by using the following command:
+
+```
+sudo aptitude update
+```
+
+Download and install OpenVPN and Network-manager-openvpn-gnome:
+
+```
+sudo aptitude install openvpn resolvconf network-manager-openvpn-gnome
+```
+
+Reboot your system .
+
+Save the config file [you've downloaded from your ccrypto account section](https://vpn.ccrypto.org/account/) into /etc/openvpn/.
+Rename the file to eg. ccrypto-*.conf if necessary.
+
+[Download the ca.crt file](https://vpn.ccrypto.org/ca.crt) and put it in /etc/opvpn aswell.
+
+- Left click on the Network icon in the Control Panel> Network Connections> Add
+- Select "Import a saved VPN configuration"
+- Select your ccrypto-*.conf config file from the /etc.openvpn directory
+
+Select "password authentication"  as the authentication type and enter your ccrypto username and password.
+Select the ca.crt you saved into /etc/openvpn and click "Save".
+
+Your VPN is now ready to use.
+
 Save username and password
 --------------------------
 You can make OpenVPN remember your username and password, so you don't need
